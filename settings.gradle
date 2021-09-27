@@ -1,0 +1,6 @@
+rootProject.name = 'Gift-certificates'
+include 'model'
+include 'persistence'
+include 'web'
+include 'logging'
+
