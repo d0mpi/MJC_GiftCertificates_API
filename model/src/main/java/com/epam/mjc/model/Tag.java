@@ -9,6 +9,11 @@ import lombok.ToString;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class Tag extends DatabaseEntity{
+public class Tag extends DatabaseEntity {
     private String name;
+
+    public Tag(int id, String name) {
+        super(id);
+        this.name = name;
+    }
 }
