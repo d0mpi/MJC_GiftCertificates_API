@@ -10,13 +10,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-//@RequiredArgsConstructor
 public class JdbcCertificateRepository implements CertificateRepository {
-
     private static final String SQL_CREATE_CERTIFICATE = "insert into certificate (name, description, price," +
             "duration, create_date, last_update_date) values (?, ?, ?, ?, ?, ?)";
-    private static final String SQL_SELECT_ALL_CERTIFICATE = "select id, name, description, price," +
-            "duration, create_date, last_update_date from certificate";
+//    private static final String SQL_SELECT_ALL_CERTIFICATE = "select id, name, description, price," +
+//            "duration, create_date, last_update_date from certificate";
     private static final String SQL_FIND_CERTIFICATE_BY_ID = "select id, name, description, price," +
             "duration, create_date, last_update_date from certificate where id = ?";
     private static final String SQL_UPDATE_CERTIFICATE = "update certificate set name = ?, description  = ?, price  = ?," +
@@ -57,18 +55,15 @@ public class JdbcCertificateRepository implements CertificateRepository {
     }
 
     @Override
-    public List<Certificate> findAll() {
-        System.out.println("select all");
-        List<Certificate> list = template.query(SQL_SELECT_ALL_CERTIFICATE, certificateMapper::mapRowToObject);
-        System.out.println(list);
-        return list;
+    public Certificate read(long id){
+        return template.queryForStream(SQL_FIND_CERTIFICATE_BY_ID, certificateMapper::mapRowToObject, id)
+                .distinct().findFirst().orElse(null);
     }
 
     @Override
-    public Certificate findEntityById(long id) {
-        return template.queryForObject(SQL_FIND_CERTIFICATE_BY_ID, certificateMapper::mapRowToObject, id);
+    public List<Certificate> findByCriteria(String sqlQuery) {
+        return template.query(sqlQuery, certificateMapper::mapRowToObject);
     }
-
 
     @Override
     public Certificate update(Certificate certificate) {
@@ -87,11 +82,4 @@ public class JdbcCertificateRepository implements CertificateRepository {
     public void delete(long id) {
         template.update(SQL_DELETE_CERTIFICATE, id);
     }
-
-    @Override
-    public void delete(Certificate certificate) {
-        delete(certificate.getId());
-    }
-
-
 }

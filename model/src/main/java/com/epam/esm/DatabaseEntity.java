@@ -5,9 +5,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 public class DatabaseEntity {
     private long id;
+
+    public DatabaseEntity() {
+    }
 
     public DatabaseEntity(long id) {
         this.id = id;

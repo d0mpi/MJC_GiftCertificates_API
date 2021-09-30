@@ -1,5 +1,6 @@
 package com.epam.esm.repository.impl;
 
+import com.epam.esm.Certificate;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.Tag;
 import com.epam.esm.repository.TagRepository;
@@ -10,14 +11,13 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-//@RequiredArgsConstructor
 public class JdbcTagRepository implements TagRepository {
-
-
     private static final String SQL_CREATE_TAG = "insert into tag (name) values (?)";
-    private static final String SQL_SELECT_ALL_TAG = "select id, name from tag";
-    private static final String SQL_SELECT_TAG_BY_ID = "select id, name from tag where id = ?";
-    private static final String SQL_UPDATE_TAG = "insert into tag (name) values (?)";
+    private static final String SQL_FIND_TAG_BY_ID = "select id, name from tag where id = ?";
+    private static final String SQL_SELECT_TAGS_BY_CERTIFICATE_ID = "select id, name from tag " +
+            "join certificate_tag on tag.id = certificate_tag.tag_id " +
+            "where certificate_id = ?";
+//    private static final String SQL_UPDATE_TAG = "insert into tag (name) values (?)";
     private static final String SQL_DELETE_TAG = "delete from tag where id = ?";
 
     private final JdbcTemplate template;
@@ -37,30 +37,23 @@ public class JdbcTagRepository implements TagRepository {
     }
 
     @Override
-    public List<Tag> findAll() {
-        return template.query(SQL_SELECT_ALL_TAG, tagMapper::mapRowToObject);
+    public List<Tag> findByCriteria(String sqlQuery) {
+        return template.query(sqlQuery, tagMapper::mapRowToObject);
     }
 
     @Override
-    public Tag findEntityById(long id) {
-        return template.queryForObject(SQL_SELECT_TAG_BY_ID, tagMapper::mapRowToObject, id);
+    public Tag read(long id) {
+        return template.queryForStream(SQL_FIND_TAG_BY_ID, tagMapper::mapRowToObject, id)
+                .distinct().findFirst().orElse(null);
     }
 
     @Override
-    public Tag update(Tag tag) {
-        template.update(SQL_UPDATE_TAG,
-                tag.getName());
-        return tag;
+    public List<Tag> findTagsByCertificateId(long id) {
+        return template.query(SQL_SELECT_TAGS_BY_CERTIFICATE_ID, tagMapper::mapRowToObject);
     }
 
     @Override
     public void delete(long id) {
         template.update(SQL_DELETE_TAG, id);
     }
-
-    @Override
-    public void delete(Tag tag) {
-        delete(tag.getId());
-    }
-    
 }
