@@ -1,16 +1,16 @@
-package com.epam.mjc.persistence.repository.impl;
+package com.epam.esm.repository.impl;
 
-import com.epam.mjc.model.Tag;
-import com.epam.mjc.persistence.repository.TagRepository;
+import com.epam.esm.mapper.TagMapper;
+import com.epam.esm.Tag;
+import com.epam.esm.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 @Repository
+//@RequiredArgsConstructor
 public class JdbcTagRepository implements TagRepository {
 
 
@@ -19,11 +19,14 @@ public class JdbcTagRepository implements TagRepository {
     private static final String SQL_SELECT_TAG_BY_ID = "select id, name from tag where id = ?";
     private static final String SQL_UPDATE_TAG = "insert into tag (name) values (?)";
     private static final String SQL_DELETE_TAG = "delete from tag where id = ?";
+
     private final JdbcTemplate template;
+    private final TagMapper tagMapper;
 
     @Autowired
-    public JdbcTagRepository(JdbcTemplate template) {
+    public JdbcTagRepository(JdbcTemplate template, TagMapper tagMapper) {
         this.template = template;
+        this.tagMapper = tagMapper;
     }
 
     @Override
@@ -35,12 +38,12 @@ public class JdbcTagRepository implements TagRepository {
 
     @Override
     public List<Tag> findAll() {
-        return template.query(SQL_SELECT_ALL_TAG, this::mapRow);
+        return template.query(SQL_SELECT_ALL_TAG, tagMapper::mapRowToObject);
     }
 
     @Override
-    public Tag findEntityById(Integer id) {
-        return template.queryForObject(SQL_SELECT_TAG_BY_ID, this::mapRow, id);
+    public Tag findEntityById(long id) {
+        return template.queryForObject(SQL_SELECT_TAG_BY_ID, tagMapper::mapRowToObject, id);
     }
 
     @Override
@@ -51,7 +54,7 @@ public class JdbcTagRepository implements TagRepository {
     }
 
     @Override
-    public void delete(Integer id) {
+    public void delete(long id) {
         template.update(SQL_DELETE_TAG, id);
     }
 
@@ -59,10 +62,5 @@ public class JdbcTagRepository implements TagRepository {
     public void delete(Tag tag) {
         delete(tag.getId());
     }
-
-    @Override
-    public Tag mapRow(ResultSet rs, int rowNum) throws SQLException {
-        return  new Tag(rs.getInt("id"),
-                rs.getString("name"));
-    }
+    
 }

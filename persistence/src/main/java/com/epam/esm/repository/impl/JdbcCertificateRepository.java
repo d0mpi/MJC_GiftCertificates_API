@@ -1,16 +1,16 @@
-package com.epam.mjc.persistence.repository.impl;
+package com.epam.esm.repository.impl;
 
-import com.epam.mjc.model.Certificate;
-import com.epam.mjc.persistence.repository.CertificateRepository;
+import com.epam.esm.mapper.CertificateMapper;
+import com.epam.esm.repository.CertificateRepository;
+import com.epam.esm.Certificate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 @Repository
+//@RequiredArgsConstructor
 public class JdbcCertificateRepository implements CertificateRepository {
 
     private static final String SQL_CREATE_CERTIFICATE = "insert into certificate (name, description, price," +
@@ -24,20 +24,23 @@ public class JdbcCertificateRepository implements CertificateRepository {
     private static final String SQL_DELETE_CERTIFICATE = "delete from certificate where id = ?";
     private static final String SQL_CREATE_CERTIFICATE_TAG = "insert into certificate_tag (tag_id, certificate_id) values (?, ?)";
     private static final String SQL_DELETE_CERTIFICATE_TAG = "delete from certificate_tag where tag_id = ? and certificate_id = ?";
+
     private final JdbcTemplate template;
+    private final CertificateMapper certificateMapper;
 
     @Autowired
-    public JdbcCertificateRepository(JdbcTemplate template) {
+    public JdbcCertificateRepository(JdbcTemplate template, CertificateMapper certificateMapper) {
         this.template = template;
+        this.certificateMapper = certificateMapper;
     }
 
     @Override
-    public void addTagToCertificate(int certificateId, int tagId) {
+    public void addTagToCertificate(long certificateId, long tagId) {
         template.update(SQL_CREATE_CERTIFICATE_TAG, tagId, certificateId);
     }
 
     @Override
-    public void deleteTagFromCertificate(int certificateId, int tagId) {
+    public void deleteTagFromCertificate(long certificateId, long tagId) {
         template.update(SQL_DELETE_CERTIFICATE_TAG, tagId, certificateId);
     }
 
@@ -55,12 +58,15 @@ public class JdbcCertificateRepository implements CertificateRepository {
 
     @Override
     public List<Certificate> findAll() {
-        return template.query(SQL_SELECT_ALL_CERTIFICATE, this::mapRow);
+        System.out.println("select all");
+        List<Certificate> list = template.query(SQL_SELECT_ALL_CERTIFICATE, certificateMapper::mapRowToObject);
+        System.out.println(list);
+        return list;
     }
 
     @Override
-    public Certificate findEntityById(Integer id) {
-        return template.queryForObject(SQL_FIND_CERTIFICATE_BY_ID, this::mapRow, id);
+    public Certificate findEntityById(long id) {
+        return template.queryForObject(SQL_FIND_CERTIFICATE_BY_ID, certificateMapper::mapRowToObject, id);
     }
 
 
@@ -78,7 +84,7 @@ public class JdbcCertificateRepository implements CertificateRepository {
     }
 
     @Override
-    public void delete(Integer id) {
+    public void delete(long id) {
         template.update(SQL_DELETE_CERTIFICATE, id);
     }
 
@@ -87,14 +93,5 @@ public class JdbcCertificateRepository implements CertificateRepository {
         delete(certificate.getId());
     }
 
-    @Override
-    public Certificate mapRow(ResultSet rs, int rowNum) throws SQLException {
-        return new Certificate(rs.getInt("id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getBigDecimal("price"),
-                rs.getInt("duration"),
-                rs.getTimestamp("create_date").toLocalDateTime(),
-                rs.getTimestamp("last_update_date").toLocalDateTime());
-    }
+
 }

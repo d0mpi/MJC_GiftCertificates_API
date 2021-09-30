@@ -1,4 +1,4 @@
-package com.epam.mjc.model;
+package com.epam.esm;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,8 +12,12 @@ import lombok.ToString;
 public class Tag extends DatabaseEntity {
     private String name;
 
-    public Tag(int id, String name) {
+    public Tag(long id, String name) {
         super(id);
         this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 }
