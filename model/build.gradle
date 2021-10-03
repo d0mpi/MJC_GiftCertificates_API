@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-group 'com.epam.mjc.model'
+group 'com.epam.esm'
 version '1.0-SNAPSHOT'
 
 repositories {
@@ -10,6 +10,12 @@ repositories {
 }
 
 dependencies {
+    implementation group: 'org.springframework', name: 'spring-beans', version: '5.3.10'
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
+    testImplementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.32'
 }
 
 test {

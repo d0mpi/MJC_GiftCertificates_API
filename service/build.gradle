@@ -1,7 +1,5 @@
 plugins {
     id 'java'
-    id 'war'
-
 }
 
 group 'com.epam.esm'
@@ -12,26 +10,27 @@ repositories {
 }
 
 dependencies {
-    implementation project(':service')
+    implementation project(':model')
+    implementation project(':persistence')
 
-    compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
     implementation group: 'org.springframework', name: 'spring-core', version: '5.3.10'
     implementation group: 'org.springframework', name: 'spring-context', version: '5.3.10'
     implementation group: 'org.springframework', name: 'spring-beans', version: '5.3.10'
     implementation group: 'org.springframework', name: 'spring-web', version: '5.3.10'
     implementation group: 'org.springframework', name: 'spring-webmvc', version: '5.3.10'
 
-    compileOnly 'org.projectlombok:lombok:1.18.20'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
 
-    implementation 'org.hibernate.validator:hibernate-validator:7.0.1.Final'
+    implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.4.4'
+
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.2'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.12.2'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.12.2'
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.12.2'
 
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
-    implementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.32'
-    implementation group: 'log4j', name: 'log4j', version: '1.2.17'
-
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    testImplementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.32'
 }
 
 test {
