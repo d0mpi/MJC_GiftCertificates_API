@@ -1,6 +1,5 @@
 package com.epam.esm.repository;
 
-import com.epam.esm.Certificate;
 import com.epam.esm.DatabaseEntity;
 
 import java.util.List;
