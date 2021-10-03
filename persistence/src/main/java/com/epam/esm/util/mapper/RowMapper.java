@@ -1,4 +1,4 @@
-package com.epam.esm.mapper;
+package com.epam.esm.util.mapper;
 
 import com.epam.esm.DatabaseEntity;
 

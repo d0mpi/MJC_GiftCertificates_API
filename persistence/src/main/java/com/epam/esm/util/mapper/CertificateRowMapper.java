@@ -1,4 +1,4 @@
-package com.epam.esm.mapper;
+package com.epam.esm.util.mapper;
 
 import com.epam.esm.Certificate;
 import org.springframework.stereotype.Component;
@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
-public class CertificateMapper implements RowMapper<Certificate> {
+public class CertificateRowMapper implements RowMapper<Certificate> {
     @Override
     public Certificate mapRowToObject(ResultSet rs, int rowNum) throws SQLException {
         return new Certificate(rs.getInt("id"),
