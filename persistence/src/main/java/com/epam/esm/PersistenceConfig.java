@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 public class PersistenceConfig {
     @Bean
     public static JdbcTemplate getTemplate() {
+
         return new JdbcTemplate(BasicHikariDataSource.getDataSource());
     }
 }
