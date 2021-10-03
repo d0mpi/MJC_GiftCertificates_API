@@ -1,15 +1,18 @@
 package com.epam.esm.pool;
 
 import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
+import javax.sql.DataSource;
 
 public class BasicHikariDataSource {
-    private static HikariConfig config = new HikariConfig("/database.properties");
-    private static com.zaxxer.hikari.HikariDataSource ds = new com.zaxxer.hikari.HikariDataSource(config);
+    private static final HikariConfig config = new HikariConfig("/database.properties");
+    private static final DataSource ds = new HikariDataSource(config);
 
     private BasicHikariDataSource() {
     }
 
-    public static com.zaxxer.hikari.HikariDataSource getDataSource() {
+    public static DataSource getDataSource() {
         return ds;
     }
 }
