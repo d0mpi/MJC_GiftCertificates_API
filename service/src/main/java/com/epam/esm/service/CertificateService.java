@@ -1,14 +1,13 @@
 package com.epam.esm.service;
 
-import com.epam.esm.Certificate;
+import com.epam.esm.DTO.CertificateDTO;
+import com.epam.esm.DTO.TagDTO;
+import com.epam.esm.exception.ValidationException;
 
-import java.util.List;
-import java.util.Map;
+public interface CertificateService extends EntityService<CertificateDTO> {
+    CertificateDTO update(CertificateDTO entity) throws ValidationException;
 
-public interface CertificateService extends EntityService<Certificate>{
-    Certificate update(Certificate entity);
+    CertificateDTO addTagToCertificate(long certificateId, TagDTO tag);
 
-    void addTagToCertificate(long certificateId, long tagId);
-
-    void deleteTagFromCertificate(long certificateId, long tagId);
+    void deleteTagFromCertificate(long certificateId, TagDTO tag);
 }

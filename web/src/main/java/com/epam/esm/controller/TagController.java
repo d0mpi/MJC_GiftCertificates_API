@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.Tag;
+import com.epam.esm.DTO.TagDTO;
+import com.epam.esm.exception.ValidationException;
 import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,25 +27,21 @@ public class TagController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> read(@PathVariable("id") long id){
-        final Tag tag = tagService.read(id);
+    public ResponseEntity<?> read(@PathVariable("id") long id) {
+        final TagDTO tag = tagService.read(id);
         return tag != null
                 ? new ResponseEntity<>(tag, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<?> create(@RequestBody Tag tag){
-        if(tag.getName() != null) {
-            return new ResponseEntity<>(tagService.create(tag), HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>("wrong entity", HttpStatus.UNPROCESSABLE_ENTITY);
-        }
+    public ResponseEntity<?> create(@RequestBody TagDTO tag) throws ValidationException {
+        return new ResponseEntity<>(tagService.create(tag), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") long id){
+    public ResponseEntity<?> delete(@PathVariable("id") long id) {
         tagService.delete(id);
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

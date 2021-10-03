@@ -1,14 +1,14 @@
 package com.epam.esm.service;
 
-import com.epam.esm.Certificate;
-import com.epam.esm.DatabaseEntity;
+import com.epam.esm.DTO.EntityDTO;
+import com.epam.esm.exception.ValidationException;
 
 import java.util.List;
 import java.util.Map;
 
-public interface EntityService<T extends DatabaseEntity> {
+public interface EntityService<T extends EntityDTO> {
 
-    T create(T entity);
+    T create(T entity) throws ValidationException;
 
     T read(long id);
 

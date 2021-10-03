@@ -1,58 +1,77 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.Certificate;
+import com.epam.esm.DTO.CertificateDTO;
+import com.epam.esm.DTO.TagDTO;
+import com.epam.esm.exception.ValidationException;
+import com.epam.esm.mapper.CertificateMapper;
+import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.repository.CertificateRepository;
 import com.epam.esm.service.CertificateService;
-import com.epam.esm.util.CertificateSearcher;
+import com.epam.esm.util.searcher.CertificateSearcher;
+import com.epam.esm.validation.CertificateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class BasicCertificateService implements CertificateService {
     private final CertificateRepository repo;
-    private CertificateSearcher searcher;
+    private final CertificateMapper certificateMapper;
+    private final TagMapper tagMapper;
+    public final CertificateValidator certificateValidator;
 
     @Autowired
-    public BasicCertificateService(CertificateRepository repo, CertificateSearcher searcher) {
+    public BasicCertificateService(CertificateRepository repo,
+                                   CertificateMapper certificateMapper,
+                                   TagMapper tagMapper,
+                                   CertificateValidator certificateValidator) {
         this.repo = repo;
-        this.searcher = searcher;
+        this.certificateMapper = certificateMapper;
+        this.tagMapper = tagMapper;
+        this.certificateValidator = certificateValidator;
     }
 
     @Override
-    public Certificate create(Certificate certificate) {
+    public CertificateDTO create(CertificateDTO certificate) throws ValidationException {
+        certificateValidator.validate(certificate);
         certificate.setCreate_date(LocalDateTime.now());
         certificate.setLast_update_date(LocalDateTime.now());
-        return repo.create(certificate);
+        return certificateMapper.convertToDto(repo.create(certificateMapper.convertToEntity(certificate)));
     }
 
     @Override
-    public Certificate read(long id) {
-        return repo.read(id);
+    public CertificateDTO read(long id) {
+        return certificateMapper.convertToDto(repo.read(id));
     }
 
     @Override
-    public List<Certificate> findByCriteria(Map<String, String> paramMap) {
-        return repo.findByCriteria(searcher.getQuery(paramMap));
+    public List<CertificateDTO> findByCriteria(Map<String, String> paramMap) {
+        return repo.findByCriteria(new CertificateSearcher().getQuery(paramMap))
+                .stream()
+                .map(certificateMapper::convertToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Certificate update(Certificate certificate) {
+    public CertificateDTO update(CertificateDTO certificate) throws ValidationException {
+        certificateValidator.validate(certificate);
         certificate.setLast_update_date(LocalDateTime.now());
-        return repo.update(certificate);
+        return certificateMapper.convertToDto(repo.update(certificateMapper.convertToEntity(certificate)));
     }
 
     @Override
-    public void addTagToCertificate(long certificateId, long tagId) {
-        repo.addTagToCertificate(certificateId, tagId);
+    public CertificateDTO addTagToCertificate(long certificateId, TagDTO tag) {
+        repo.addTagToCertificate(certificateId, tagMapper.convertToEntity(tag));
+        return certificateMapper.convertToDto(repo.read(certificateId));
     }
 
     @Override
-    public void deleteTagFromCertificate(long certificateId, long tagId) {
-        repo.deleteTagFromCertificate(certificateId, tagId);
+    public void deleteTagFromCertificate(long certificateId, TagDTO tag){
+        repo.deleteTagFromCertificate(certificateId, tagMapper.convertToEntity(tag));
     }
 
     @Override
@@ -61,7 +80,7 @@ public class BasicCertificateService implements CertificateService {
     }
 
     @Override
-    public void delete(Certificate certificate) {
+    public void delete(CertificateDTO certificate) {
         repo.delete(certificate.getId());
     }
 }

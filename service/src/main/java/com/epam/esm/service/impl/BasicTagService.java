@@ -1,36 +1,45 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.Tag;
+import com.epam.esm.DTO.TagDTO;
+import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.TagService;
+import com.epam.esm.util.searcher.CertificateSearcher;
+import com.epam.esm.util.searcher.TagSearcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class BasicTagService implements TagService {
     private final TagRepository repo;
+    private final TagMapper mapper;
 
     @Autowired
-    public BasicTagService(TagRepository repo) {
+    public BasicTagService(TagRepository repo, TagMapper mapper) {
         this.repo = repo;
+        this.mapper = mapper;
     }
 
     @Override
-    public Tag create(Tag tag) {
-        return repo.create(tag);
+    public TagDTO create(TagDTO tag) {
+        return mapper.convertToDto(repo.create(mapper.convertToEntity(tag)));
     }
 
     @Override
-    public Tag read(long id) {
-        return repo.read(id);
+    public TagDTO read(long id) {
+        return mapper.convertToDto(repo.read(id));
     }
 
     @Override
-    public List<Tag> findByCriteria(Map<String, String> paramMap) {
-        return null;
+    public List<TagDTO> findByCriteria(Map<String, String> paramMap) {
+        return repo.findByCriteria(new TagSearcher().getQuery(paramMap))
+                .stream()
+                .map(mapper::convertToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -39,7 +48,7 @@ public class BasicTagService implements TagService {
     }
 
     @Override
-    public void delete(Tag tag) {
+    public void delete(TagDTO tag) {
         repo.delete(tag.getId());
     }
 }
