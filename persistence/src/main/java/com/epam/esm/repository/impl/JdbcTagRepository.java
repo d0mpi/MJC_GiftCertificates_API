@@ -1,8 +1,9 @@
 package com.epam.esm.repository.impl;
 
+import com.epam.esm.exception.DAOException;
+import com.epam.esm.repository.TagRepository;
 import com.epam.esm.util.mapper.TagRowMapper;
 import com.epam.esm.Tag;
-import com.epam.esm.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -24,7 +25,6 @@ public class JdbcTagRepository implements TagRepository {
             "on t.id = ct.tag_id " +
             "where ct.certificate_id = ?";
 
-    //    private static final String SQL_UPDATE_TAG = "insert into tag (name) values (?)";
     private static final String SQL_DELETE_TAG = "delete from tag where id = ?";
 
     private final JdbcTemplate template;
@@ -37,7 +37,7 @@ public class JdbcTagRepository implements TagRepository {
     }
 
     @Override
-    public Tag create(Tag tag) {
+    public Tag create(Tag tag) throws DAOException{
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(SQL_CREATE_TAG, Statement.RETURN_GENERATED_KEYS);
@@ -48,7 +48,7 @@ public class JdbcTagRepository implements TagRepository {
             tag.setId(keyHolder.getKey().longValue());
             return tag;
         } else
-            return null;
+            throw new DAOException("tag.emptyKeyHolder", 40902);
     }
 
     @Override
@@ -59,11 +59,11 @@ public class JdbcTagRepository implements TagRepository {
     @Override
     public Tag read(long id) {
         return template.queryForStream(SQL_FIND_TAG_BY_ID, tagMapper::mapRowToObject, id)
-                .distinct().findFirst().orElse(null);
+                .distinct().findFirst().orElseThrow(() -> (new DAOException("tag.notFound", 40402)));
     }
 
     @Override
-    public Optional<Tag> isPresent(String name) {
+    public Optional<Tag> readByName(String name) {
         return template.queryForStream(SQL_FIND_TAG_BY_NAME, tagMapper::mapRowToObject, name).findFirst();
     }
 

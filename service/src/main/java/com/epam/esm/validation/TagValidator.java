@@ -9,9 +9,9 @@ public class TagValidator implements EntityValidator<TagDTO> {
     @Override
     public void validate(TagDTO tag) throws ValidationException {
         if (tag.getName() == null) {
-            throw new ValidationException();
+            throw new ValidationException("tag.nameNull", 42202);
         } else if (tag.getName().length() > 45 || tag.getName().isBlank()) {
-            throw new ValidationException();
+            throw new ValidationException("tag.nameSize", 42202);
         }
     }
 }

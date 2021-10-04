@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface TagRepository extends Repository<Tag> {
     List<Tag> findTagsByCertificateId(long id);
 
-    Optional<Tag> isPresent(String name);
+    Optional<Tag> readByName(String name);
 }

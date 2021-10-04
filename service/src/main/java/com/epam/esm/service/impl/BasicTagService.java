@@ -4,7 +4,6 @@ import com.epam.esm.DTO.TagDTO;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.TagService;
-import com.epam.esm.util.searcher.CertificateSearcher;
 import com.epam.esm.util.searcher.TagSearcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

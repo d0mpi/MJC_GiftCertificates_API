@@ -1,19 +1,16 @@
 package com.epam.esm.exception;
 
-public class ValidationException extends Exception{
-    public ValidationException() {
-        super();
-    }
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-    public ValidationException(String message) {
-        super(message);
-    }
+@ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
+public class ValidationException extends RuntimeException{
+    @Getter
+    private final int errorCode;
 
-    public ValidationException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public ValidationException(Throwable cause) {
-        super(cause);
+    public ValidationException(String errorMessage, int errorCode) {
+        super(errorMessage);
+        this.errorCode = errorCode;
     }
 }

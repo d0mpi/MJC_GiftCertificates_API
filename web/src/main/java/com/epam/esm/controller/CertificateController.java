@@ -5,6 +5,7 @@ import com.epam.esm.DTO.TagDTO;
 import com.epam.esm.exception.ValidationException;
 import com.epam.esm.service.CertificateService;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,14 +17,11 @@ import java.util.Map;
 @RestController
 @Slf4j
 @RequestMapping("/certificate")
+@RequiredArgsConstructor
 public class CertificateController {
 
-    private final CertificateService certificateService;
-
     @Autowired
-    public CertificateController(CertificateService certificateService) {
-        this.certificateService = certificateService;
-    }
+    private final CertificateService certificateService;
 
     @GetMapping
     public ResponseEntity<?> findAllByCriteria(@RequestParam Map<String, String> params) {
