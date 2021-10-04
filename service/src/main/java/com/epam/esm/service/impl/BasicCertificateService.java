@@ -9,6 +9,7 @@ import com.epam.esm.repository.CertificateRepository;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.util.searcher.CertificateSearcher;
 import com.epam.esm.validation.CertificateValidator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,22 +19,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class BasicCertificateService implements CertificateService {
-    private final CertificateRepository repo;
-    private final CertificateMapper certificateMapper;
-    private final TagMapper tagMapper;
-    public final CertificateValidator certificateValidator;
-
     @Autowired
-    public BasicCertificateService(CertificateRepository repo,
-                                   CertificateMapper certificateMapper,
-                                   TagMapper tagMapper,
-                                   CertificateValidator certificateValidator) {
-        this.repo = repo;
-        this.certificateMapper = certificateMapper;
-        this.tagMapper = tagMapper;
-        this.certificateValidator = certificateValidator;
-    }
+    private final CertificateRepository repo;
+    @Autowired
+    private final CertificateMapper certificateMapper;
+    @Autowired
+    private final TagMapper tagMapper;
+    @Autowired
+    public final CertificateValidator certificateValidator;
 
     @Override
     public CertificateDTO create(CertificateDTO certificate) throws ValidationException {

@@ -3,6 +3,7 @@ package com.epam.esm.controller;
 import com.epam.esm.DTO.TagDTO;
 import com.epam.esm.exception.ValidationException;
 import com.epam.esm.service.TagService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,14 +13,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/tag")
+@RequiredArgsConstructor
 public class TagController {
-
-    private final TagService tagService;
-
     @Autowired
-    public TagController(TagService tagService) {
-        this.tagService = tagService;
-    }
+    private final TagService tagService;
 
     @GetMapping
     public ResponseEntity<?> findAll(@RequestParam Map<String, String> params) {

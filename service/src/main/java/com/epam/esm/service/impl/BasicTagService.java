@@ -5,6 +5,7 @@ import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.TagService;
 import com.epam.esm.util.searcher.TagSearcher;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,15 +14,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class BasicTagService implements TagService {
-    private final TagRepository repo;
-    private final TagMapper mapper;
-
     @Autowired
-    public BasicTagService(TagRepository repo, TagMapper mapper) {
-        this.repo = repo;
-        this.mapper = mapper;
-    }
+    private final TagRepository repo;
+    @Autowired
+    private final TagMapper mapper;
 
     @Override
     public TagDTO create(TagDTO tag) {

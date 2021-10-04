@@ -5,6 +5,7 @@ import com.epam.esm.Tag;
 import com.epam.esm.exception.DAOException;
 import com.epam.esm.repository.CertificateRepository;
 import com.epam.esm.util.mapper.CertificateRowMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
+@RequiredArgsConstructor
 public class JdbcCertificateRepository implements CertificateRepository {
     private static final String SQL_CREATE_CERTIFICATE = "insert into certificate (name, description, price," +
             "duration, create_date, last_update_date) values (?, ?, ?, ?, ?, ?)";
@@ -32,16 +34,12 @@ public class JdbcCertificateRepository implements CertificateRepository {
     private static final String SQL_CREATE_CERTIFICATE_TAG = "insert into certificate_tag (certificate_id, tag_id) values (?, ?)";
     private static final String SQL_DELETE_CERTIFICATE_TAG = "delete from certificate_tag where tag_id = ? and certificate_id = ?";
 
-    private final JdbcTemplate template;
-    private final CertificateRowMapper certificateMapper;
-    private final JdbcTagRepository tagRepository;
-
     @Autowired
-    public JdbcCertificateRepository(JdbcTemplate template, CertificateRowMapper certificateMapper, JdbcTagRepository tagRepository) {
-        this.template = template;
-        this.certificateMapper = certificateMapper;
-        this.tagRepository = tagRepository;
-    }
+    private final JdbcTemplate template;
+    @Autowired
+    private final CertificateRowMapper certificateMapper;
+    @Autowired
+    private final JdbcTagRepository tagRepository;
 
     @Override
     @Transactional

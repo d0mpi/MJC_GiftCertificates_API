@@ -34,7 +34,6 @@ public class CertificateController {
     @GetMapping("/{id}")
     @ResponseBody
     public CertificateDTO read(@PathVariable("id") long id) {
-        log.info(certificateService.read(id).toString());
         return certificateService.read(id);
     }
 

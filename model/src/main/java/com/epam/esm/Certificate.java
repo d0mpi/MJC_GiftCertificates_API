@@ -13,6 +13,7 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class Certificate extends DatabaseEntity {
 
     private String name;
