@@ -32,7 +32,7 @@ public class JdbcCertificateRepository implements CertificateRepository {
             "duration = ?, create_date = ?, last_update_date = ? where id = ?";
     private static final String SQL_DELETE_CERTIFICATE = "delete from certificate where id = ?";
     private static final String SQL_CREATE_CERTIFICATE_TAG = "insert into certificate_tag (certificate_id, tag_id) values (?, ?)";
-    private static final String SQL_DELETE_CERTIFICATE_TAG = "delete from certificate_tag where tag_id = ? and certificate_id = ?";
+    private static final String SQL_DELETE_CERTIFICATE_TAG = "delete from certificate_tag where certificate_id = ? and tag_id = ?";
 
     @Autowired
     private final JdbcTemplate template;
@@ -50,12 +50,14 @@ public class JdbcCertificateRepository implements CertificateRepository {
         } else {
             tag.setId(presentedTag.getId());
         }
-        template.update(SQL_CREATE_CERTIFICATE_TAG, certificateId, presentedTag.getId());
+        if(!read(certificateId).getTags().contains(tag)) {
+            template.update(SQL_CREATE_CERTIFICATE_TAG, certificateId, presentedTag.getId());
+        }
     }
 
     @Override
     public void deleteTagFromCertificate(long certificateId, Tag tag) {
-        template.update(SQL_DELETE_CERTIFICATE_TAG, tag, certificateId);
+        template.update(SQL_DELETE_CERTIFICATE_TAG, certificateId, tag.getId());
     }
 
     @Override
@@ -96,7 +98,7 @@ public class JdbcCertificateRepository implements CertificateRepository {
     @Override
     @Transactional
     public List<Certificate> findByCriteria(String sqlQuery) {
-        List<Certificate> certificateList = template.query(SQL_SELECT_ALL_CERTIFICATE, certificateMapper::mapRowToObject);
+        List<Certificate> certificateList = template.query(sqlQuery, certificateMapper::mapRowToObject);
         for (Certificate certificate : certificateList) {
             certificate.addTags(tagRepository.findTagsByCertificateId(certificate.getId()));
         }

@@ -4,16 +4,12 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Certificate extends DatabaseEntity {
 
     private String name;
@@ -42,8 +38,8 @@ public class Certificate extends DatabaseEntity {
     @Override
     public String toString() {
         return "Certificate{" +
-                "id = '" + getId() +
-                "name='" + name + '\'' +
+                "id =" + getId() +
+                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", duration=" + duration +
@@ -51,5 +47,21 @@ public class Certificate extends DatabaseEntity {
                 ", create_date=" + create_date +
                 ", last_update_date=" + last_update_date +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Certificate that = (Certificate) o;
+        this.tags = this.tags.stream().sorted().collect(Collectors.toList());
+        ((Certificate) o).setTags(((Certificate) o).getTags().stream().sorted().collect(Collectors.toList()));
+        return name.equals(that.name) && description.equals(that.description) && price.equals(that.price) && duration.equals(that.duration) && Objects.equals(tags, that.tags) && Objects.equals(create_date, that.create_date) && Objects.equals(last_update_date, that.last_update_date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), name, description, price, duration, tags, create_date, last_update_date);
     }
 }

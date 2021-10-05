@@ -35,8 +35,12 @@ public class JdbcTagRepository implements TagRepository {
     private final TagRowMapper tagMapper;
 
     @Override
-    public Tag create(Tag tag) throws DAOException{
+    public Tag create(Tag tag) throws DAOException {
+        Tag existingTag = readByName(tag.getName()).orElse(null);
         KeyHolder keyHolder = new GeneratedKeyHolder();
+        if(existingTag != null)
+            return existingTag;
+
         template.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(SQL_CREATE_TAG, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, tag.getName());
@@ -47,6 +51,7 @@ public class JdbcTagRepository implements TagRepository {
             return tag;
         } else
             throw new DAOException("tag.emptyKeyHolder", 40902);
+
     }
 
     @Override
@@ -55,14 +60,15 @@ public class JdbcTagRepository implements TagRepository {
     }
 
     @Override
-    public Tag read(long id) {
+    public Tag read(long id) throws DAOException {
         return template.queryForStream(SQL_FIND_TAG_BY_ID, tagMapper::mapRowToObject, id)
                 .distinct().findFirst().orElseThrow(() -> (new DAOException("tag.notFound", 40402)));
     }
 
     @Override
     public Optional<Tag> readByName(String name) {
-        return template.queryForStream(SQL_FIND_TAG_BY_NAME, tagMapper::mapRowToObject, name).findFirst();
+        return template.queryForStream(SQL_FIND_TAG_BY_NAME, tagMapper::mapRowToObject, name)
+                .findFirst();
     }
 
     @Override
