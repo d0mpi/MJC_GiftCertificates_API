@@ -65,7 +65,7 @@ public class CertificateController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping(value = "/{certificateId}/tag")
+    @PostMapping(value = "/{certificateId}/tag")
     public ResponseEntity<?> addTagToCertificate(@PathVariable("certificateId") long certificateId,
                                                  @RequestBody TagDTO tag){
         return new ResponseEntity<>(certificateService.addTagToCertificate(certificateId, tag), HttpStatus.OK);

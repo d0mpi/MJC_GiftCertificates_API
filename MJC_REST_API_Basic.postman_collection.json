@@ -1,0 +1,485 @@
+{
+	"info": {
+		"_postman_id": "a6d90abe-7108-44b3-8930-b40562b94323",
+		"name": "MJC_REST_API_Basic",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Certificate",
+			"item": [
+				{
+					"name": "Get all certificates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/certificate",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"certificate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post certificate",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"id\": 1,\r\n        \"name\": \"Aerobatics training\",\r\n        \"description\": \"Want to finally overcome the gravity of the Earth? Stop just dreaming, come to the air club and aim higher!\",\r\n        \"price\": 390.0,\r\n        \"duration\": 92,\r\n        \"tags\": [\r\n            {\r\n                \"name\": \"flight\"\r\n            },\r\n            {\r\n                \"name\": \"training\"\r\n            }\r\n        ]\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}/certificate",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"certificate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete certificate",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/certificate/11",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"certificate",
+								"11"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get certificate by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/certificate/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"certificate",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get certificates by criteria",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/certificate?name=flying",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"certificate"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "flying"
+								},
+								{
+									"key": "description",
+									"value": "a",
+									"disabled": true
+								},
+								{
+									"key": "tag",
+									"value": "for one person",
+									"disabled": true
+								},
+								{
+									"key": "price",
+									"value": "390",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "name_asc, date_asc",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get certificates by criteria",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}/certificate?description=of",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"certificate"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "flying",
+											"disabled": true
+										},
+										{
+											"key": "description",
+											"value": "of"
+										},
+										{
+											"key": "tag",
+											"value": "training",
+											"disabled": true
+										},
+										{
+											"key": "price",
+											"value": "390",
+											"disabled": true
+										},
+										{
+											"key": "sort",
+											"value": "name_asc, date_asc",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Get certificates by criteria",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}/certificate?sort=name_asc, date_asc",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"certificate"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "flying",
+											"disabled": true
+										},
+										{
+											"key": "description",
+											"value": "of",
+											"disabled": true
+										},
+										{
+											"key": "tag",
+											"value": "training",
+											"disabled": true
+										},
+										{
+											"key": "price",
+											"value": "390",
+											"disabled": true
+										},
+										{
+											"key": "sort",
+											"value": "name_asc, date_asc"
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Get certificates by criteria",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}/certificate?tag=training",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"certificate"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "flying",
+											"disabled": true
+										},
+										{
+											"key": "description",
+											"value": "of",
+											"disabled": true
+										},
+										{
+											"key": "tag",
+											"value": "training"
+										},
+										{
+											"key": "price",
+											"value": "390",
+											"disabled": true
+										},
+										{
+											"key": "sort",
+											"value": "name_asc, date_asc",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Get certificates by criteria",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}/certificate?name=a&description=a&tag=for one person&sort=name_asc, date_asc",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"certificate"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "a"
+										},
+										{
+											"key": "description",
+											"value": "a"
+										},
+										{
+											"key": "tag",
+											"value": "for one person"
+										},
+										{
+											"key": "price",
+											"value": "390",
+											"disabled": true
+										},
+										{
+											"key": "sort",
+											"value": "name_asc, date_asc"
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Update certificate",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "   {\r\n        \"name\": \"Aerobatics training Update!!!\",\r\n        \"price\": 410.0,\r\n        \"tags\": [\r\n            {\r\n                \"name\": \"flight\"\r\n            },\r\n            {\r\n                \"name\": \"training\"\r\n            },\r\n            {\r\n                \"name\": \"add new tag\"\r\n            }\r\n        ]\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}/certificate/1",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"certificate",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"only new tag was added\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}/certificate/10/tag",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"certificate",
+								"10",
+								"tag"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tag",
+			"item": [
+				{
+					"name": "Get all tags",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/tag",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"tag"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get tag by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/tag/1",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"tag",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"diving\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}/tag",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"tag"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deelte tag",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/tag/10",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"tag",
+								"10"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "domain",
+			"value": "localhost:8080"
+		}
+	]
+}

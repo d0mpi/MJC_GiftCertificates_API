@@ -5,8 +5,10 @@ import com.epam.esm.Tag;
 import com.epam.esm.exception.DAOException;
 import com.epam.esm.util.mapper.CertificateRowMapper;
 import com.epam.esm.util.mapper.TagRowMapper;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -19,9 +21,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@RequiredArgsConstructor
 class JdbcCertificateRepositoryTest {
     private static JdbcCertificateRepository certificateRepository;
-    private static JdbcTagRepository tagRepository;
 
     public static DataSource dataSource() {
         return new EmbeddedDatabaseBuilder()
@@ -65,8 +67,8 @@ class JdbcCertificateRepositoryTest {
     }
 
     @Test
-    void read_When_IdEqualsTwo_Then_ReturnSecondCertificate(){
-        Certificate certificate =  new Certificate(2, "Diving with dolphins",
+    void read_When_IdEqualsTwo_Then_ReturnSecondCertificate() {
+        Certificate certificate = new Certificate(2, "Diving with dolphins",
                 "The Dolphin Diving Certificate is a unique opportunity to interact with amazing marine life in their natural environment.",
                 new BigDecimal("220.0"), 31,
                 LocalDateTime.parse("2021-06-12T10:34:09"),
@@ -76,8 +78,8 @@ class JdbcCertificateRepositoryTest {
     }
 
     @Test
-    void read_When_ReadNonExistentCertificate_Then_ThrowDAOException(){
-        assertThrows(DAOException.class,() -> certificateRepository.read(404));
+    void read_When_ReadNonExistentCertificate_Then_ThrowDAOException() {
+        assertThrows(DAOException.class, () -> certificateRepository.read(404));
     }
 
     @Test
@@ -92,7 +94,7 @@ class JdbcCertificateRepositoryTest {
     }
 
     @Test
-    void update_When_UpdateAllTenthCertificateInfo_Then_ShouldBeEqualsWithReadCertificateWithSpecifiedId(){
+    void update_When_UpdateAllTenthCertificateInfo_Then_ShouldBeEqualsWithReadCertificateWithSpecifiedId() {
         Certificate certificate = new Certificate(10, "Diving with dolphins",
                 "The Dolphin Diving Certificate is a unique opportunity to interact with amazing marine life in their natural environment.",
                 new BigDecimal("220.0"), 31,
@@ -104,25 +106,25 @@ class JdbcCertificateRepositoryTest {
     }
 
     @Test
-    void delete_When_DeleteCertificateWithIdNine_Then_ReadAndThrowDAOException(){
+    void delete_When_DeleteCertificateWithIdNine_Then_ReadAndThrowDAOException() {
         certificateRepository.delete(9);
         assertThrows(DAOException.class, () -> certificateRepository.read(9));
     }
 
     @Test
-    void addTagToCertificate_When_TagDoesNotExist_Then_ReadUpdatedCertificateWithNewTag(){
+    void addTagToCertificate_When_TagDoesNotExist_Then_ReadUpdatedCertificateWithNewTag() {
         certificateRepository.addTagToCertificate(8, new Tag("new tag"));
         Certificate certificate = new Certificate(8, "Vocal Mastery Course",
                 "Want to get 100 karaoke points, perform at events, or sing beautifully in the shower? In one month, you will master the basic theoretical knowledge and acquire professional performance skills that will help you develop in the future.",
                 new BigDecimal("94.0"), 31,
                 LocalDateTime.parse("2021-06-12T10:34:09"),
                 LocalDateTime.parse("2021-06-12T10:34:09"));
-        certificate.addTags(List.of( new Tag(6, "for one person"), new Tag(8, "new tag"), new Tag(3, "training")));
+        certificate.addTags(List.of(new Tag(6, "for one person"), new Tag(8, "new tag"), new Tag(3, "training")));
         assertEquals(certificate, certificateRepository.read(8));
     }
 
     @Test
-    void deleteTagFromCertificate_When_DeleteFromSevenCertificateFifthTag_Then_ReadCertificateWithoutTags(){
+    void deleteTagFromCertificate_When_DeleteFromSevenCertificateFifthTag_Then_ReadCertificateWithoutTags() {
         certificateRepository.deleteTagFromCertificate(7, new Tag(5, "does not matter"));
         assertEquals(0, certificateRepository.read(7).getTags().size());
     }

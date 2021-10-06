@@ -57,10 +57,10 @@ public enum CertificateFindParam {
     }
 
     public enum SortType {
-        NAME_ASC(" certificate.name ASC ", "name_asc", "name,asc", "a-z", "aname"),
-        NAME_DESC(" certificate.name DESC ", "name_desc", "name,desc", "z-a", "dname"),
-        DATE_ASC(" certificate.create_date ASC ", "date_asc", "date,asc", "adate", "newest"),
-        DATE_DESC(" certificate.create_date DESC ", "date_desc", "date,desc", "ddate", "oldest");
+        NAME_ASC(" certificate.name ASC ", "name_asc", "a-z", "aname"),
+        NAME_DESC(" certificate.name DESC ", "name_desc", "z-a", "dname"),
+        DATE_ASC(" certificate.create_date ASC ", "date_asc", "adate", "newest"),
+        DATE_DESC(" certificate.create_date DESC ", "date_desc", "ddate", "oldest");
 
         @Getter
         final String queryComponent;
