@@ -4,6 +4,8 @@ import com.epam.esm.Tag;
 import com.epam.esm.exception.CustomDataIntegrityViolationException;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.util.mapper.TagRowMapper;
+import com.epam.esm.util.searcher.CertificateQueryBuilder;
+import com.epam.esm.util.searcher.TagQueryBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -63,8 +66,8 @@ public class JdbcTagRepository implements TagRepository {
     }
 
     @Override
-    public List<Tag> findByCriteria(String sqlQuery) {
-        return template.query(sqlQuery, tagMapper::mapRowToObject);
+    public List<Tag> findByCriteria(Map<String, String> paramMap) {
+        return template.query(TagQueryBuilder.init().getQuery(paramMap), tagMapper::mapRowToObject);
     }
 
     @Override

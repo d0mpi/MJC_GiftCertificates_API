@@ -2,7 +2,6 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.DTO.CertificateDTO;
 import com.epam.esm.DTO.TagDTO;
-import com.epam.esm.Tag;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.exception.ValidationException;
 import com.epam.esm.mapper.CertificateMapper;
@@ -10,7 +9,6 @@ import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.repository.CertificateRepository;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.CertificateService;
-import com.epam.esm.util.searcher.CertificateQueryBuilder;
 import com.epam.esm.validation.CertificateValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -68,7 +65,7 @@ public class BasicCertificateService implements CertificateService {
     @Override
     public List<CertificateDTO> findByCriteria(Map<String, String> paramMap) {
 
-        return certificateRepo.findByCriteria(CertificateQueryBuilder.init().getQuery(paramMap))
+        return certificateRepo.findByCriteria(paramMap)
                 .stream()
                 .map(certificateMapper::convertToDto)
                 .collect(Collectors.toList());

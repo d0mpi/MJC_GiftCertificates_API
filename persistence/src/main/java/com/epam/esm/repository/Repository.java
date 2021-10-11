@@ -3,6 +3,7 @@ package com.epam.esm.repository;
 import com.epam.esm.DatabaseEntity;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -24,10 +25,10 @@ public interface Repository<T extends DatabaseEntity> {
     /**
      * Finds object in rhe database. Uses sqlQuery to find entities.
      *
-     * @param sqlQuery the object to be saved to the database
+     * @param paramMap map with parameters
      * @return list of found objects
      */
-    List<T> findByCriteria(String sqlQuery);
+    List<T> findByCriteria(Map<String, String> paramMap);
 
     /**
      * Reads object from rhe database

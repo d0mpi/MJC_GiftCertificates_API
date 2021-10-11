@@ -5,6 +5,7 @@ import com.epam.esm.Tag;
 import com.epam.esm.exception.CustomDataIntegrityViolationException;
 import com.epam.esm.repository.CertificateRepository;
 import com.epam.esm.util.mapper.CertificateRowMapper;
+import com.epam.esm.util.searcher.CertificateQueryBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,10 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -115,8 +113,9 @@ public class JdbcCertificateRepository implements CertificateRepository {
 
     @Override
     @Transactional
-    public List<Certificate> findByCriteria(String sqlQuery) {
-        List<Certificate> certificateList = template.query(sqlQuery, certificateMapper::mapRowToObject);
+    public List<Certificate> findByCriteria(Map<String, String> paramMap) {
+        List<Certificate> certificateList = template.query(
+                CertificateQueryBuilder.init().getQuery(paramMap), certificateMapper::mapRowToObject);
         for (Certificate certificate : certificateList) {
             certificate.addTags(tagRepository.findTagsByCertificateId(certificate.getId()));
         }

@@ -47,7 +47,7 @@ public class BasicTagService implements TagService {
 
     @Override
     public List<TagDTO> findByCriteria(Map<String, String> paramMap) {
-        return repo.findByCriteria(TagQueryBuilder.init().getQuery(paramMap))
+        return repo.findByCriteria(paramMap)
                 .stream()
                 .map(mapper::convertToDto)
                 .collect(Collectors.toList());
