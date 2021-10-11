@@ -19,6 +19,16 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 
+
+/**
+ * Implementation of the {@link CertificateRepository} class that uses JDBC to
+ * interact with database.
+ *
+ * @author Mikhail Dokuchaev
+ * @version 1.0
+ * @see CertificateRepository
+ * @see Repository
+ */
 @Repository
 @RequiredArgsConstructor
 public class JdbcCertificateRepository implements CertificateRepository {
@@ -50,7 +60,7 @@ public class JdbcCertificateRepository implements CertificateRepository {
         } else {
             tag.setId(presentedTag.getId());
         }
-        if(!read(certificateId).getTags().contains(tag)) {
+        if (!read(certificateId).getTags().contains(tag)) {
             template.update(SQL_CREATE_CERTIFICATE_TAG, certificateId, presentedTag.getId());
         }
     }

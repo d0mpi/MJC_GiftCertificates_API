@@ -11,6 +11,11 @@ repositories {
     mavenCentral()
 }
 
+ext{
+    isProd = System.properties['env'] == 'prod'
+    isDev = System.properties['env'] == 'dev'
+}
+
 dependencies {
     implementation project(':service')
 

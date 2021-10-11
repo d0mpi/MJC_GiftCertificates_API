@@ -18,6 +18,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
+/**
+ * Basic implementation of the {@link CertificateService} class.
+ * Transfer data to {@link com.epam.esm.repository.impl.JdbcCertificateRepository}
+ *
+ * @author Mikhail Dokuchaev
+ * @version 1.0
+ * @see CertificateService
+ */
 @Service
 @RequiredArgsConstructor
 public class BasicCertificateService implements CertificateService {
@@ -28,7 +37,8 @@ public class BasicCertificateService implements CertificateService {
     @Autowired
     private final TagMapper tagMapper;
     @Autowired
-    public final CertificateValidator certificateValidator;
+    private final CertificateValidator certificateValidator;
+
 
     @Override
     public CertificateDTO create(CertificateDTO certificate) throws ValidationException {
@@ -45,7 +55,8 @@ public class BasicCertificateService implements CertificateService {
 
     @Override
     public List<CertificateDTO> findByCriteria(Map<String, String> paramMap) {
-        return repo.findByCriteria(new CertificateSearcher().getQuery(paramMap))
+        System.out.println(paramMap);
+        return repo.findByCriteria(CertificateSearcher.init().getQuery(paramMap))
                 .stream()
                 .map(certificateMapper::convertToDto)
                 .collect(Collectors.toList());
@@ -65,7 +76,7 @@ public class BasicCertificateService implements CertificateService {
     }
 
     @Override
-    public void deleteTagFromCertificate(long certificateId, TagDTO tag){
+    public void deleteTagFromCertificate(long certificateId, TagDTO tag) {
         repo.deleteTagFromCertificate(certificateId, tagMapper.convertToEntity(tag));
     }
 
@@ -74,8 +85,4 @@ public class BasicCertificateService implements CertificateService {
         repo.delete(id);
     }
 
-    @Override
-    public void delete(CertificateDTO certificate) {
-        repo.delete(certificate.getId());
-    }
 }

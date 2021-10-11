@@ -1,9 +1,7 @@
 package com.epam.esm.repository.impl;
 
-import com.epam.esm.Certificate;
 import com.epam.esm.Tag;
 import com.epam.esm.exception.DAOException;
-import com.epam.esm.util.mapper.CertificateRowMapper;
 import com.epam.esm.util.mapper.TagRowMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -12,10 +10,9 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import javax.sql.DataSource;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class JdbcTagRepositoryTest {
     private static JdbcTagRepository tagRepository;

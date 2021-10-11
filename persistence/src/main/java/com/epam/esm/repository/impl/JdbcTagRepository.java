@@ -1,9 +1,9 @@
 package com.epam.esm.repository.impl;
 
+import com.epam.esm.Tag;
 import com.epam.esm.exception.DAOException;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.util.mapper.TagRowMapper;
-import com.epam.esm.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,6 +16,15 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implementation of the {@link TagRepository} class that uses JDBC to
+ * interact with database.
+ *
+ * @author Mikhail Dokuchaev
+ * @version 1.0
+ * @see TagRepository
+ * @see Repository
+ */
 @Repository
 @RequiredArgsConstructor
 public class JdbcTagRepository implements TagRepository {
@@ -38,7 +47,7 @@ public class JdbcTagRepository implements TagRepository {
     public Tag create(Tag tag) throws DAOException {
         Tag existingTag = readByName(tag.getName()).orElse(null);
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        if(existingTag != null)
+        if (existingTag != null)
             return existingTag;
 
         template.update(connection -> {

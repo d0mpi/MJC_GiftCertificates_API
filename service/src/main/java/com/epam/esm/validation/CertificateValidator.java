@@ -6,9 +6,24 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
+
+/**
+ * Contains method required to validate received from the client {@link CertificateDTO}
+ *
+ * @author Mikhail Dokuchaev
+ * @version 1.0
+ * @see EntityValidator
+ * @see ValidationException
+ */
 @Service
 public class CertificateValidator implements EntityValidator<CertificateDTO> {
 
+    /**
+     * Validates DTO information
+     *
+     * @param certificate {@link CertificateDTO} to be validated
+     * @throws ValidationException if {@link CertificateDTO} is invalid
+     */
     @Override
     public void validate(CertificateDTO certificate) throws ValidationException {
         if (certificate.getName() == null) {

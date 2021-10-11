@@ -6,6 +6,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Class store all possible url parameters for certificate search and
+ * query components corresponding to these parameters.
+ * Each name of the constant equals ignore case to one parameter name.
+ * Each constant contains method component() which return string with SQL query component.
+ *
+ * @author Mikhail Dokuchaev
+ * @version 1.0
+ * @see EntitySearcher, CertificateSearcher, TagSearcher
+ */
 public enum CertificateFindParam {
     NAME {
         @Override
@@ -38,8 +48,20 @@ public enum CertificateFindParam {
         }
     };
 
+    /**
+     * Formats and returns string with SQL query component.
+     *
+     * @param value url parameter received from request
+     * @return component of SQL Query
+     */
     public abstract String component(String value);
 
+    /**
+     * Checks is parameter with the specified name present in this enum
+     *
+     * @param param name of the param to be checked
+     * @return true - if parameter is present
+     */
     static boolean hasParam(String param) {
         for (CertificateFindParam type : values()) {
             if (type.name().equalsIgnoreCase(param)) {
@@ -49,6 +71,12 @@ public enum CertificateFindParam {
         return false;
     }
 
+    /**
+     * Finds CertificateParam corresponding to the specified param name
+     *
+     * @param param name of the parameter to be found
+     * @return CertificateParam corresponding to the specified param name
+     */
     static CertificateFindParam of(String param) {
         if (hasParam(param))
             return CertificateFindParam.valueOf(param.toUpperCase(Locale.ROOT));
@@ -56,11 +84,14 @@ public enum CertificateFindParam {
             return null;
     }
 
+    /**
+     * Nested enum containing all possible types of sorting
+     */
     public enum SortType {
         NAME_ASC(" certificate.name ASC ", "name_asc", "a-z", "aname"),
         NAME_DESC(" certificate.name DESC ", "name_desc", "z-a", "dname"),
-        DATE_ASC(" certificate.create_date ASC ", "date_asc", "adate", "newest"),
-        DATE_DESC(" certificate.create_date DESC ", "date_desc", "ddate", "oldest");
+        DATE_ASC(" certificate.last_update_date ASC ", "date_asc", "adate", "newest"),
+        DATE_DESC(" certificate.last_update_date DESC ", "date_desc", "ddate", "oldest");
 
         @Getter
         final String queryComponent;
@@ -72,6 +103,12 @@ public enum CertificateFindParam {
             this.paramVars = Arrays.asList(paramVars);
         }
 
+        /**
+         * Finds SortingType corresponding to the specified param name
+         *
+         * @param param name of the parameter to be found
+         * @return SortType corresponding to the specified param name
+         */
         static SortType of(String param) {
             for (SortType type : values()) {
                 if (type.getParamVars().contains(param)) {

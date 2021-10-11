@@ -14,7 +14,7 @@ import javax.sql.DataSource;
 public class PersistenceConfig {
     @Bean
     public static DataSource getDataSource() {
-        return new HikariDataSource(new HikariConfig("/database.properties"));
+        return new HikariDataSource(new HikariConfig("/dev/database.properties"));
     }
 
     @Bean

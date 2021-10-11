@@ -2,7 +2,14 @@ package com.epam.esm.exception;
 
 import lombok.Getter;
 
-public class DAOException extends RuntimeException{
+/**
+ * Exception that occurs when smth went wrong during receive information
+ * from the database
+ *
+ * @author Mikhail Dokuchaev
+ * @version 1.0
+ */
+public class DAOException extends RuntimeException {
     @Getter
     private final int errorCode;
 

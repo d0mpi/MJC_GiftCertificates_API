@@ -15,6 +15,15 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * DTO required for interaction between web and persistence module and
+ * performing intermediate actions (validation etc.)
+ * Corresponds to {@link com.epam.esm.Certificate}.
+ *
+ * @author Mikhail Dokuchaev
+ * @version 1.0
+ * @see com.epam.esm.Certificate
+ */
 @EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
@@ -39,6 +48,22 @@ public class CertificateDTO extends EntityDTO {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime last_update_date;
 
+    public CertificateDTO(Long id, String name,
+                          String description,
+                          BigDecimal price,
+                          Integer duration,
+                          List<TagDTO> tags,
+                          LocalDateTime create_date,
+                          LocalDateTime last_update_date) {
+        super(id);
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
+        this.tags = tags;
+        this.create_date = create_date;
+        this.last_update_date = last_update_date;
+    }
 
     @Override
     public String toString() {
