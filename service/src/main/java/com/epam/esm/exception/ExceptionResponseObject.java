@@ -14,7 +14,7 @@ import lombok.ToString;
 @Data
 @ToString
 @AllArgsConstructor
-public class ResponseException {
+public class ExceptionResponseObject {
     private String errorMessage;
     private Integer errorCode;
 }

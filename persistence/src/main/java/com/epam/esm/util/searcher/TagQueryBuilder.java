@@ -11,10 +11,10 @@ import java.util.Map;
  *
  * @author Mikhail Dokuchaev
  * @version 1.0
- * @see EntitySearcher
+ * @see EntityQueryBuilder
  */
 @Component
-public class TagSearcher implements EntitySearcher {
+public class TagQueryBuilder implements EntityQueryBuilder {
 
     /**
      * Creates a query to the database for searching
@@ -29,7 +29,7 @@ public class TagSearcher implements EntitySearcher {
         return "select * from tag";
     }
 
-    private TagSearcher() {
+    private TagQueryBuilder() {
     }
 
 
@@ -38,7 +38,7 @@ public class TagSearcher implements EntitySearcher {
      *
      * @return new instance of the class
      */
-    public static TagSearcher init() {
-        return new TagSearcher();
+    public static TagQueryBuilder init() {
+        return new TagQueryBuilder();
     }
 }

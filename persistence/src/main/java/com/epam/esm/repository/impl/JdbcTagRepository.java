@@ -1,7 +1,7 @@
 package com.epam.esm.repository.impl;
 
 import com.epam.esm.Tag;
-import com.epam.esm.exception.DAOException;
+import com.epam.esm.exception.CustomDataIntegrityViolationException;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.util.mapper.TagRowMapper;
 import lombok.RequiredArgsConstructor;
@@ -44,12 +44,12 @@ public class JdbcTagRepository implements TagRepository {
     private final TagRowMapper tagMapper;
 
     @Override
-    public Tag create(Tag tag) throws DAOException {
+    public Optional<Tag> create(Tag tag) {
         Tag existingTag = readByName(tag.getName()).orElse(null);
-        KeyHolder keyHolder = new GeneratedKeyHolder();
         if (existingTag != null)
-            return existingTag;
+            return Optional.of(existingTag);
 
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(SQL_CREATE_TAG, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, tag.getName());
@@ -57,10 +57,9 @@ public class JdbcTagRepository implements TagRepository {
         }, keyHolder);
         if (keyHolder.getKey() != null) {
             tag.setId(keyHolder.getKey().longValue());
-            return tag;
+            return Optional.of(tag);
         } else
-            throw new DAOException("tag.emptyKeyHolder", 40902);
-
+            throw new CustomDataIntegrityViolationException("tag", 50002);
     }
 
     @Override
@@ -69,9 +68,9 @@ public class JdbcTagRepository implements TagRepository {
     }
 
     @Override
-    public Tag read(long id) throws DAOException {
+    public Optional<Tag> read(long id) {
         return template.queryForStream(SQL_FIND_TAG_BY_ID, tagMapper::mapRowToObject, id)
-                .distinct().findFirst().orElseThrow(() -> (new DAOException("tag.notFound", 40402)));
+                .distinct().findFirst();
     }
 
     @Override

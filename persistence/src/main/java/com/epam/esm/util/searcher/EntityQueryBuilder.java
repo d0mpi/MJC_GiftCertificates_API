@@ -9,6 +9,6 @@ import java.util.Map;
  * @author Mikhail Dokuchaev
  * @version 1.0
  */
-public interface EntitySearcher {
+public interface EntityQueryBuilder {
     String getQuery(Map<String, String> paramMap);
 }

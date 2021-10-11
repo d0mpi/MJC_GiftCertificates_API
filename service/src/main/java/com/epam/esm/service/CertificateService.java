@@ -24,7 +24,7 @@ public interface CertificateService extends EntityService<CertificateDTO> {
      * @return updated {@link CertificateDTO}
      * @throws ValidationException if the transmitted information is not valid
      */
-    CertificateDTO update(CertificateDTO entity) throws ValidationException;
+    CertificateDTO update(CertificateDTO entity);
 
     /**
      * Provides a link between web and persistence module.

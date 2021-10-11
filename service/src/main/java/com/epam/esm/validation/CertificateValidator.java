@@ -25,7 +25,7 @@ public class CertificateValidator implements EntityValidator<CertificateDTO> {
      * @throws ValidationException if {@link CertificateDTO} is invalid
      */
     @Override
-    public void validate(CertificateDTO certificate) throws ValidationException {
+    public void validate(CertificateDTO certificate) {
         if (certificate.getName() == null) {
             throw new ValidationException("certificate.nameNull", 42201);
         } else if (certificate.getName().length() > 45 || certificate.getName().isBlank()) {

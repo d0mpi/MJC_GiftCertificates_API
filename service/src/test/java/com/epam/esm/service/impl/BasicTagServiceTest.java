@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,7 +37,7 @@ class BasicTagServiceTest {
         TagDTO tagDTO = Mockito.mock(TagDTO.class);
         Mockito.when(tagMapper.convertToDto(tag)).thenReturn(tagDTO);
         Mockito.when(tagMapper.convertToEntity(tagDTO)).thenReturn(tag);
-        Mockito.when(tagRepo.create(tag)).thenReturn(tag);
+        Mockito.when(tagRepo.create(tag)).thenReturn(Optional.of(tag));
 
         assertEquals(tagDTO, service.create(tagDTO));
         Mockito.verify(tagRepo, Mockito.times(1)).create(tag);
@@ -47,9 +48,10 @@ class BasicTagServiceTest {
     void read() {
         Tag tag = Mockito.mock(Tag.class);
         TagDTO tagDTO = Mockito.mock(TagDTO.class);
+        Optional<Tag> tagOptional = Optional.of(tag);
         Mockito.when(tagMapper.convertToDto(tag)).thenReturn(tagDTO);
         Mockito.when(tagMapper.convertToEntity(tagDTO)).thenReturn(tag);
-        Mockito.when(tagRepo.read(1L)).thenReturn(tag);
+        Mockito.when(tagRepo.read(1L)).thenReturn(tagOptional);
 
         assertEquals(tagDTO, service.read(1L));
         Mockito.verify(tagRepo, Mockito.times(1)).read(1L);

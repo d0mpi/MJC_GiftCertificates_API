@@ -3,6 +3,7 @@ package com.epam.esm.repository;
 import com.epam.esm.DatabaseEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Provides CRD operations on {@link DatabaseEntity} required to interact with database.
@@ -18,7 +19,7 @@ public interface Repository<T extends DatabaseEntity> {
      * @param entity the object to be saved to the database
      * @return saved object
      */
-    T create(T entity);
+    Optional<T> create(T entity);
 
     /**
      * Finds object in rhe database. Uses sqlQuery to find entities.
@@ -34,7 +35,7 @@ public interface Repository<T extends DatabaseEntity> {
      * @param id id of the object to be read from the database
      * @return read object
      */
-    T read(long id);
+    Optional<T> read(long id);
 
     /**
      * Deletes object with the specified id from rhe database

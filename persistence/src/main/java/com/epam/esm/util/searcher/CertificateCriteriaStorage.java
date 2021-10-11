@@ -14,9 +14,9 @@ import java.util.Locale;
  *
  * @author Mikhail Dokuchaev
  * @version 1.0
- * @see EntitySearcher, CertificateSearcher, TagSearcher
+ * @see EntityQueryBuilder, CertificateQueryBuilder, TagQueryBuilder
  */
-public enum CertificateFindParam {
+public enum CertificateCriteriaStorage {
     NAME {
         @Override
         public String component(String value) {
@@ -63,7 +63,7 @@ public enum CertificateFindParam {
      * @return true - if parameter is present
      */
     static boolean hasParam(String param) {
-        for (CertificateFindParam type : values()) {
+        for (CertificateCriteriaStorage type : values()) {
             if (type.name().equalsIgnoreCase(param)) {
                 return true;
             }
@@ -77,9 +77,9 @@ public enum CertificateFindParam {
      * @param param name of the parameter to be found
      * @return CertificateParam corresponding to the specified param name
      */
-    static CertificateFindParam of(String param) {
+    static CertificateCriteriaStorage of(String param) {
         if (hasParam(param))
-            return CertificateFindParam.valueOf(param.toUpperCase(Locale.ROOT));
+            return CertificateCriteriaStorage.valueOf(param.toUpperCase(Locale.ROOT));
         else
             return null;
     }

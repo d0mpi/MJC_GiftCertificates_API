@@ -25,7 +25,7 @@ public interface EntityService<T extends EntityDTO> {
      * @return converted to DTO entity received from persistence
      * @throws ValidationException if the transmitted information is not valid
      */
-    T create(T entity) throws ValidationException;
+    T create(T entity);
 
     /**
      * Provides a link between web and persistence module.

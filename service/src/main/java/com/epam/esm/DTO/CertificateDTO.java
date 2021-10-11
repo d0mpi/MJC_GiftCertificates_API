@@ -14,6 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 /**
  * DTO required for interaction between web and persistence module and
@@ -34,7 +35,7 @@ public class CertificateDTO extends EntityDTO {
     private String description;
     private BigDecimal price;
     private Integer duration;
-    private List<TagDTO> tags;
+    private Set<TagDTO> tags;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
@@ -52,7 +53,7 @@ public class CertificateDTO extends EntityDTO {
                           String description,
                           BigDecimal price,
                           Integer duration,
-                          List<TagDTO> tags,
+                          Set<TagDTO> tags,
                           LocalDateTime create_date,
                           LocalDateTime last_update_date) {
         super(id);
@@ -63,6 +64,10 @@ public class CertificateDTO extends EntityDTO {
         this.tags = tags;
         this.create_date = create_date;
         this.last_update_date = last_update_date;
+    }
+
+    public void addTag(TagDTO tag) {
+        tags.add(tag);
     }
 
     @Override

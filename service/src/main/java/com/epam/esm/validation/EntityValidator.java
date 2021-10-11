@@ -19,5 +19,5 @@ public interface EntityValidator<T extends EntityDTO> {
      * @param entity {@link EntityDTO} to be validated
      * @throws ValidationException if {@link EntityDTO} is invalid
      */
-    void validate(T entity) throws ValidationException;
+    void validate(T entity);
 }

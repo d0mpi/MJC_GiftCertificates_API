@@ -12,17 +12,17 @@ import java.util.Objects;
  *
  * @author Mikhail Dokuchaev
  * @version 1.0
- * @see EntitySearcher
+ * @see EntityQueryBuilder
  */
 @Component
-public class CertificateSearcher implements EntitySearcher {
+public class CertificateQueryBuilder implements EntityQueryBuilder {
     private final StringBuilder joinQuery;
     private final StringBuilder sortingQuery;
     private final StringBuilder filteringQuery;
 
-    private CertificateSearcher() {
+    private CertificateQueryBuilder() {
         this.sortingQuery = new StringBuilder();
-        this.filteringQuery = new StringBuilder();
+        this.filteringQuery = new StringBuilder(" where true ");
         this.joinQuery = new StringBuilder();
     }
 
@@ -31,8 +31,8 @@ public class CertificateSearcher implements EntitySearcher {
      *
      * @return new instance of the class
      */
-    public static CertificateSearcher init() {
-        return new CertificateSearcher();
+    public static CertificateQueryBuilder init() {
+        return new CertificateQueryBuilder();
     }
 
     /**
@@ -46,11 +46,10 @@ public class CertificateSearcher implements EntitySearcher {
     @Override
     public String getQuery(Map<String, String> paramMap) {
         for (Map.Entry<String, String> param : paramMap.entrySet()) {
-            if (CertificateFindParam.hasParam(param.getKey())) {
-                addQueryComponent(Objects.requireNonNull(CertificateFindParam.of(param.getKey())), param.getValue());
+            if (CertificateCriteriaStorage.hasParam(param.getKey())) {
+                addQueryComponent(Objects.requireNonNull(CertificateCriteriaStorage.of(param.getKey())), param.getValue());
             }
         }
-        System.out.println("select * from certificate " + filteringQuery + sortingQuery);
         return "select certificate.id," +
                 " certificate.name," +
                 " certificate.description," +
@@ -61,14 +60,14 @@ public class CertificateSearcher implements EntitySearcher {
                 " from certificate " + joinQuery + filteringQuery + sortingQuery;
     }
 
-    private void addQueryComponent(CertificateFindParam certificateFindParam, String paramValue) {
-        if (certificateFindParam.equals(CertificateFindParam.TAG)) {
+    private void addQueryComponent(CertificateCriteriaStorage certificateFindParam, String paramValue) {
+        if (certificateFindParam.equals(CertificateCriteriaStorage.TAG)) {
             joinQuery.append(" join certificate_tag " +
                     "              on certificate.id = certificate_tag.certificate_id" +
                     "         join tag " +
                     "              on certificate_tag.tag_id = tag.id ");
         }
-        if (certificateFindParam.equals(CertificateFindParam.SORT)) {
+        if (certificateFindParam.equals(CertificateCriteriaStorage.SORT)) {
             Arrays.stream(paramValue.split("[,+\\s]"))
                     .forEach(component -> addSortComponent(certificateFindParam, component));
         } else {
@@ -76,8 +75,7 @@ public class CertificateSearcher implements EntitySearcher {
         }
     }
 
-    private void addSortComponent(CertificateFindParam certificateFindParam, String sortComponent) {
-        System.out.println(sortComponent);
+    private void addSortComponent(CertificateCriteriaStorage certificateFindParam, String sortComponent) {
         if (this.sortingQuery.isEmpty()) {
             this.sortingQuery.append(" order by ");
         } else {
@@ -86,12 +84,8 @@ public class CertificateSearcher implements EntitySearcher {
         this.sortingQuery.append(certificateFindParam.component(sortComponent));
     }
 
-    private void addFilterComponent(CertificateFindParam certificateFindParam, String filterComponent) {
-        if (this.filteringQuery.isEmpty()) {
-            this.filteringQuery.append(" where ");
-        } else {
-            this.filteringQuery.append(" and ");
-        }
+    private void addFilterComponent(CertificateCriteriaStorage certificateFindParam, String filterComponent) {
+        this.filteringQuery.append(" and ");
         this.filteringQuery.append(certificateFindParam.component(filterComponent));
     }
 }

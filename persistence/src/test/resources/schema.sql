@@ -1,5 +1,8 @@
 drop schema if exists gift_service;
 create schema if not exists gift_service;
+drop table if exists certificate_tag;
+drop table if exists certificate;
+drop table if exists tag;
 
 create table certificate
 (

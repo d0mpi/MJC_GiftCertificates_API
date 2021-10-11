@@ -22,7 +22,7 @@ public class TagValidator implements EntityValidator<TagDTO> {
      * @throws ValidationException if {@link TagDTO} is invalid
      */
     @Override
-    public void validate(TagDTO tag) throws ValidationException {
+    public void validate(TagDTO tag) {
         if (tag.getName() == null) {
             throw new ValidationException("tag.nameNull", 42202);
         } else if (tag.getName().length() > 45 || tag.getName().isBlank()) {

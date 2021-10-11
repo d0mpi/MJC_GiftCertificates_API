@@ -60,7 +60,7 @@ public class TagController {
      * @throws ValidationException if received information is not valid
      */
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<?> create(@RequestBody TagDTO tag) throws ValidationException {
+    public ResponseEntity<?> create(@RequestBody TagDTO tag) {
         return new ResponseEntity<>(tagService.create(tag), HttpStatus.CREATED);
     }
 

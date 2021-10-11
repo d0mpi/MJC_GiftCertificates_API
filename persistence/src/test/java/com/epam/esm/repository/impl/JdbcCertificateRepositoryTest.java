@@ -2,7 +2,6 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.Certificate;
 import com.epam.esm.Tag;
-import com.epam.esm.exception.DAOException;
 import com.epam.esm.util.mapper.CertificateRowMapper;
 import com.epam.esm.util.mapper.TagRowMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +15,10 @@ import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @RequiredArgsConstructor
 class JdbcCertificateRepositoryTest {
@@ -73,12 +73,12 @@ class JdbcCertificateRepositoryTest {
                 LocalDateTime.parse("2021-06-12T10:34:09"),
                 LocalDateTime.parse("2021-06-12T10:34:09"));
         certificate.addTags(List.of(new Tag(5, "entertainment")));
-        assertEquals(certificate, certificateRepository.read(2));
+        assertEquals(certificate, certificateRepository.read(2).orElse(null));
     }
 
     @Test
     void read_When_ReadNonExistentCertificate_Then_ThrowDAOException() {
-        assertThrows(DAOException.class, () -> certificateRepository.read(404));
+        assertNull(certificateRepository.read(404).orElse(null));
     }
 
     @Test
@@ -89,7 +89,7 @@ class JdbcCertificateRepositoryTest {
                 LocalDateTime.parse("2021-06-12T10:34:09"),
                 LocalDateTime.parse("2021-06-12T10:34:09"));
         certificateRepository.create(certificate);
-        assertEquals(certificate, certificateRepository.read(11));
+        assertEquals(certificate, certificateRepository.read(11).orElse(null));
     }
 
     @Test
@@ -99,15 +99,14 @@ class JdbcCertificateRepositoryTest {
                 new BigDecimal("220.0"), 31,
                 LocalDateTime.parse("2021-06-12T10:34:09"),
                 LocalDateTime.parse("2021-06-12T10:34:09"));
-        certificate.addTags(List.of(new Tag(5, "entertainment")));
         certificateRepository.update(certificate);
-        assertEquals(certificate, certificateRepository.read(10));
+        assertEquals(certificate, certificateRepository.read(10).orElse(null));
     }
 
     @Test
     void delete_When_DeleteCertificateWithIdNine_Then_ReadAndThrowDAOException() {
         certificateRepository.delete(9);
-        assertThrows(DAOException.class, () -> certificateRepository.read(9));
+        assertNull(certificateRepository.read(9).orElse(null));
     }
 
     @Test
@@ -119,12 +118,12 @@ class JdbcCertificateRepositoryTest {
                 LocalDateTime.parse("2021-06-12T10:34:09"),
                 LocalDateTime.parse("2021-06-12T10:34:09"));
         certificate.addTags(List.of(new Tag(6, "for one person"), new Tag(8, "new tag"), new Tag(3, "training")));
-        assertEquals(certificate, certificateRepository.read(8));
+        assertEquals(certificate, certificateRepository.read(8).orElse(null));
     }
 
     @Test
     void deleteTagFromCertificate_When_DeleteFromSevenCertificateFifthTag_Then_ReadCertificateWithoutTags() {
         certificateRepository.deleteTagFromCertificate(7, new Tag(5, "does not matter"));
-        assertEquals(0, certificateRepository.read(7).getTags().size());
+        assertEquals(0, Objects.requireNonNull(certificateRepository.read(7).orElse(null)).getTags().size());
     }
 }

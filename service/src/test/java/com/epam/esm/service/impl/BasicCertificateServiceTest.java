@@ -7,6 +7,7 @@ import com.epam.esm.Tag;
 import com.epam.esm.mapper.CertificateMapper;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.repository.impl.JdbcCertificateRepository;
+import com.epam.esm.repository.impl.JdbcTagRepository;
 import com.epam.esm.validation.CertificateValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,10 +16,10 @@ import org.mockito.Mockito;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 
 class BasicCertificateServiceTest {
 
@@ -28,13 +29,15 @@ class BasicCertificateServiceTest {
     private JdbcCertificateRepository certificateRepo;
     private CertificateValidator validator;
 
+
     @BeforeEach
     void setUp() {
         this.certificateRepo = Mockito.mock(JdbcCertificateRepository.class);
         this.certificateMapper = Mockito.mock(CertificateMapper.class);
+        JdbcTagRepository tagRepo = Mockito.mock(JdbcTagRepository.class);
         this.tagMapper = Mockito.mock(TagMapper.class);
         this.validator = Mockito.mock(CertificateValidator.class);
-        this.service = new BasicCertificateService(certificateRepo, certificateMapper, tagMapper,
+        this.service = new BasicCertificateService(certificateRepo, tagRepo, certificateMapper, tagMapper,
                 validator);
     }
 
@@ -44,7 +47,7 @@ class BasicCertificateServiceTest {
         CertificateDTO certificateDTO = Mockito.mock(CertificateDTO.class);
         Mockito.when(certificateMapper.convertToDto(certificate)).thenReturn(certificateDTO);
         Mockito.when(certificateMapper.convertToEntity(certificateDTO)).thenReturn(certificate);
-        Mockito.when(certificateRepo.create(certificate)).thenReturn(certificate);
+        Mockito.when(certificateRepo.create(certificate)).thenReturn(Optional.of(certificate));
 
         assertEquals(certificateDTO, service.create(certificateDTO));
         Mockito.verify(certificateRepo, Mockito.times(1)).create(certificate);
@@ -54,7 +57,8 @@ class BasicCertificateServiceTest {
     @Test
     void readCertificateById() {
         Certificate certificate = Mockito.mock(Certificate.class);
-        Mockito.when(certificateRepo.read(1L)).thenReturn(certificate);
+        Optional<Certificate> certificateOptional = Optional.of(certificate);
+        Mockito.when(certificateRepo.read(1L)).thenReturn(certificateOptional);
 
         assertEquals(certificateMapper.convertToDto(certificate), service.read(1L));
         Mockito.verify(certificateRepo, Mockito.times(1)).read(1L);
@@ -75,7 +79,7 @@ class BasicCertificateServiceTest {
                 " certificate.duration," +
                 " certificate.create_date," +
                 " certificate.last_update_date " +
-                " from certificate ";
+                " from certificate  where true ";
         Mockito.when(certificateRepo.findByCriteria(query)).thenReturn(certificateList);
         assertEquals(certificateList, service
                 .findByCriteria(Collections.emptyMap())
@@ -91,7 +95,9 @@ class BasicCertificateServiceTest {
         CertificateDTO certificateDTO = Mockito.mock(CertificateDTO.class);
         Mockito.when(certificateMapper.convertToDto(certificate)).thenReturn(certificateDTO);
         Mockito.when(certificateMapper.convertToEntity(certificateDTO)).thenReturn(certificate);
-        Mockito.when(certificateRepo.update(certificate)).thenReturn(certificate);
+        Mockito.when(certificateMapper.convertToEntity(certificateDTO)).thenReturn(certificate);
+        Mockito.when(certificateRepo.update(certificate)).thenReturn(Optional.of(certificate));
+        Mockito.when(certificateRepo.read(certificateDTO.getId())).thenReturn(Optional.of(certificate));
         service.update(certificateDTO);
         Mockito.verify(certificateRepo, Mockito.times(1)).update(certificate);
     }
@@ -102,7 +108,7 @@ class BasicCertificateServiceTest {
         TagDTO tagDTO = Mockito.mock(TagDTO.class);
         Mockito.when(tagMapper.convertToDto(tag)).thenReturn(tagDTO);
         Mockito.when(tagMapper.convertToEntity(tagDTO)).thenReturn(tag);
-
+        Mockito.when(certificateRepo.read(1L)).thenReturn(Optional.of(new Certificate()));
         service.addTagToCertificate(1L, tagDTO);
         Mockito.verify(certificateRepo, Mockito.times(1)).addTagToCertificate(1L, tag);
         Mockito.verify(certificateRepo, Mockito.times(1)).read(1L);

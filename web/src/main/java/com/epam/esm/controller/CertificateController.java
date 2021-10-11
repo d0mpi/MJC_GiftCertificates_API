@@ -39,9 +39,6 @@ public class CertificateController {
      */
     @GetMapping
     public ResponseEntity<?> findAllByCriteria(@RequestParam Map<String, String> params) {
-        for (var param : params.entrySet()) {
-            System.out.println(param.getKey() + " : " + param.getValue());
-        }
         return new ResponseEntity<>(certificateService.findByCriteria(params), HttpStatus.OK);
     }
 
@@ -65,7 +62,7 @@ public class CertificateController {
      * @throws ValidationException if received information is not valid
      */
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<?> create(@RequestBody CertificateDTO certificate) throws ValidationException {
+    public ResponseEntity<?> create(@RequestBody CertificateDTO certificate) {
         return new ResponseEntity<>(certificateService.create(certificate), HttpStatus.CREATED);
     }
 
@@ -79,19 +76,9 @@ public class CertificateController {
      */
     @PatchMapping(value = "/{id}",
             consumes = "application/json")
-    public ResponseEntity<?> update(@PathVariable("id") long id, @RequestBody CertificateDTO patch) throws ValidationException {
-        CertificateDTO certificate = certificateService.read(id);
-        if (patch.getName() != null)
-            certificate.setName(patch.getName());
-        if (patch.getDuration() != null)
-            certificate.setDuration(patch.getDuration());
-        if (patch.getDescription() != null)
-            certificate.setDescription(patch.getDescription());
-        if (patch.getPrice() != null)
-            certificate.setPrice(patch.getPrice());
-        if (patch.getTags() != null)
-            certificate.setTags(patch.getTags());
-        return new ResponseEntity<>(certificateService.update(certificate), HttpStatus.CREATED);
+    public ResponseEntity<?> update(@PathVariable("id") long id, @RequestBody CertificateDTO patch) {
+        patch.setId(id);
+        return new ResponseEntity<>(certificateService.update(patch), HttpStatus.CREATED);
     }
 
     /**

@@ -1,10 +1,11 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.DTO.TagDTO;
+import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.TagService;
-import com.epam.esm.util.searcher.TagSearcher;
+import com.epam.esm.util.searcher.TagQueryBuilder;
 import com.epam.esm.validation.TagValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,17 +36,18 @@ public class BasicTagService implements TagService {
     @Override
     public TagDTO create(TagDTO tag) {
         validator.validate(tag);
-        return mapper.convertToDto(repo.create(mapper.convertToEntity(tag)));
+        return mapper.convertToDto(
+                repo.create(mapper.convertToEntity(tag)).orElseThrow(() -> (new EntityNotFoundException("tag", 40402))));
     }
 
     @Override
     public TagDTO read(long id) {
-        return mapper.convertToDto(repo.read(id));
+        return mapper.convertToDto(repo.read(id).orElseThrow(() -> (new EntityNotFoundException("tag", 40402))));
     }
 
     @Override
     public List<TagDTO> findByCriteria(Map<String, String> paramMap) {
-        return repo.findByCriteria(TagSearcher.init().getQuery(paramMap))
+        return repo.findByCriteria(TagQueryBuilder.init().getQuery(paramMap))
                 .stream()
                 .map(mapper::convertToDto)
                 .collect(Collectors.toList());

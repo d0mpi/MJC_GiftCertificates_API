@@ -18,7 +18,7 @@ import java.util.Locale;
  * @author Mikhail Dokuchaev
  * @version 1.0
  * @see ValidationException
- * @see DAOException
+ * @see EntityNotFoundException
  * @see MessageSource
  */
 @RestControllerAdvice
@@ -29,34 +29,67 @@ public class GlobalExceptionHandler {
     private final MessageSource messageSource;
 
     /**
-     * Handles {@link ValidationException} and send response containing {@link ResponseException}
+     * Handles {@link ValidationException} and send response containing {@link ExceptionResponseObject}
      *
      * @param ex     {@link ValidationException} to be handled
      * @param locale {@link Locale} received from http header
-     * @return {@link ResponseException} witch contains error message and code
+     * @return {@link ExceptionResponseObject} witch contains error message and code
      */
     @ExceptionHandler(value = ValidationException.class)
     public ResponseEntity<?> handleValidationException(ValidationException ex, Locale locale) {
-        String errorMessage = messageSource.getMessage(
-                "validationException." + ex.getMessage(), new Object[]{}, locale);
-        log.error(errorMessage + " : " + ex.getErrorCode());
         return new ResponseEntity<>(
-                new ResponseException(errorMessage, ex.getErrorCode()), new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY);
+                new ExceptionResponseObject(
+                        getLocalizeMessage(ex.getClass().getSimpleName(),
+                                ex.getMessage(), ex.getErrorCode(), locale), ex.getErrorCode()),
+                new HttpHeaders(),
+                HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     /**
-     * Handles {@link DAOException} and send response containing {@link ResponseException}
+     * Handles {@link EntityNotFoundException} and send response containing {@link ExceptionResponseObject}
      *
-     * @param ex     {@link DAOException} to be handled
+     * @param ex     {@link EntityNotFoundException} to be handled
      * @param locale {@link Locale} received from http header
-     * @return {@link ResponseException} witch contains error message and code
+     * @return {@link ExceptionResponseObject} witch contains error message and code
      */
-    @ExceptionHandler(value = DAOException.class)
-    public ResponseEntity<?> handleDAOException(DAOException ex, Locale locale) {
-        String errorMessage = messageSource.getMessage(
-                "DAOException." + ex.getMessage(), new Object[]{}, locale);
-        log.error(errorMessage + " : " + ex.getErrorCode());
+    @ExceptionHandler(value = EntityNotFoundException.class)
+    public ResponseEntity<?> handleEntityNotFoundException(EntityNotFoundException ex, Locale locale) {
         return new ResponseEntity<>(
-                new ResponseException(errorMessage, ex.getErrorCode()), new HttpHeaders(), HttpStatus.NOT_FOUND);
+                new ExceptionResponseObject(
+                        getLocalizeMessage(ex.getClass().getSimpleName(),
+                                ex.getMessage(), ex.getErrorCode(), locale), ex.getErrorCode()),
+                new HttpHeaders(),
+                HttpStatus.NOT_FOUND);
     }
+
+    /**
+     * Handles {@link EntityNotFoundException} and send response containing {@link ExceptionResponseObject}
+     *
+     * @param ex     {@link EntityNotFoundException} to be handled
+     * @param locale {@link Locale} received from http header
+     * @return {@link ExceptionResponseObject} witch contains error message and code
+     */
+    @ExceptionHandler(value = CustomDataIntegrityViolationException.class)
+    public ResponseEntity<?> handleCustomDataIntegrityViolationException(CustomDataIntegrityViolationException ex, Locale locale) {
+        return new ResponseEntity<>(
+                new ExceptionResponseObject(
+                        getLocalizeMessage(ex.getClass().getSimpleName(),
+                                ex.getMessage(), ex.getErrorCode(), locale), ex.getErrorCode()),
+                new HttpHeaders(),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private String getLocalizeMessage(String className,
+                                      String messageType,
+                                      int errorCode,
+                                      Locale locale) {
+        String errorMessage = messageSource.getMessage(
+                className + "." + messageType, new Object[]{}, locale);
+        log.error(messageSource.getMessage(
+                className + "." + messageType, new Object[]{},
+                new Locale("US_us")) + " : " + errorCode);
+        return errorMessage;
+    }
+
+
 }

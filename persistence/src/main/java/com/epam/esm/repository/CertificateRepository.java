@@ -3,6 +3,8 @@ package com.epam.esm.repository;
 import com.epam.esm.Certificate;
 import com.epam.esm.Tag;
 
+import java.util.Optional;
+
 /**
  * Provides CRUD operations on {@link Certificate} required to interact with database.
  *
@@ -18,7 +20,7 @@ public interface CertificateRepository extends Repository<Certificate> {
      * @param certificateId id of the {@link Certificate} to which the tag should be added
      * @param tag           {@link Tag} which should be added to the {@link Certificate} with the specified id
      */
-    void addTagToCertificate(long certificateId, Tag tag);
+    Optional<Tag> addTagToCertificate(long certificateId, Tag tag);
 
     /**
      * Delete entry from the table linking {@link Certificate} and tag.
@@ -34,5 +36,5 @@ public interface CertificateRepository extends Repository<Certificate> {
      * @param certificate {@link Certificate} instance containing info to be updated
      * @return updated {@link Certificate}
      */
-    Certificate update(Certificate certificate);
+    Optional<Certificate> update(Certificate certificate);
 }

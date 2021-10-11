@@ -2,11 +2,12 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.Certificate;
 import com.epam.esm.Tag;
-import com.epam.esm.exception.DAOException;
+import com.epam.esm.exception.CustomDataIntegrityViolationException;
 import com.epam.esm.repository.CertificateRepository;
 import com.epam.esm.util.mapper.CertificateRowMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -18,6 +19,8 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 
 /**
@@ -53,16 +56,19 @@ public class JdbcCertificateRepository implements CertificateRepository {
 
     @Override
     @Transactional
-    public void addTagToCertificate(long certificateId, Tag tag) {
+    public Optional<Tag> addTagToCertificate(long certificateId, Tag tag) {
         Tag presentedTag = tagRepository.readByName(tag.getName()).orElse(null);
         if (presentedTag == null) {
-            presentedTag = tagRepository.create(tag);
+            presentedTag = tagRepository.create(tag).orElse(null);
+            if (presentedTag == null)
+                return Optional.empty();
         } else {
             tag.setId(presentedTag.getId());
         }
-        if (!read(certificateId).getTags().contains(tag)) {
+        if (!tagRepository.findTagsByCertificateId(certificateId).contains(tag)) {
             template.update(SQL_CREATE_CERTIFICATE_TAG, certificateId, presentedTag.getId());
         }
+        return Optional.of(tag);
     }
 
     @Override
@@ -72,7 +78,7 @@ public class JdbcCertificateRepository implements CertificateRepository {
 
     @Override
     @Transactional
-    public Certificate create(Certificate certificate) throws DAOException {
+    public Optional<Certificate> create(Certificate certificate) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(SQL_CREATE_CERTIFICATE, Statement.RETURN_GENERATED_KEYS);
@@ -86,23 +92,25 @@ public class JdbcCertificateRepository implements CertificateRepository {
         }, keyHolder);
         if (keyHolder.getKey() != null) {
             certificate.setId(keyHolder.getKey().longValue());
-            List<Tag> tags = certificate.getTags();
+            Set<Tag> tags = certificate.getTags();
             for (Tag tag : tags) {
                 addTagToCertificate(certificate.getId(), tag);
             }
-            return certificate;
+            return Optional.of(certificate);
         } else
-            throw new DAOException("certificate.emptyKeyHolder", 40901);
+            throw new CustomDataIntegrityViolationException("certificate", 50001);
     }
 
     @Override
     @Transactional
-    public Certificate read(long id) throws DAOException {
+    public Optional<Certificate> read(long id) {
         Certificate certificate = template.queryForStream(SQL_FIND_CERTIFICATE_BY_ID, certificateMapper::mapRowToObject, id)
-                .distinct().findFirst().orElseThrow(() -> (new DAOException("certificate.notFound", 40401)));
-        List<Tag> tags = tagRepository.findTagsByCertificateId(Objects.requireNonNull(certificate).getId());
-        certificate.addTags(tags);
-        return certificate;
+                .distinct().findFirst().orElse(null);
+        if (certificate != null) {
+            List<Tag> tags = tagRepository.findTagsByCertificateId(certificate.getId());
+            certificate.addTags(tags);
+        }
+        return Optional.ofNullable(certificate);
     }
 
     @Override
@@ -117,7 +125,7 @@ public class JdbcCertificateRepository implements CertificateRepository {
 
     @Override
     @Transactional
-    public Certificate update(Certificate certificate) {
+    public Optional<Certificate> update(Certificate certificate) {
         int updatedRowsNum = template.update(SQL_UPDATE_CERTIFICATE,
                 certificate.getName(),
                 certificate.getDescription(),
@@ -127,12 +135,12 @@ public class JdbcCertificateRepository implements CertificateRepository {
                 certificate.getLast_update_date(),
                 certificate.getId());
         if (updatedRowsNum == 0)
-            throw new DAOException("certificate.notFound", 40401);
-        List<Tag> tags = certificate.getTags();
+            return Optional.empty();
+        Set<Tag> tags = certificate.getTags();
         for (Tag tag : tags) {
             addTagToCertificate(certificate.getId(), tag);
         }
-        return certificate;
+        return Optional.of(certificate);
     }
 
     @Override

@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 
 /**
- * Contains daatbase entity' id, provides
+ * Contains database entity' id, provides
  * methods and constructors to interact with this
  * information
  *
