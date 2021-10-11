@@ -47,9 +47,8 @@ public class TagController {
     @GetMapping("/{id}")
     public ResponseEntity<?> read(@PathVariable("id") long id) {
         final TagDTO tag = tagService.read(id);
-        return tag != null
-                ? new ResponseEntity<>(tag, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(tag, HttpStatus.OK);
+
     }
 
     /**
