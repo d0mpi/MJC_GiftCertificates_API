@@ -1,30 +1,27 @@
 package com.epam.esm.repository.impl;
 
 import com.epam.esm.Tag;
+import com.epam.esm.repository.TestPersistenceConfig;
 import com.epam.esm.util.mapper.TagRowMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-
-import javax.sql.DataSource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+@ExtendWith(SpringExtension.class)
+@SpringJUnitConfig(classes = TestPersistenceConfig.class)
 class JdbcTagRepositoryTest {
+
     private static JdbcTagRepository tagRepository;
 
-    public static DataSource dataSource() {
-        return new EmbeddedDatabaseBuilder()
-                .setType(EmbeddedDatabaseType.H2)
-                .addScript("classpath:schema.sql").build();
-    }
-
     @BeforeAll
-    static void init() {
-        JdbcTemplate template = new JdbcTemplate(dataSource());
+    static void init(@Autowired JdbcTemplate template) {
         tagRepository = new JdbcTagRepository(
                 template,
                 new TagRowMapper());

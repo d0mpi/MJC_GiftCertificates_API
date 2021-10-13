@@ -2,16 +2,18 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.Certificate;
 import com.epam.esm.Tag;
+import com.epam.esm.repository.TestPersistenceConfig;
 import com.epam.esm.util.mapper.CertificateRowMapper;
 import com.epam.esm.util.mapper.TagRowMapper;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -21,19 +23,13 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@RequiredArgsConstructor
+@ExtendWith(SpringExtension.class)
+@SpringJUnitConfig(classes = TestPersistenceConfig.class)
 class JdbcCertificateRepositoryTest {
     private static JdbcCertificateRepository certificateRepository;
 
-    public static DataSource dataSource() {
-        return new EmbeddedDatabaseBuilder()
-                .setType(EmbeddedDatabaseType.H2)
-                .addScript("classpath:schema.sql").build();
-    }
-
     @BeforeAll
-    static void init() {
-        JdbcTemplate template = new JdbcTemplate(dataSource());
+    static void init(@Autowired JdbcTemplate template) {
         certificateRepository = new JdbcCertificateRepository(
                 template,
                 new CertificateRowMapper(),
