@@ -6,9 +6,9 @@ import com.epam.esm.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,8 +34,9 @@ public class TagController {
      * @return list of {@link TagDTO} in JSON  format
      */
     @GetMapping
-    public ResponseEntity<?> findAll(@RequestParam Map<String, String> params) {
-        return new ResponseEntity<>(tagService.findByCriteria(params), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public List<TagDTO> findAll(@RequestParam Map<String, String> params) {
+        return tagService.findByCriteria(params);
     }
 
     /**
@@ -45,10 +46,9 @@ public class TagController {
      * @return {@link TagDTO} with the specified ID if it exists in JSON format
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> read(@PathVariable("id") long id) {
-        final TagDTO tag = tagService.read(id);
-        return new ResponseEntity<>(tag, HttpStatus.OK);
-
+    @ResponseStatus(HttpStatus.OK)
+    public TagDTO read(@PathVariable("id") long id) {
+        return tagService.read(id);
     }
 
     /**
@@ -59,8 +59,9 @@ public class TagController {
      * @throws ValidationException if received information is not valid
      */
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<?> create(@RequestBody TagDTO tag) {
-        return new ResponseEntity<>(tagService.create(tag), HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public TagDTO create(@RequestBody TagDTO tag) {
+        return tagService.create(tag);
     }
 
     /**

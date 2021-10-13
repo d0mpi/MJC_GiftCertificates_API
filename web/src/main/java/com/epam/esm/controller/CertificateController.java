@@ -8,9 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,8 +38,9 @@ public class CertificateController {
      * @return list of {@link CertificateDTO} in JSON format
      */
     @GetMapping
-    public ResponseEntity<?> findAllByCriteria(@RequestParam Map<String, String> params) {
-        return new ResponseEntity<>(certificateService.findByCriteria(params), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public List<CertificateDTO> findAllByCriteria(@RequestParam Map<String, String> params) {
+        return certificateService.findByCriteria(params);
     }
 
     /**
@@ -62,8 +63,9 @@ public class CertificateController {
      * @throws ValidationException if received information is not valid
      */
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<?> create(@RequestBody CertificateDTO certificate) {
-        return new ResponseEntity<>(certificateService.create(certificate), HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public CertificateDTO create(@RequestBody CertificateDTO certificate) {
+        return certificateService.create(certificate);
     }
 
     /**
@@ -76,9 +78,10 @@ public class CertificateController {
      */
     @PatchMapping(value = "/{id}",
             consumes = "application/json")
-    public ResponseEntity<?> update(@PathVariable("id") long id, @RequestBody CertificateDTO patch) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public CertificateDTO update(@PathVariable("id") long id, @RequestBody CertificateDTO patch) {
         patch.setId(id);
-        return new ResponseEntity<>(certificateService.update(patch), HttpStatus.CREATED);
+        return certificateService.update(patch);
     }
 
     /**
@@ -100,9 +103,10 @@ public class CertificateController {
      * @return {@link CertificateDTO} with up-to-date information in JSON format
      */
     @PostMapping(value = "/{certificateId}/tag")
-    public ResponseEntity<?> addTagToCertificate(@PathVariable("certificateId") long certificateId,
-                                                 @RequestBody TagDTO tag) {
-        return new ResponseEntity<>(certificateService.addTagToCertificate(certificateId, tag), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public CertificateDTO addTagToCertificate(@PathVariable("certificateId") long certificateId,
+                                              @RequestBody TagDTO tag) {
+        return certificateService.addTagToCertificate(certificateId, tag);
     }
 
     /**
