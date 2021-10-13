@@ -36,7 +36,7 @@ class BasicTagServiceTest {
     }
 
     @Test
-    void create() {
+    void create_When_CreateTagDTOFromService_Should_InvokeCreateTagMethodInRepoAndConvertToDTO() {
         Tag tag = Mockito.mock(Tag.class);
         TagDTO tagDTO = Mockito.mock(TagDTO.class);
         Mockito.when(tagMapper.convertToDto(tag)).thenReturn(tagDTO);
@@ -48,7 +48,7 @@ class BasicTagServiceTest {
     }
 
     @Test
-    void read() {
+    void read_When_ReadTagByIdFromService_Should_InvokeReadTagMethodInRepoAndConvertToDTO() {
         Tag tag = Mockito.mock(Tag.class);
         TagDTO tagDTO = Mockito.mock(TagDTO.class);
         Optional<Tag> tagOptional = Optional.of(tag);
@@ -60,7 +60,7 @@ class BasicTagServiceTest {
     }
 
     @Test
-    void findByCriteria() {
+    void findByCriteria_When_FindWithoutParams_Should_InvokeFindTagsMethodAndConvertToDTO() {
         Tag tag = Mockito.mock(Tag.class);
         TagDTO tagDTO = Mockito.mock(TagDTO.class);
         Mockito.when(tagMapper.convertToDto(tag)).thenReturn(tagDTO);
@@ -76,7 +76,7 @@ class BasicTagServiceTest {
     }
 
     @Test
-    void delete() {
+    void delete_Should_InvokeDeleteMethodInRepo() {
         service.delete(1L);
         Mockito.verify(repo, Mockito.times(1)).delete(1L);
     }

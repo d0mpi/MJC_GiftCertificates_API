@@ -48,9 +48,9 @@ public class JdbcTagRepository implements TagRepository {
     @Override
     public Optional<Tag> create(Tag tag) {
         Tag existingTag = readByName(tag.getName()).orElse(null);
-        if (existingTag != null)
+        if (existingTag != null) {
             return Optional.of(existingTag);
-
+        }
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(SQL_CREATE_TAG, Statement.RETURN_GENERATED_KEYS);

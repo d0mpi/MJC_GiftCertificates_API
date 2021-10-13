@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(MockitoExtension.class)
 class BasicCertificateServiceTest {
 
-    @Mock
     private BasicCertificateService service;
     @Mock
     private CertificateMapper certificateMapper;
@@ -38,7 +37,6 @@ class BasicCertificateServiceTest {
     @Mock
     private CertificateValidator validator;
 
-
     @BeforeEach
     void setUp(@Mock TagRepository tagRepository) {
         this.service = new BasicCertificateService(certificateRepo, tagRepository, certificateMapper, tagMapper,
@@ -46,7 +44,7 @@ class BasicCertificateServiceTest {
     }
 
     @Test
-    void createNewCertificate() {
+    void create_When_CreateCertificateDTOFromService_Should_InvokeCreateCertificateMethodInRepoAndConvertToDTO() {
         Certificate certificate = Mockito.mock(Certificate.class);
         CertificateDTO certificateDTO = Mockito.mock(CertificateDTO.class);
         Mockito.when(certificateMapper.convertToDto(certificate)).thenReturn(certificateDTO);
@@ -59,7 +57,7 @@ class BasicCertificateServiceTest {
     }
 
     @Test
-    void readCertificateById() {
+    void read_When_ReadCertificateByIdFromService_Should_InvokeReadCertificateMethodInRepoAndConvertToDTO() {
         Certificate certificate = Mockito.mock(Certificate.class);
         Optional<Certificate> certificateOptional = Optional.of(certificate);
         Mockito.when(certificateRepo.read(1L)).thenReturn(certificateOptional);
@@ -69,7 +67,7 @@ class BasicCertificateServiceTest {
     }
 
     @Test
-    void findByCriteria() {
+    void findByCriteria_When_FindWithoutParams_Should_InvokeFindCertificatesMethodAndConvertToDTO() {
         Certificate certificate = Mockito.mock(Certificate.class);
         CertificateDTO certificateDTO = Mockito.mock(CertificateDTO.class);
         Mockito.when(certificateMapper.convertToDto(certificate)).thenReturn(certificateDTO);
@@ -86,7 +84,7 @@ class BasicCertificateServiceTest {
     }
 
     @Test
-    void update() {
+    void update_When_UpdateCertificateFromService_Should_InvokeUpdateCertificateMethodInRepoAndConvertToDTO() {
         Certificate certificate = Mockito.mock(Certificate.class);
         CertificateDTO certificateDTO = Mockito.mock(CertificateDTO.class);
         Mockito.when(certificateMapper.convertToDto(certificate)).thenReturn(certificateDTO);
@@ -99,7 +97,7 @@ class BasicCertificateServiceTest {
     }
 
     @Test
-    void addTagToCertificate() {
+    void addTagToCertificate_Should_InvokeAddTagWithSpecifiedIDToCertificateMethodInRepoAndConvertToDTO() {
         Tag tag = Mockito.mock(Tag.class);
         TagDTO tagDTO = Mockito.mock(TagDTO.class);
         Mockito.when(tagMapper.convertToEntity(tagDTO)).thenReturn(tag);
@@ -110,7 +108,7 @@ class BasicCertificateServiceTest {
     }
 
     @Test
-    void deleteTagFromCertificate() {
+    void deleteTagFromCertificate_Should_InvokeDeleteTagMethodInRepo() {
         Tag tag = Mockito.mock(Tag.class);
         TagDTO tagDTO = Mockito.mock(TagDTO.class);
         Mockito.when(tagMapper.convertToEntity(tagDTO)).thenReturn(tag);
@@ -119,7 +117,7 @@ class BasicCertificateServiceTest {
     }
 
     @Test
-    void delete() {
+    void delete_Should_InvokeDeleteMethodInRepo() {
         service.delete(1L);
         Mockito.verify(certificateRepo, Mockito.times(1)).delete(1L);
     }

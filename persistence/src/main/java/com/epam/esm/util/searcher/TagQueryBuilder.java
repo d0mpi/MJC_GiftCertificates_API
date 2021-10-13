@@ -13,7 +13,6 @@ import java.util.Map;
  * @version 1.0
  * @see EntityQueryBuilder
  */
-@Component
 public class TagQueryBuilder implements EntityQueryBuilder {
 
     private TagQueryBuilder() {
@@ -38,6 +37,6 @@ public class TagQueryBuilder implements EntityQueryBuilder {
      */
     @Override
     public String getQuery(Map<String, String> paramMap) {
-        return "select * from tag";
+        return "select tag.id,tag.name from tag";
     }
 }

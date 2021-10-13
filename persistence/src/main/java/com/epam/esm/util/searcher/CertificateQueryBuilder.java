@@ -1,7 +1,5 @@
 package com.epam.esm.util.searcher;
 
-import org.springframework.stereotype.Component;
-
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
@@ -14,7 +12,6 @@ import java.util.Objects;
  * @version 1.0
  * @see EntityQueryBuilder
  */
-@Component
 public class CertificateQueryBuilder implements EntityQueryBuilder {
     private final StringBuilder joinQuery;
     private final StringBuilder sortingQuery;
