@@ -85,12 +85,11 @@ public class CertificateController {
      * Deletes certificate with the specified id from the database
      *
      * @param id id of the certificate to be deleted
-     * @return {@link HttpStatus)
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCertificate(@PathVariable("id") long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCertificate(@PathVariable("id") long id) {
         certificateService.delete(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -111,12 +110,11 @@ public class CertificateController {
      *
      * @param certificateId id of the certificate to be updated
      * @param tag           tag to be deleted
-     * @return {@link HttpStatus)
      */
     @DeleteMapping(value = "/{certificateId}/tag")
-    public ResponseEntity<?> deleteTagFromCertificate(@PathVariable("certificateId") long certificateId,
-                                                      @RequestBody TagDTO tag) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTagFromCertificate(@PathVariable("certificateId") long certificateId,
+                                         @RequestBody TagDTO tag) {
         certificateService.deleteTagFromCertificate(certificateId, tag);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

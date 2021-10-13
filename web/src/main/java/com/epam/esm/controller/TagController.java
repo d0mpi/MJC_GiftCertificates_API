@@ -67,11 +67,10 @@ public class TagController {
      * Deletes tag with the specified id from the database
      *
      * @param id id of the tag to be deleted
-     * @return {@link HttpStatus)
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable("id") long id) {
         tagService.delete(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
