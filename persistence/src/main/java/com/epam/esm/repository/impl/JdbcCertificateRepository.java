@@ -8,7 +8,6 @@ import com.epam.esm.util.mapper.CertificateRowMapper;
 import com.epam.esm.util.searcher.CertificateQueryBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -18,7 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 
 /**
@@ -55,16 +57,14 @@ public class JdbcCertificateRepository implements CertificateRepository {
     @Override
     @Transactional
     public Optional<Tag> addTagToCertificate(long certificateId, Tag tag) {
-        Tag presentedTag = tagRepository.readByName(tag.getName()).orElse(null);
-        if (presentedTag == null) {
-            presentedTag = tagRepository.create(tag).orElse(null);
-            if (presentedTag == null)
-                return Optional.empty();
-        } else {
-            tag.setId(presentedTag.getId());
-        }
+        Optional<Tag> presentedTag = Optional.ofNullable(tagRepository
+                .readByName(
+                        tag.getName()).orElseGet(() -> tagRepository.create(tag).orElse(null)));
+        if (presentedTag.isEmpty())
+            return Optional.empty();
+        presentedTag.ifPresent(value -> tag.setId(value.getId()));
         if (!tagRepository.findTagsByCertificateId(certificateId).contains(tag)) {
-            template.update(SQL_CREATE_CERTIFICATE_TAG, certificateId, presentedTag.getId());
+            template.update(SQL_CREATE_CERTIFICATE_TAG, certificateId, presentedTag.get().getId());
         }
         return Optional.of(tag);
     }
@@ -84,8 +84,8 @@ public class JdbcCertificateRepository implements CertificateRepository {
             ps.setString(2, certificate.getDescription());
             ps.setBigDecimal(3, certificate.getPrice());
             ps.setInt(4, certificate.getDuration());
-            ps.setTimestamp(5, Timestamp.valueOf(certificate.getCreate_date()));
-            ps.setTimestamp(6, Timestamp.valueOf(certificate.getLast_update_date()));
+            ps.setTimestamp(5, Timestamp.valueOf(certificate.getCreateDate()));
+            ps.setTimestamp(6, Timestamp.valueOf(certificate.getLastUpdateDate()));
             return ps;
         }, keyHolder);
         if (keyHolder.getKey() != null) {
@@ -130,8 +130,8 @@ public class JdbcCertificateRepository implements CertificateRepository {
                 certificate.getDescription(),
                 certificate.getPrice(),
                 certificate.getDuration(),
-                certificate.getCreate_date(),
-                certificate.getLast_update_date(),
+                certificate.getCreateDate(),
+                certificate.getLastUpdateDate(),
                 certificate.getId());
         if (updatedRowsNum == 0)
             return Optional.empty();

@@ -46,8 +46,8 @@ public class BasicCertificateService implements CertificateService {
     @Override
     public CertificateDTO create(CertificateDTO certificate) {
         certificateValidator.validate(certificate);
-        certificate.setCreate_date(LocalDateTime.now());
-        certificate.setLast_update_date(LocalDateTime.now());
+        certificate.setCreateDate(LocalDateTime.now());
+        certificate.setLastUpdateDate(LocalDateTime.now());
         return certificateMapper
                 .convertToDto(
                         certificateRepo.create(
@@ -85,7 +85,7 @@ public class BasicCertificateService implements CertificateService {
         if (patch.getTags() != null)
             certificate.setTags(patch.getTags());
         certificateValidator.validate(certificate);
-        certificate.setLast_update_date(LocalDateTime.now());
+        certificate.setLastUpdateDate(LocalDateTime.now());
         return certificateMapper.convertToDto(
                 certificateRepo.update(certificateMapper.convertToEntity(certificate))
                         .orElseThrow(() -> (new EntityNotFoundException("certificate", 40401))));

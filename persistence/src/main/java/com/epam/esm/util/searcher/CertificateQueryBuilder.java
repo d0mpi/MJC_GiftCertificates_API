@@ -76,7 +76,7 @@ public class CertificateQueryBuilder implements EntityQueryBuilder {
     }
 
     private void addSortComponent(CertificateCriteriaStorage certificateFindParam, String sortComponent) {
-        if (this.sortingQuery.isEmpty()) {
+        if (this.sortingQuery.length() == 0) {
             this.sortingQuery.append(" order by ");
         } else {
             this.sortingQuery.append(" , ");

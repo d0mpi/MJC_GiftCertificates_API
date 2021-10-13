@@ -1,14 +1,12 @@
 package com.epam.esm;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Contains information about certificate, provides
@@ -23,6 +21,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class Certificate extends DatabaseEntity {
 
     private String name;
@@ -30,8 +29,8 @@ public class Certificate extends DatabaseEntity {
     private BigDecimal price;
     private Integer duration;
     private Set<Tag> tags;
-    private LocalDateTime create_date;
-    private LocalDateTime last_update_date;
+    private LocalDateTime createDate;
+    private LocalDateTime lastUpdateDate;
 
 
     /**
@@ -51,26 +50,12 @@ public class Certificate extends DatabaseEntity {
         this.description = description;
         this.price = price;
         this.duration = duration;
-        this.create_date = create_date;
-        this.last_update_date = last_update_date;
+        this.createDate = create_date;
+        this.lastUpdateDate = last_update_date;
         this.tags = new HashSet<>();
     }
 
     public void addTags(List<Tag> tag) {
         tags.addAll(tag);
-    }
-
-    @Override
-    public String toString() {
-        return "Certificate{" +
-                "id =" + getId() +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", price=" + price +
-                ", duration=" + duration +
-                ", tags=" + tags +
-                ", create_date=" + create_date +
-                ", last_update_date=" + last_update_date +
-                '}';
     }
 }

@@ -4,7 +4,6 @@ import com.epam.esm.Tag;
 import com.epam.esm.exception.CustomDataIntegrityViolationException;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.util.mapper.TagRowMapper;
-import com.epam.esm.util.searcher.CertificateQueryBuilder;
 import com.epam.esm.util.searcher.TagQueryBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

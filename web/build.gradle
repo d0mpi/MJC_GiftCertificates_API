@@ -11,7 +11,7 @@ repositories {
     mavenCentral()
 }
 
-ext{
+ext {
     isProd = System.properties['env'] == 'prod'
     isDev = System.properties['env'] == 'dev'
 }

@@ -16,6 +16,18 @@ import java.util.Map;
 @Component
 public class TagQueryBuilder implements EntityQueryBuilder {
 
+    private TagQueryBuilder() {
+    }
+
+    /**
+     * Replacement of the constructor for ease of use
+     *
+     * @return new instance of the class
+     */
+    public static TagQueryBuilder init() {
+        return new TagQueryBuilder();
+    }
+
     /**
      * Creates a query to the database for searching
      * certificates in parts based on the received parameters
@@ -27,18 +39,5 @@ public class TagQueryBuilder implements EntityQueryBuilder {
     @Override
     public String getQuery(Map<String, String> paramMap) {
         return "select * from tag";
-    }
-
-    private TagQueryBuilder() {
-    }
-
-
-    /**
-     * Replacement of the constructor for ease of use
-     *
-     * @return new instance of the class
-     */
-    public static TagQueryBuilder init() {
-        return new TagQueryBuilder();
     }
 }

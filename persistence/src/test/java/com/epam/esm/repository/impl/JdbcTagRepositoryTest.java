@@ -38,11 +38,6 @@ class JdbcTagRepositoryTest {
     }
 
     @Test
-    void findByCriteria_When_FindByNameFlight_Then_ReturnOne() {
-        assertEquals(1, tagRepository.findByCriteria("select * from tag where name='flight'").size());
-    }
-
-    @Test
     void read_When_IdEqualsTwo_Then_ReturnSecondCertificate() {
         Tag tag = new Tag(2, "sport");
         assertEquals(tag, tagRepository.read(2).orElse(null));

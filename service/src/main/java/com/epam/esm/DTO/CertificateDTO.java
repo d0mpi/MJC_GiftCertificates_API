@@ -5,15 +5,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -29,6 +25,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class CertificateDTO extends EntityDTO {
 
     private String name;
@@ -41,13 +38,13 @@ public class CertificateDTO extends EntityDTO {
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime create_date;
+    private LocalDateTime createDate;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime last_update_date;
+    private LocalDateTime lastUpdateDate;
 
     public CertificateDTO(Long id, String name,
                           String description,
@@ -62,25 +59,11 @@ public class CertificateDTO extends EntityDTO {
         this.price = price;
         this.duration = duration;
         this.tags = tags;
-        this.create_date = create_date;
-        this.last_update_date = last_update_date;
+        this.createDate = create_date;
+        this.lastUpdateDate = last_update_date;
     }
 
     public void addTag(TagDTO tag) {
         tags.add(tag);
-    }
-
-    @Override
-    public String toString() {
-        return "CertificateDTO{" +
-                "id=" + this.getId() +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", price=" + price +
-                ", duration=" + duration +
-                ", tags=" + tags +
-                ", create_date=" + create_date +
-                ", last_update_date=" + last_update_date +
-                '}';
     }
 }

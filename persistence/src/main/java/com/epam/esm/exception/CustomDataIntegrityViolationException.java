@@ -2,7 +2,7 @@ package com.epam.esm.exception;
 
 import lombok.Getter;
 
-public class CustomDataIntegrityViolationException extends RuntimeException{
+public class CustomDataIntegrityViolationException extends RuntimeException {
     @Getter
     private final int errorCode;
 

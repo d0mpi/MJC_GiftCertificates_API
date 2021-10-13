@@ -20,13 +20,13 @@ public enum CertificateCriteriaStorage {
     NAME {
         @Override
         public String component(String value) {
-            return String.format(" certificate.name LIKE '%%%s%%' ", value);
+            return String.format(" upper(certificate.name) LIKE upper('%%%s%%') ", value);
         }
     },
     DESCRIPTION {
         @Override
         public String component(String value) {
-            return String.format(" certificate.description LIKE '%%%s%%' ", value);
+            return String.format(" upper(certificate.description) LIKE upper('%%%s%%') ", value);
         }
     },
     PRICE {
@@ -38,7 +38,7 @@ public enum CertificateCriteriaStorage {
     TAG {
         @Override
         public String component(String value) {
-            return String.format(" tag.name = '%s' ", value);
+            return String.format(" upper(tag.name) = upper('%s') ", value);
         }
     },
     SORT {
@@ -47,14 +47,6 @@ public enum CertificateCriteriaStorage {
             return SortType.of(value).getQueryComponent();
         }
     };
-
-    /**
-     * Formats and returns string with SQL query component.
-     *
-     * @param value url parameter received from request
-     * @return component of SQL Query
-     */
-    public abstract String component(String value);
 
     /**
      * Checks is parameter with the specified name present in this enum
@@ -83,6 +75,14 @@ public enum CertificateCriteriaStorage {
         else
             return null;
     }
+
+    /**
+     * Formats and returns string with SQL query component.
+     *
+     * @param value url parameter received from request
+     * @return component of SQL Query
+     */
+    public abstract String component(String value);
 
     /**
      * Nested enum containing all possible types of sorting

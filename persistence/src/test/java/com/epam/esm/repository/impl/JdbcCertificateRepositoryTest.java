@@ -14,7 +14,8 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,28 +42,22 @@ class JdbcCertificateRepositoryTest {
 
     @Test
     void findAllByCriteria_When_FindAll_Then_ReturnTen() {
-        assertEquals(10, certificateRepository.findByCriteria("select * from certificate").size());
+        assertEquals(10, certificateRepository.findByCriteria(Collections.emptyMap()).size());
     }
 
     @Test
     void findAllByCriteria_When_FindByName_Ride_Then_ReturnOne() {
-        assertEquals(1, certificateRepository.findByCriteria("select * from certificate where upper(name) LIKE upper('%ride%')").size());
+        assertEquals(1, certificateRepository.findByCriteria(Collections.singletonMap("name", "ride")).size());
     }
 
     @Test
     void findAllByCriteria_When_FindByDescription_Ride_Then_ReturnOne() {
-        assertEquals(2, certificateRepository.findByCriteria("select * from certificate where upper(description) LIKE upper('%certificate%')").size());
+        assertEquals(2, certificateRepository.findByCriteria(Collections.singletonMap("description", "certificate")).size());
     }
 
     @Test
     void findAllByCriteria_When_FindByTagName_ForOnePerson_Then_ReturnThree() {
-        assertEquals(3, certificateRepository.findByCriteria("select certificate.id, certificate.name, certificate.description, certificate.price, certificate.duration, certificate.create_date, certificate.last_update_date" +
-                "                from certificate" +
-                "                         join certificate_tag" +
-                "                              on certificate.id = certificate_tag.certificate_id" +
-                "                         join tag" +
-                "                              on certificate_tag.tag_id = tag.id" +
-                "                where tag.name = 'for one person'").size());
+        assertEquals(3, certificateRepository.findByCriteria(Collections.singletonMap("tag", "for one person")).size());
     }
 
     @Test
@@ -72,7 +67,7 @@ class JdbcCertificateRepositoryTest {
                 new BigDecimal("220.0"), 31,
                 LocalDateTime.parse("2021-06-12T10:34:09"),
                 LocalDateTime.parse("2021-06-12T10:34:09"));
-        certificate.addTags(List.of(new Tag(5, "entertainment")));
+        certificate.addTags(Collections.singletonList(new Tag(5, "entertainment")));
         assertEquals(certificate, certificateRepository.read(2).orElse(null));
     }
 
@@ -117,7 +112,7 @@ class JdbcCertificateRepositoryTest {
                 new BigDecimal("94.0"), 31,
                 LocalDateTime.parse("2021-06-12T10:34:09"),
                 LocalDateTime.parse("2021-06-12T10:34:09"));
-        certificate.addTags(List.of(new Tag(6, "for one person"), new Tag(8, "new tag"), new Tag(3, "training")));
+        certificate.addTags(Arrays.asList(new Tag(6, "for one person"), new Tag(8, "new tag"), new Tag(3, "training")));
         assertEquals(certificate, certificateRepository.read(8).orElse(null));
     }
 
