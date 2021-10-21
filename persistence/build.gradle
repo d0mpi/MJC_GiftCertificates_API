@@ -16,27 +16,24 @@ if (project.hasProperty('env')) {
 
 dependencies {
     implementation project(':model')
-
-    implementation group: 'com.zaxxer', name: 'HikariCP', version: '5.0.0'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter', version: '2.5.5'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '2.5.5'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.5.5'
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.5.5'
 
     implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.23'
-    implementation group: 'org.springframework', name: 'spring-jdbc', version: '5.3.10'
-    implementation group: 'org.springframework', name: 'spring-core', version: '5.3.10'
-    implementation group: 'org.springframework', name: 'spring-context', version: '5.3.10'
-    implementation group: 'org.springframework', name: 'spring-beans', version: '5.3.10'
 
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    testImplementation 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
+    testImplementation group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
-    testImplementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.32'
 
+    testImplementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.32'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
 
     testImplementation group: 'com.h2database', name: 'h2', version: '1.4.200'
-    testImplementation group: 'org.springframework', name: 'spring-test', version: '5.3.10'
 }
 
 test {

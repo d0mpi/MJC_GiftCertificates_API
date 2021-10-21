@@ -62,13 +62,6 @@ public class GlobalExceptionHandler {
                 HttpStatus.NOT_FOUND);
     }
 
-    /**
-     * Handles {@link EntityNotFoundException} and send response containing {@link ExceptionResponseObject}
-     *
-     * @param ex     {@link EntityNotFoundException} to be handled
-     * @param locale {@link Locale} received from http header
-     * @return {@link ExceptionResponseObject} witch contains error message and code
-     */
     @ExceptionHandler(value = CustomDataIntegrityViolationException.class)
     public ResponseEntity<?> handleCustomDataIntegrityViolationException(CustomDataIntegrityViolationException ex, Locale locale) {
         return new ResponseEntity<>(

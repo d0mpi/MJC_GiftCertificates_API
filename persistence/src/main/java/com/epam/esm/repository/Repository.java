@@ -1,5 +1,6 @@
 package com.epam.esm.repository;
 
+import com.epam.esm.Certificate;
 import com.epam.esm.DatabaseEntity;
 
 import java.util.List;
@@ -37,6 +38,17 @@ public interface Repository<T extends DatabaseEntity> {
      * @return read object
      */
     Optional<T> read(long id);
+
+
+    List<T> readAll(int page, int limit);
+
+    /**
+     * Updates info about the specified {@link Certificate} in the database
+     *
+     * @param certificate {@link Certificate} instance containing info to be updated
+     * @return updated {@link Certificate}
+     */
+    Optional<Certificate> update(Certificate certificate);
 
     /**
      * Deletes object with the specified id from rhe database

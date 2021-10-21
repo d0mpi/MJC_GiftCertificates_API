@@ -1,17 +1,19 @@
 package com.epam.esm.repository.impl;
 
+import com.epam.esm.Certificate;
 import com.epam.esm.Tag;
-import com.epam.esm.exception.CustomDataIntegrityViolationException;
+import exception.CustomDataIntegrityViolationException;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.util.mapper.TagRowMapper;
 import com.epam.esm.util.searcher.TagQueryBuilder;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
@@ -37,13 +39,13 @@ public class JdbcTagRepository implements TagRepository {
             "join certificate_tag ct " +
             "on t.id = ct.tag_id " +
             "where ct.certificate_id = ?";
-
     private static final String SQL_DELETE_TAG = "delete from tag where id = ?";
 
-    @Autowired
     private final JdbcTemplate template;
-    @Autowired
     private final TagRowMapper tagMapper;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public Optional<Tag> create(Tag tag) {
@@ -73,6 +75,16 @@ public class JdbcTagRepository implements TagRepository {
     public Optional<Tag> read(long id) {
         return template.queryForStream(SQL_FIND_TAG_BY_ID, tagMapper::mapRowToObject, id)
                 .distinct().findFirst();
+    }
+
+    @Override
+    public List<Tag> readAll(int page, int limit) {
+        return null;
+    }
+
+    @Override
+    public Optional<Certificate> update(Certificate certificate) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

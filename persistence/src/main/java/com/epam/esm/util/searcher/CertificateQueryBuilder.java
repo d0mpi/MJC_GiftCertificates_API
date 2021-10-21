@@ -73,11 +73,19 @@ public class CertificateQueryBuilder implements EntityQueryBuilder {
     }
 
     private void addSortComponent(CertificateCriteriaStorage certificateFindParam, String sortComponent) {
+
         if (this.sortingQuery.length() == 0) {
             this.sortingQuery.append(" order by ");
         } else {
             this.sortingQuery.append(" , ");
         }
+//        if(sortComponent.contains("date_asc")) {
+//            sortingQuery.append(" certificate.last_update_date ASC");
+//        } else if(sortComponent.contains("date_desc")) {
+//            sortingQuery.append(" certificate.last_update_date DESC");
+//        } else if(sortComponent.contains("name_asc")) {
+//            sortingQuery.append(" certificate.name ASC");
+//        }
         this.sortingQuery.append(certificateFindParam.component(sortComponent));
     }
 

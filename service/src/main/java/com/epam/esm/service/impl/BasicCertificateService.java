@@ -11,7 +11,7 @@ import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.validation.CertificateValidator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -31,17 +31,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class BasicCertificateService implements CertificateService {
-    @Autowired
     private final CertificateRepository certificateRepo;
-    @Autowired
     private final TagRepository tagRepo;
-    @Autowired
     private final CertificateMapper certificateMapper;
-    @Autowired
     private final TagMapper tagMapper;
-    @Autowired
     private final CertificateValidator certificateValidator;
-
 
     @Override
     public CertificateDTO create(CertificateDTO certificate) {
@@ -64,7 +58,6 @@ public class BasicCertificateService implements CertificateService {
 
     @Override
     public List<CertificateDTO> findByCriteria(Map<String, String> paramMap) {
-
         return certificateRepo.findByCriteria(paramMap)
                 .stream()
                 .map(certificateMapper::convertToDto)
@@ -72,7 +65,7 @@ public class BasicCertificateService implements CertificateService {
     }
 
     @Override
-    public CertificateDTO update(CertificateDTO patch) throws ValidationException {
+    public CertificateDTO update(CertificateDTO patch) {
         CertificateDTO certificate = read(patch.getId());
         if (patch.getName() != null)
             certificate.setName(patch.getName());

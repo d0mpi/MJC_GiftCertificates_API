@@ -1,0 +1,32 @@
+2021-10-11 16:30:57 ERROR GlobalExceptionHandler:44 - Not valid certificate name. Name length should be less then 45. : 42201
+2021-10-11 16:31:12 ERROR GlobalExceptionHandler:44 - Not valid certificate name. Name length should be less then 45. : 42201
+2021-10-11 16:31:14 ERROR GlobalExceptionHandler:44 - Not valid certificate name. Name length should be less then 45. : 42201
+2021-10-11 16:31:52 ERROR GlobalExceptionHandler:44 - Not valid certificate name. Name length should be less then 45. : 42201
+2021-10-11 16:31:56 ERROR GlobalExceptionHandler:44 - Not valid certificate name. Name length should be less then 45. : 42201
+2021-10-11 16:44:21 ERROR GlobalExceptionHandler:44 - Not valid certificate name. Name length should be less then 45. : 42201
+2021-10-11 23:06:58 ERROR GlobalExceptionHandler:42 - Not valid certificate name. Name length should be less then 45. : 42201
+2021-10-11 23:07:01 ERROR GlobalExceptionHandler:42 - Not valid certificate name. Name length should be less then 45. : 42201
+2021-10-11 23:07:03 ERROR GlobalExceptionHandler:42 - Not valid certificate name. Name length should be less then 45. : 42201
+2021-10-11 23:07:24 ERROR GlobalExceptionHandler:59 - Certificate with the specified ID does not exist. : 40401
+2021-10-11 23:07:27 ERROR GlobalExceptionHandler:59 - Certificate with the specified ID does not exist. : 40401
+2021-10-11 23:07:29 ERROR GlobalExceptionHandler:59 - Certificate with the specified ID does not exist. : 40401
+2021-10-11 23:39:23 ERROR GlobalExceptionHandler:88 - Certificate with the specified ID does not exist. : 40401
+2021-10-11 23:39:38 ERROR GlobalExceptionHandler:88 - ValidationException.certificate.nameSize : 42201
+2021-10-11 23:41:03 ERROR GlobalExceptionHandler:88 - Not valid certificate name. Name length should be less then 45. : 42201
+2021-10-11 23:41:08 ERROR GlobalExceptionHandler:88 - Not valid certificate name. Name length should be less then 45. : 42201
+2021-10-11 23:41:12 ERROR GlobalExceptionHandler:88 - Certificate with the specified ID does not exist. : 40401
+2021-10-11 23:41:14 ERROR GlobalExceptionHandler:88 - Certificate with the specified ID does not exist. : 40401
+2021-10-11 23:49:33 ERROR GlobalExceptionHandler:88 - Certificate with the specified ID does not exist. : 40401
+2021-10-12 00:04:25 ERROR GlobalExceptionHandler:88 - Certificate with the specified ID does not exist. : 40401
+2021-10-12 00:32:32 ERROR GlobalExceptionHandler:88 - Certificate with the specified ID does not exist. : 40401
+2021-10-13 11:49:53 ERROR GlobalExceptionHandler:88 - Certificate with the specified ID does not exist. : 40401
+2021-10-13 11:49:55 ERROR GlobalExceptionHandler:88 - Not valid certificate name. Name length should be less then 45. : 42201
+2021-10-13 11:49:59 ERROR GlobalExceptionHandler:88 - Not valid certificate price. Price should be positive. : 42201
+2021-10-13 11:50:22 ERROR GlobalExceptionHandler:88 - Tag with the specified ID does not exist. : 40402
+2021-10-13 15:57:50 ERROR GlobalExceptionHandler:88 - Certificate with the specified ID does not exist. : 40401
+2021-10-19 12:13:11 ERROR GlobalExceptionHandler:88 - Not valid certificate name. Name length should be less then 45. : 42201
+2021-10-19 12:13:50 ERROR GlobalExceptionHandler:88 - Not valid certificate name. Name length should be less then 45. : 42201
+2021-10-19 12:16:08 ERROR GlobalExceptionHandler:88 - Tag with the specified ID does not exist. : 40402
+2021-10-19 12:17:22 ERROR GlobalExceptionHandler:88 - Certificate with the specified ID does not exist. : 40401
+2021-10-19 12:18:32 ERROR GlobalExceptionHandler:88 - Certificate with the specified ID does not exist. : 40401
+2021-10-19 12:18:53 ERROR GlobalExceptionHandler:88 - Certificate with the specified ID does not exist. : 40401

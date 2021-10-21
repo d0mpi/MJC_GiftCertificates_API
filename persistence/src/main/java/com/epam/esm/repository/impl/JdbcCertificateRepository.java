@@ -2,18 +2,19 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.Certificate;
 import com.epam.esm.Tag;
-import com.epam.esm.exception.CustomDataIntegrityViolationException;
+import exception.CustomDataIntegrityViolationException;
 import com.epam.esm.repository.CertificateRepository;
 import com.epam.esm.util.mapper.CertificateRowMapper;
 import com.epam.esm.util.searcher.CertificateQueryBuilder;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -47,11 +48,11 @@ public class JdbcCertificateRepository implements CertificateRepository {
     private static final String SQL_CREATE_CERTIFICATE_TAG = "insert into certificate_tag (certificate_id, tag_id) values (?, ?)";
     private static final String SQL_DELETE_CERTIFICATE_TAG = "delete from certificate_tag where certificate_id = ? and tag_id = ?";
 
-    @Autowired
+    @PersistenceContext
+    private EntityManager entityManager;
+
     private final JdbcTemplate template;
-    @Autowired
     private final CertificateRowMapper certificateMapper;
-    @Autowired
     private final JdbcTagRepository tagRepository;
 
     @Override
@@ -109,6 +110,11 @@ public class JdbcCertificateRepository implements CertificateRepository {
             certificate.addTags(tags);
         }
         return Optional.ofNullable(certificate);
+    }
+
+    @Override
+    public List<Certificate> readAll(int page, int limit) {
+        return null;
     }
 
     @Override

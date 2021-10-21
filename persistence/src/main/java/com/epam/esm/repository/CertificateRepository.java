@@ -29,12 +29,4 @@ public interface CertificateRepository extends Repository<Certificate> {
      * @param tag           {@link Tag} which should be deleted from the {@link Certificate} with the specified id
      */
     void deleteTagFromCertificate(long certificateId, Tag tag);
-
-    /**
-     * Updates info about the specified {@link Certificate} in the database
-     *
-     * @param certificate {@link Certificate} instance containing info to be updated
-     * @return updated {@link Certificate}
-     */
-    Optional<Certificate> update(Certificate certificate);
 }

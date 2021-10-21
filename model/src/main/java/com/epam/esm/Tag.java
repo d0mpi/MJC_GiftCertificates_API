@@ -2,6 +2,9 @@ package com.epam.esm;
 
 import lombok.*;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
@@ -18,7 +21,10 @@ import java.io.Serializable;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@Entity
+@Table(name = "tag")
 public class Tag extends DatabaseEntity implements Comparable<Tag>, Serializable {
+    @Column(name = "name")
     private String name;
 
     /**
