@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'idea'
 }
 
 group 'com.epam.esm'
@@ -13,9 +14,11 @@ dependencies {
     implementation project(':model')
     implementation project(':persistence')
 
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter', version: '2.5.5'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.5.5'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.5.5'
+    implementation 'org.springframework.boot:spring-boot-starter-hateoas:2.5.5'
 
+    implementation 'at.favre.lib:bcrypt:0.9.0'
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
@@ -27,7 +30,8 @@ dependencies {
 
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.2'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.12.2'
-    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.12.2'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0'
+
 
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
     implementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.32'

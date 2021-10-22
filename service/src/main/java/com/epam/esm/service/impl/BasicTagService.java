@@ -7,11 +7,9 @@ import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.TagService;
 import com.epam.esm.validation.TagValidator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -25,11 +23,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class BasicTagService implements TagService {
-    @Autowired
     private final TagRepository repo;
-    @Autowired
     private final TagMapper mapper;
-    @Autowired
     private final TagValidator validator;
 
     @Override
@@ -45,8 +40,8 @@ public class BasicTagService implements TagService {
     }
 
     @Override
-    public List<TagDTO> findByCriteria(Map<String, String> paramMap) {
-        return repo.findByCriteria(paramMap)
+    public List<TagDTO> readAll(int page, int limit) {
+        return repo.readAll(page, limit)
                 .stream()
                 .map(mapper::convertToDto)
                 .collect(Collectors.toList());

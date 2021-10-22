@@ -17,16 +17,18 @@ import java.util.Set;
  *
  * @author Mikhail Dokuchaev
  * @version 1.0
- * @see DatabaseEntity
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
 @Entity
+@Builder
 @Table(name = "certificate")
-public class Certificate extends DatabaseEntity {
+public class Certificate {
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
     @Column(name = "name")
     private String name;
     @Column(name = "description")
@@ -41,10 +43,8 @@ public class Certificate extends DatabaseEntity {
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags;
     @Column(name = "create_date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private LocalDateTime createDate;
     @Column(name = "last_update_date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private LocalDateTime lastUpdateDate;
 
 
@@ -60,7 +60,7 @@ public class Certificate extends DatabaseEntity {
      * @param last_update_date date and time of the certificate's last update
      */
     public Certificate(long id, String name, String description, BigDecimal price, int duration, LocalDateTime create_date, LocalDateTime last_update_date) {
-        super(id);
+        this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
@@ -73,4 +73,5 @@ public class Certificate extends DatabaseEntity {
     public void addTags(List<Tag> tag) {
         tags.addAll(tag);
     }
+
 }

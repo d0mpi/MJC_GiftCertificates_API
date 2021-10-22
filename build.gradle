@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'war'
 }
 
 group 'com.epam.esm'
@@ -15,8 +14,4 @@ dependencies {
 
 test {
     useJUnitPlatform()
-}
-
-war {
-    archiveName = 'giftCertificate.war'
 }

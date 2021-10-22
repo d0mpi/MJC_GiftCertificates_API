@@ -1,7 +1,6 @@
 package com.epam.esm.validation;
 
 import com.epam.esm.DTO.CertificateDTO;
-import com.epam.esm.DTO.EntityDTO;
 import com.epam.esm.exception.ValidationException;
 
 /**
@@ -12,12 +11,12 @@ import com.epam.esm.exception.ValidationException;
  * @see EntityValidator
  * @see ValidationException
  */
-public interface EntityValidator<T extends EntityDTO> {
+public interface EntityValidator<T> {
     /**
      * Validates DTO information
      *
-     * @param entity {@link EntityDTO} to be validated
-     * @throws ValidationException if {@link EntityDTO} is invalid
+     * @param entity  entity to be validated
+     * @throws ValidationException if entity is invalid
      */
     void validate(T entity);
 }

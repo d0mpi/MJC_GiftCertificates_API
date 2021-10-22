@@ -4,6 +4,9 @@ import com.epam.esm.DTO.CertificateDTO;
 import com.epam.esm.DTO.TagDTO;
 import com.epam.esm.exception.ValidationException;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Provides certificate info transfer between web and persistence module,
  * Required to convert certificate info from {@link CertificateDTO}
@@ -44,4 +47,14 @@ public interface CertificateService extends EntityService<CertificateDTO> {
      * @param tag           the tag to be deleted
      */
     void deleteTagFromCertificate(long certificateId, TagDTO tag);
+
+    /**
+     * Provides a link between web and persistence module.
+     * Gets entity by specified params.
+     *
+     * @param paramMap map of params parsed from url
+     * @return entities that meet the parameters specified in the specified map
+     */
+    List<CertificateDTO> findByCriteria(Map<String, String> paramMap);
+
 }

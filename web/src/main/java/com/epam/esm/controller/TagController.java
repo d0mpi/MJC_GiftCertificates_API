@@ -4,10 +4,10 @@ import com.epam.esm.DTO.TagDTO;
 import com.epam.esm.exception.ValidationException;
 import com.epam.esm.service.TagService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +24,6 @@ import java.util.Map;
 @RequestMapping("/tag")
 @RequiredArgsConstructor
 public class TagController {
-    @Autowired
     private final TagService tagService;
 
     /**
@@ -35,8 +34,12 @@ public class TagController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<TagDTO> findAll(@RequestParam Map<String, String> params) {
-        return tagService.findByCriteria(params);
+    public List<TagDTO> findAll(@RequestParam Map<String, String> params,
+                                @RequestParam(value = "page", required = false, defaultValue = "1")
+                                        int page,
+                                @RequestParam(value = "limit", required = false, defaultValue = "10")
+                                        int limit) {
+        return tagService.readAll(1, 1);
     }
 
     /**
@@ -60,7 +63,7 @@ public class TagController {
      */
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public TagDTO create(@RequestBody TagDTO tag) {
+    public TagDTO create(@RequestBody @Valid TagDTO tag) {
         return tagService.create(tag);
     }
 

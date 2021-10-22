@@ -102,4 +102,12 @@ public class BasicCertificateService implements CertificateService {
         certificateRepo.delete(id);
     }
 
+    @Override
+    public List<CertificateDTO> readAll(int page, int limit) {
+        return certificateRepo.readAll(page, limit)
+                .stream()
+                .map(certificateMapper::convertToDto)
+                .collect(Collectors.toList());
+    }
+
 }

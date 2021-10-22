@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -67,12 +66,12 @@ class BasicTagServiceTest {
         Mockito.when(tagMapper.convertToEntity(tagDTO)).thenReturn(tag);
         List<Tag> tagList = new LinkedList<>();
         tagList.add(tag);
-        Mockito.when(repo.findByCriteria(Collections.emptyMap())).thenReturn(tagList);
+        Mockito.when(repo.readAll(0, 0)).thenReturn(tagList);
         assertEquals(tagList, service
-                .findByCriteria(Collections.emptyMap())
+                .readAll(0, 0)
                 .stream().map(tagMapper::convertToEntity)
                 .collect(Collectors.toList()));
-        Mockito.verify(repo, Mockito.times(1)).findByCriteria(Collections.emptyMap());
+        Mockito.verify(repo, Mockito.times(1)).readAll(0, 0);
     }
 
     @Test

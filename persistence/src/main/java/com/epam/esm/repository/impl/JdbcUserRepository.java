@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -20,11 +19,6 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public Optional<User> create(User entity) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<User> findByCriteria(Map<String, String> paramMap) {
         throw new UnsupportedOperationException();
     }
 

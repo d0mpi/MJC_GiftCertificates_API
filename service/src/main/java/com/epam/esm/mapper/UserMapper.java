@@ -4,7 +4,6 @@ import com.epam.esm.DTO.UserDTO;
 import com.epam.esm.User;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -12,7 +11,6 @@ import java.util.Objects;
 @Component
 @RequiredArgsConstructor
 public class UserMapper {
-    @Autowired
     protected final ModelMapper mapper;
 
     public UserDTO convertToDto(User user) {

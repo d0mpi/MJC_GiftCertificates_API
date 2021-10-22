@@ -8,5 +8,9 @@ import com.epam.esm.User;
 import java.util.List;
 
 public interface OrderService extends EntityService<OrderDTO> {
-    List<OrderDTO> findOrdersPageByUser(UserDTO userDTO, int page, int limit);
+    List<OrderDTO> getUserOrders(long userId, int page, int limit);
+
+    OrderDTO getUserOrder(long userId, long orderId);
+
+    OrderDTO createOrder(long userId, long certificateId);
 }

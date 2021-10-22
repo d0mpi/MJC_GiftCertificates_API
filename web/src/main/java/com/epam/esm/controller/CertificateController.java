@@ -6,7 +6,6 @@ import com.epam.esm.exception.ValidationException;
 import com.epam.esm.service.CertificateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +27,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CertificateController {
 
-    @Autowired
     private final CertificateService certificateService;
 
     /**
@@ -39,7 +37,12 @@ public class CertificateController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<CertificateDTO> findAllByCriteria(@RequestParam Map<String, String> params) {
+    public List<CertificateDTO> findAllByCriteria(@RequestParam
+                                                          Map<String, String> params,
+                                                  @RequestParam(value = "page", required = false, defaultValue = "1")
+                                                          int page,
+                                                  @RequestParam(value = "limit", required = false, defaultValue = "10")
+                                                          int limit) {
         return certificateService.findByCriteria(params);
     }
 

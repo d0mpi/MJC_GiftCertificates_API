@@ -1,10 +1,8 @@
 package com.epam.esm.service;
 
-import com.epam.esm.DTO.EntityDTO;
 import com.epam.esm.exception.ValidationException;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Provides database entity info transfer between web and persistence module,
@@ -14,7 +12,7 @@ import java.util.Map;
  *
  * @param <T> DTO class
  */
-public interface EntityService<T extends EntityDTO> {
+public interface EntityService<T> {
     /**
      * Provides a link between web and persistence module.
      * Responsible for converting DTO to entity that
@@ -36,15 +34,6 @@ public interface EntityService<T extends EntityDTO> {
      */
     T read(long id);
 
-    /**
-     * Provides a link between web and persistence module.
-     * Gets entity by specified params.
-     *
-     * @param paramMap map of params parsed from url
-     * @return entities that meet the parameters specified in the specified map
-     */
-    List<T> findByCriteria(Map<String, String> paramMap);
-
 
     /**
      * Provides a link between web and persistence module.
@@ -53,4 +42,6 @@ public interface EntityService<T extends EntityDTO> {
      * @param id id of the entity to be deleted from the database
      */
     void delete(long id);
+
+    List<T> readAll(int page, int limit);
 }

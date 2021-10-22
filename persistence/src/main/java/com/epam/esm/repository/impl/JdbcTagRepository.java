@@ -2,10 +2,9 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.Certificate;
 import com.epam.esm.Tag;
-import exception.CustomDataIntegrityViolationException;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.util.mapper.TagRowMapper;
-import com.epam.esm.util.searcher.TagQueryBuilder;
+import exception.CustomDataIntegrityViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -17,7 +16,6 @@ import javax.persistence.PersistenceContext;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -33,6 +31,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class JdbcTagRepository implements TagRepository {
     private static final String SQL_CREATE_TAG = "insert into tag (name) values (?)";
+    private static final String SQL_FIND_ALL = "select id, name from tag";
     private static final String SQL_FIND_TAG_BY_ID = "select id, name from tag where id = ?";
     private static final String SQL_FIND_TAG_BY_NAME = "select id, name from tag where name = ?";
     private static final String SQL_SELECT_TAGS_BY_CERTIFICATE_ID = "select t.id, t.name from tag t " +
@@ -66,20 +65,19 @@ public class JdbcTagRepository implements TagRepository {
             throw new CustomDataIntegrityViolationException("tag", 50002);
     }
 
-    @Override
-    public List<Tag> findByCriteria(Map<String, String> paramMap) {
-        return template.query(TagQueryBuilder.init().getQuery(paramMap), tagMapper::mapRowToObject);
-    }
-
+    //    @Override
+//    public Optional<Tag> read(long id) {
+//        return template.queryForStream(SQL_FIND_TAG_BY_ID, tagMapper::mapRowToObject, id)
+//                .distinct().findFirst();
+//    }
     @Override
     public Optional<Tag> read(long id) {
-        return template.queryForStream(SQL_FIND_TAG_BY_ID, tagMapper::mapRowToObject, id)
-                .distinct().findFirst();
+        return Optional.ofNullable(entityManager.find(Tag.class, id));
     }
 
     @Override
     public List<Tag> readAll(int page, int limit) {
-        return null;
+        return template.query(SQL_FIND_ALL, tagMapper::mapRowToObject);
     }
 
     @Override

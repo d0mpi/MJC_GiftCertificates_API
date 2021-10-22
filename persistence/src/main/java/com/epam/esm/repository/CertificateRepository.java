@@ -3,6 +3,8 @@ package com.epam.esm.repository;
 import com.epam.esm.Certificate;
 import com.epam.esm.Tag;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -29,4 +31,13 @@ public interface CertificateRepository extends Repository<Certificate> {
      * @param tag           {@link Tag} which should be deleted from the {@link Certificate} with the specified id
      */
     void deleteTagFromCertificate(long certificateId, Tag tag);
+
+    /**
+     * Finds object in rhe database. Uses sqlQuery to find entities.
+     *
+     * @param paramMap map with parameters
+     * @return list of found objects
+     */
+    List<Certificate> findByCriteria(Map<String, String> paramMap);
+
 }

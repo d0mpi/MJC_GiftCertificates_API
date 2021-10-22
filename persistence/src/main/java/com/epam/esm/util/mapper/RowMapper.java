@@ -1,7 +1,5 @@
 package com.epam.esm.util.mapper;
 
-import com.epam.esm.DatabaseEntity;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -11,7 +9,7 @@ import java.sql.SQLException;
  *
  * @param <T> database entity
  */
-public interface RowMapper<T extends DatabaseEntity> {
+public interface RowMapper<T> {
     /**
      * Maps information from rs to the database entity
      *

@@ -2,9 +2,7 @@ package com.epam.esm;
 
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -14,16 +12,19 @@ import java.io.Serializable;
  *
  * @author Mikhail Dokuchaev
  * @version 1.0
- * @see DatabaseEntity
  */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
+@AllArgsConstructor
+@ToString
 @Entity
+@Builder
 @Table(name = "tag")
-public class Tag extends DatabaseEntity implements Comparable<Tag>, Serializable {
+public class Tag implements Comparable<Tag>, Serializable {
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
     @Column(name = "name")
     private String name;
 
@@ -34,7 +35,11 @@ public class Tag extends DatabaseEntity implements Comparable<Tag>, Serializable
      * @param name tag name
      */
     public Tag(long id, String name) {
-        super(id);
+        this.id = id;
+        this.name = name;
+    }
+
+    public Tag(String name) {
         this.name = name;
     }
 

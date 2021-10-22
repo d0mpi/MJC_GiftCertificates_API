@@ -2,8 +2,13 @@ package com.epam.esm.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.springframework.hateoas.RepresentationModel;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 
 
 /**
@@ -15,24 +20,14 @@ import lombok.NoArgsConstructor;
  * @version 1.0
  * @see com.epam.esm.Tag
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TagDTO extends EntityDTO {
-
+@ToString
+public class TagDTO extends RepresentationModel<TagDTO> {
+    @Positive
+    private Long id;
+    @NotBlank
+    @Size(min = 1, max = 45)
     private String name;
-
-    public TagDTO(Long id, String name) {
-        super(id);
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return "TagDTO{" +
-                "id" + super.getId() +
-                "name='" + name + '\'' +
-                '}';
-    }
 }

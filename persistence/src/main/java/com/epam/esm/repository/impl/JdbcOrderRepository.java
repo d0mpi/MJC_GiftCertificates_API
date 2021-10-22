@@ -4,11 +4,15 @@ import com.epam.esm.Certificate;
 import com.epam.esm.Order;
 import com.epam.esm.User;
 import com.epam.esm.repository.OrderRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Repository
+@RequiredArgsConstructor
 public class JdbcOrderRepository implements OrderRepository {
     @Override
     public List<Order> findOrdersPageByUser(User user, int page, int limit) {
@@ -16,13 +20,13 @@ public class JdbcOrderRepository implements OrderRepository {
     }
 
     @Override
-    public Optional<Order> create(Order entity) {
-        return Optional.empty();
+    public List<Order> readUserOrders(long userId, int page, int limit) {
+        return null;
     }
 
     @Override
-    public List<Order> findByCriteria(Map<String, String> paramMap) {
-        return null;
+    public Optional<Order> create(Order entity) {
+        return Optional.empty();
     }
 
     @Override

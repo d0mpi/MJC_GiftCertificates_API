@@ -25,7 +25,6 @@ import java.util.Locale;
 @RequiredArgsConstructor
 @Slf4j
 public class GlobalExceptionHandler {
-    @Autowired
     private final MessageSource messageSource;
 
     /**

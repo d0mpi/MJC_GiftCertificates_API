@@ -4,7 +4,7 @@ import com.epam.esm.DTO.OrderDTO;
 import com.epam.esm.Order;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -12,7 +12,6 @@ import java.util.Objects;
 @Component
 @RequiredArgsConstructor
 public class OrderMapper {
-    @Autowired
     protected final ModelMapper mapper;
 
     public OrderDTO convertToDto(Order order) {
