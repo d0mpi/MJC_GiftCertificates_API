@@ -113,13 +113,13 @@ public class JdbcCertificateRepository implements CertificateRepository {
     }
 
     @Override
-    public List<Certificate> readAll(int page, int limit) {
+    public List<Certificate> readAll(long page, long size) {
         return null;
     }
 
     @Override
     @Transactional
-    public List<Certificate> findByCriteria(Map<String, String> paramMap) {
+    public List<Certificate> findByCriteria(Map<String, String> paramMap, long page, long size) {
         List<Certificate> certificateList = template.query(
                 CertificateQueryBuilder.init().getQuery(paramMap), certificateMapper::mapRowToObject);
         for (Certificate certificate : certificateList) {
@@ -146,6 +146,11 @@ public class JdbcCertificateRepository implements CertificateRepository {
             addTagToCertificate(certificate.getId(), tag);
         }
         return Optional.of(certificate);
+    }
+
+    @Override
+    public long getCount() {
+        return (long) entityManager.createQuery("SELECT COUNT(c) FROM Certificate c").getSingleResult();
     }
 
     @Override

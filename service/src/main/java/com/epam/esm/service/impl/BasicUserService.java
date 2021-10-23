@@ -7,6 +7,7 @@ import com.epam.esm.mapper.UserMapper;
 import com.epam.esm.repository.UserRepository;
 import com.epam.esm.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,12 +33,8 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public List<UserDTO> readAll(int page, int login) {
+    public PagedModel<UserDTO> readAll(long page, long login) {
         return null;
     }
 
-    @Override
-    public TagDTO getMostWidelyUsedTag(long userId) {
-        return null;
-    }
 }

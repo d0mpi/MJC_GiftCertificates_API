@@ -4,6 +4,7 @@ import com.epam.esm.DTO.OrderDTO;
 import com.epam.esm.DTO.TagDTO;
 import com.epam.esm.DTO.UserDTO;
 import com.epam.esm.service.OrderService;
+import com.epam.esm.service.TagService;
 import com.epam.esm.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final OrderService orderService;
+    private final TagService tagService;
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -32,10 +34,10 @@ public class UserController {
     public List<OrderDTO> getUserOrders(@PathVariable
                                         @Positive long userId,
                                         @RequestParam(value = "page", required = false, defaultValue = "1")
-                                        @Positive int page,
-                                        @RequestParam(value = "limit", required = false, defaultValue = "10")
-                                        @Positive int limit) {
-        return orderService.getUserOrders(userId, page, limit);
+                                        @Positive long page,
+                                        @RequestParam(value = "size", required = false, defaultValue = "10")
+                                        @Positive long size) {
+        return orderService.getUserOrders(userId, page, size);
     }
 
     @GetMapping("/{userId}/orders/{orderId}")
@@ -53,13 +55,13 @@ public class UserController {
                                 @Positive long userId,
                                 @PathVariable
                                 @Positive long certificateId) {
-        return orderService.createOrder(userId, certificateId);
+        return orderService.create(userId, certificateId);
     }
 
     @GetMapping("/{userId}/mostWidelyUsedTag")
     @ResponseStatus(HttpStatus.OK)
     public TagDTO getMostWidelyUsedTag(@PathVariable
                                        @Positive long userId) {
-        return userService.getMostWidelyUsedTag(userId);
+        return tagService.getMostWidelyUsedTag(userId);
     }
 }

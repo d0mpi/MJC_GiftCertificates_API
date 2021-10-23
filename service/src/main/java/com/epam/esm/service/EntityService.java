@@ -1,8 +1,7 @@
 package com.epam.esm.service;
 
 import com.epam.esm.exception.ValidationException;
-
-import java.util.List;
+import org.springframework.hateoas.PagedModel;
 
 /**
  * Provides database entity info transfer between web and persistence module,
@@ -43,5 +42,5 @@ public interface EntityService<T> {
      */
     void delete(long id);
 
-    List<T> readAll(int page, int limit);
+    PagedModel<T> readAll(long page, long size);
 }

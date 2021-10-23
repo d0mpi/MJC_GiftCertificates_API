@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.Digits;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Relation(itemRelation = "order", collectionRelation = "orders")
 public class OrderDTO extends RepresentationModel<OrderDTO> {
     @Positive
     private Long id;

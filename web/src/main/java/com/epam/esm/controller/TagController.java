@@ -1,15 +1,15 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.DTO.TagDTO;
+import com.epam.esm.assembler.TagRepresentationModelAssembler;
 import com.epam.esm.exception.ValidationException;
 import com.epam.esm.service.TagService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Contains methods that process information in JSON received from this kind
@@ -25,21 +25,21 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class TagController {
     private final TagService tagService;
+    private final TagRepresentationModelAssembler tagAssembler;
 
     /**
      * Gets all tags that meet specified criteria
      *
-     * @param params parameters that tag must satisfy
      * @return list of {@link TagDTO} in JSON  format
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<TagDTO> findAll(@RequestParam Map<String, String> params,
-                                @RequestParam(value = "page", required = false, defaultValue = "1")
-                                        int page,
-                                @RequestParam(value = "limit", required = false, defaultValue = "10")
-                                        int limit) {
-        return tagService.readAll(1, 1);
+    public PagedModel<TagDTO> findAll(@RequestParam(value = "page", required = false, defaultValue = "1")
+                                              long page,
+                                      @RequestParam(value = "size", required = false, defaultValue = "10")
+                                              long size) {
+        PagedModel<TagDTO> tagPage = tagService.readAll(page, size);
+        return tagAssembler.toPagedModel(tagPage);
     }
 
     /**

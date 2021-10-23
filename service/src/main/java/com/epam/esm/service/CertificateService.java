@@ -55,6 +55,6 @@ public interface CertificateService extends EntityService<CertificateDTO> {
      * @param paramMap map of params parsed from url
      * @return entities that meet the parameters specified in the specified map
      */
-    List<CertificateDTO> findByCriteria(Map<String, String> paramMap);
+    List<CertificateDTO> findByCriteria(Map<String, String> paramMap, long page, long size);
 
 }

@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Positive;
@@ -23,6 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Relation(itemRelation = "user", collectionRelation = "users")
 public class UserDTO extends RepresentationModel<UserDTO> {
     @Positive
     private Long id;

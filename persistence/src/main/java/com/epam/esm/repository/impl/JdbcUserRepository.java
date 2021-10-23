@@ -28,7 +28,7 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    public List<User> readAll(int page, int limit) {
+    public List<User> readAll(long page, long size) {
         return null;
     }
 
@@ -40,5 +40,10 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public void delete(long id) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long getCount() {
+        return (long) entityManager.createQuery("SELECT COUNT(u) FROM User u").getSingleResult();
     }
 }

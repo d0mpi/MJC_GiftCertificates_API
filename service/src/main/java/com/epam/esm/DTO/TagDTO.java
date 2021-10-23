@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
@@ -24,6 +25,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Relation(itemRelation = "tag", collectionRelation = "tags")
 public class TagDTO extends RepresentationModel<TagDTO> {
     @Positive
     private Long id;

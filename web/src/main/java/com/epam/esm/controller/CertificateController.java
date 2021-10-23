@@ -40,10 +40,10 @@ public class CertificateController {
     public List<CertificateDTO> findAllByCriteria(@RequestParam
                                                           Map<String, String> params,
                                                   @RequestParam(value = "page", required = false, defaultValue = "1")
-                                                          int page,
-                                                  @RequestParam(value = "limit", required = false, defaultValue = "10")
-                                                          int limit) {
-        return certificateService.findByCriteria(params);
+                                                          long page,
+                                                  @RequestParam(value = "size", required = false, defaultValue = "10")
+                                                          long size) {
+        return certificateService.findByCriteria(params, page, size);
     }
 
     /**

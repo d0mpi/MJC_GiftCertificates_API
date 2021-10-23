@@ -9,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
@@ -29,6 +30,7 @@ import java.util.Set;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ToString
+@Relation(itemRelation = "certificate", collectionRelation = "certificates")
 public class CertificateDTO extends RepresentationModel<CertificateDTO> {
     @Positive
     private Long id;

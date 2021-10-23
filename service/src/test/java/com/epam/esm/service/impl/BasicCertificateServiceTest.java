@@ -74,12 +74,12 @@ class BasicCertificateServiceTest {
         Mockito.when(certificateMapper.convertToEntity(certificateDTO)).thenReturn(certificate);
         List<Certificate> certificateList = new LinkedList<>();
         certificateList.add(certificate);
-        Mockito.when(certificateRepo.findByCriteria(Collections.emptyMap())).thenReturn(certificateList);
+        Mockito.when(certificateRepo.findByCriteria(Collections.emptyMap(), 1, 10)).thenReturn(certificateList);
         assertEquals(certificateList, service
-                .findByCriteria(Collections.emptyMap())
+                .findByCriteria(Collections.emptyMap(), 1, 10)
                 .stream().map(certificateMapper::convertToEntity)
                 .collect(Collectors.toList()));
-        Mockito.verify(certificateRepo, Mockito.times(1)).findByCriteria(Collections.emptyMap());
+        Mockito.verify(certificateRepo, Mockito.times(1)).findByCriteria(Collections.emptyMap(), 1, 10);
 
     }
 

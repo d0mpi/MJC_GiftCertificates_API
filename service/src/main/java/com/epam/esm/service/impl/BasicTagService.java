@@ -7,6 +7,7 @@ import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.TagService;
 import com.epam.esm.validation.TagValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,11 +41,13 @@ public class BasicTagService implements TagService {
     }
 
     @Override
-    public List<TagDTO> readAll(int page, int limit) {
-        return repo.readAll(page, limit)
+    public PagedModel<TagDTO> readAll(long page, long size) {
+        List<TagDTO> tagDTOList = repo.readAll(page, size)
                 .stream()
                 .map(mapper::convertToDto)
                 .collect(Collectors.toList());
+        PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(size, page, repo.getCount());
+        return PagedModel.of(tagDTOList, metadata);
     }
 
     @Override
@@ -52,4 +55,8 @@ public class BasicTagService implements TagService {
         repo.delete(id);
     }
 
+    @Override
+    public TagDTO getMostWidelyUsedTag(long userId) {
+        return null;
+    }
 }

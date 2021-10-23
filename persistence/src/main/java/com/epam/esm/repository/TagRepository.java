@@ -29,4 +29,8 @@ public interface TagRepository extends Repository<Tag> {
      * the {@link Tag} with the specified id does not exist in the databse
      */
     Optional<Tag> readByName(String name);
+
+    Tag getMostWidelyUsedTag(long userId);
+
+    long getCount();
 }

@@ -7,5 +7,4 @@ import com.epam.esm.DTO.UserDTO;
 import java.util.List;
 
 public interface UserService extends EntityService<UserDTO> {
-    TagDTO getMostWidelyUsedTag(long userId);
 }

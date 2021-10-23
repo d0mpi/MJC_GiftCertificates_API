@@ -65,19 +65,18 @@ public class JdbcTagRepository implements TagRepository {
             throw new CustomDataIntegrityViolationException("tag", 50002);
     }
 
-    //    @Override
-//    public Optional<Tag> read(long id) {
-//        return template.queryForStream(SQL_FIND_TAG_BY_ID, tagMapper::mapRowToObject, id)
-//                .distinct().findFirst();
-//    }
     @Override
     public Optional<Tag> read(long id) {
         return Optional.ofNullable(entityManager.find(Tag.class, id));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public List<Tag> readAll(int page, int limit) {
-        return template.query(SQL_FIND_ALL, tagMapper::mapRowToObject);
+    public List<Tag> readAll(long page, long size) {
+        return entityManager.createQuery("select t from Tag t")
+                .setFirstResult((int) ((page - 1) * size))
+                .setMaxResults((int) size)
+                .getResultList();
     }
 
     @Override
@@ -89,6 +88,16 @@ public class JdbcTagRepository implements TagRepository {
     public Optional<Tag> readByName(String name) {
         return template.queryForStream(SQL_FIND_TAG_BY_NAME, tagMapper::mapRowToObject, name)
                 .findFirst();
+    }
+
+    @Override
+    public Tag getMostWidelyUsedTag(long userId) {
+        return null;
+    }
+
+    @Override
+    public long getCount() {
+        return (long) entityManager.createQuery("SELECT COUNT(t) FROM Tag t").getSingleResult();
     }
 
     @Override

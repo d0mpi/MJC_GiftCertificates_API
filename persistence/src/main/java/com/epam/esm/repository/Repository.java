@@ -29,7 +29,7 @@ public interface Repository<T> {
      */
     Optional<T> read(long id);
 
-    List<T> readAll(int page, int limit);
+    List<T> readAll(long page, long size);
 
     /**
      * Updates info about the specified {@link Certificate} in the database

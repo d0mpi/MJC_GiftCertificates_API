@@ -15,4 +15,5 @@ import com.epam.esm.Tag;
  * @see EntityService
  */
 public interface TagService extends EntityService<TagDTO> {
+    TagDTO getMostWidelyUsedTag(long userId);
 }

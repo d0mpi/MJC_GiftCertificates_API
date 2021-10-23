@@ -12,6 +12,7 @@ import com.epam.esm.service.CertificateService;
 import com.epam.esm.validation.CertificateValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -57,8 +58,8 @@ public class BasicCertificateService implements CertificateService {
     }
 
     @Override
-    public List<CertificateDTO> findByCriteria(Map<String, String> paramMap) {
-        return certificateRepo.findByCriteria(paramMap)
+    public List<CertificateDTO> findByCriteria(Map<String, String> paramMap, long page, long size) {
+        return certificateRepo.findByCriteria(paramMap, page, size)
                 .stream()
                 .map(certificateMapper::convertToDto)
                 .collect(Collectors.toList());
@@ -97,17 +98,21 @@ public class BasicCertificateService implements CertificateService {
         certificateRepo.deleteTagFromCertificate(certificateId, tagMapper.convertToEntity(tag));
     }
 
+
+
     @Override
     public void delete(long id) {
         certificateRepo.delete(id);
     }
 
     @Override
-    public List<CertificateDTO> readAll(int page, int limit) {
-        return certificateRepo.readAll(page, limit)
+    public PagedModel<CertificateDTO> readAll(long page, long size) {
+        List<CertificateDTO> certificateDTOList = certificateRepo.readAll(page, size)
                 .stream()
                 .map(certificateMapper::convertToDto)
                 .collect(Collectors.toList());
+        PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(size, page, certificateRepo.getCount());
+        return PagedModel.of(certificateDTOList, metadata);
     }
 
 }

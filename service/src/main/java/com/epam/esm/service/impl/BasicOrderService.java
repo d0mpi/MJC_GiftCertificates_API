@@ -11,6 +11,7 @@ import com.epam.esm.repository.OrderRepository;
 import com.epam.esm.repository.UserRepository;
 import com.epam.esm.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -42,16 +43,18 @@ public class BasicOrderService implements OrderService {
     }
 
     @Override
-    public List<OrderDTO> readAll(int page, int limit) {
-        return orderRepository.readAll(page, limit)
+    public PagedModel<OrderDTO> readAll(long page, long size) {
+        List<OrderDTO> orderDTOList = orderRepository.readAll(page, size)
                 .stream()
                 .map(orderMapper::convertToDto)
                 .collect(Collectors.toList());
+        PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(size, page, orderRepository.getCount());
+        return PagedModel.of(orderDTOList, metadata);
     }
 
     @Override
-    public List<OrderDTO> getUserOrders(long userId, int page, int limit) {
-        return orderRepository.readUserOrders(userId, page, limit)
+    public List<OrderDTO> getUserOrders(long userId, long page, long size) {
+        return orderRepository.readUserOrders(userId, page, size)
                 .stream()
                 .map(orderMapper::convertToDto)
                 .collect(Collectors.toList());
@@ -67,7 +70,7 @@ public class BasicOrderService implements OrderService {
     }
 
     @Override
-    public OrderDTO createOrder(long userId, long certificateId) {
+    public OrderDTO create(long userId, long certificateId) {
         Certificate certificate = certificateRepository
                 .read(certificateId).orElseThrow(() -> (new EntityNotFoundException("certificate", 40401)));
         User user = userRepository.read(userId).orElseThrow(() -> (new EntityNotFoundException("user", 40403)));

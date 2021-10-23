@@ -38,22 +38,22 @@ class JdbcCertificateRepositoryTest {
 
     @Test
     void findAllByCriteria_When_FindAll_Then_ReturnTen() {
-        assertEquals(10, certificateRepository.findByCriteria(Collections.emptyMap()).size());
+        assertEquals(10, certificateRepository.findByCriteria(Collections.emptyMap(), 1, 10).size());
     }
 
     @Test
     void findAllByCriteria_When_FindByName_Ride_Then_ReturnOne() {
-        assertEquals(1, certificateRepository.findByCriteria(Collections.singletonMap("name", "ride")).size());
+        assertEquals(1, certificateRepository.findByCriteria(Collections.singletonMap("name", "ride"), 1, 10).size());
     }
 
     @Test
     void findAllByCriteria_When_FindByDescription_Ride_Then_ReturnOne() {
-        assertEquals(2, certificateRepository.findByCriteria(Collections.singletonMap("description", "certificate")).size());
+        assertEquals(2, certificateRepository.findByCriteria(Collections.singletonMap("description", "certificate"), 1, 10).size());
     }
 
     @Test
     void findAllByCriteria_When_FindByTagName_ForOnePerson_Then_ReturnThree() {
-        assertEquals(3, certificateRepository.findByCriteria(Collections.singletonMap("tag", "for one person")).size());
+        assertEquals(3, certificateRepository.findByCriteria(Collections.singletonMap("tag", "for one person"), 1, 10).size());
     }
 
     @Test

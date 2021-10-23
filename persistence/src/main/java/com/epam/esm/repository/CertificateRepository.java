@@ -38,6 +38,7 @@ public interface CertificateRepository extends Repository<Certificate> {
      * @param paramMap map with parameters
      * @return list of found objects
      */
-    List<Certificate> findByCriteria(Map<String, String> paramMap);
+    List<Certificate> findByCriteria(Map<String, String> paramMap, long page, long size);
 
+    long getCount();
 }

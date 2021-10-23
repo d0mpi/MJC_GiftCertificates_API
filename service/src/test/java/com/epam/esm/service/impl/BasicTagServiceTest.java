@@ -68,7 +68,7 @@ class BasicTagServiceTest {
         tagList.add(tag);
         Mockito.when(repo.readAll(0, 0)).thenReturn(tagList);
         assertEquals(tagList, service
-                .readAll(0, 0)
+                .readAll(0, 0).getContent()
                 .stream().map(tagMapper::convertToEntity)
                 .collect(Collectors.toList()));
         Mockito.verify(repo, Mockito.times(1)).readAll(0, 0);
