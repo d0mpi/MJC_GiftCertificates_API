@@ -4,17 +4,14 @@ import com.epam.esm.Certificate;
 import com.epam.esm.Tag;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.util.mapper.TagRowMapper;
-import exception.CustomDataIntegrityViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,22 +44,13 @@ public class JdbcTagRepository implements TagRepository {
     private EntityManager entityManager;
 
     @Override
+    @Transactional
     public Optional<Tag> create(Tag tag) {
-        Tag existingTag = readByName(tag.getName()).orElse(null);
-        if (existingTag != null) {
-            return Optional.of(existingTag);
-        }
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        template.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(SQL_CREATE_TAG, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, tag.getName());
-            return ps;
-        }, keyHolder);
-        if (keyHolder.getKey() != null) {
-            tag.setId(keyHolder.getKey().longValue());
-            return Optional.of(tag);
-        } else
-            throw new CustomDataIntegrityViolationException("tag", 50002);
+        System.out.println("repo before " + tag);
+        entityManager.persist(tag);
+        entityManager.flush();
+        System.out.println("repo after " + tag);
+        return Optional.of(tag);
     }
 
     @Override
@@ -86,8 +74,12 @@ public class JdbcTagRepository implements TagRepository {
 
     @Override
     public Optional<Tag> readByName(String name) {
-        return template.queryForStream(SQL_FIND_TAG_BY_NAME, tagMapper::mapRowToObject, name)
-                .findFirst();
+        try {
+            return Optional.of((Tag) entityManager.createQuery("select t from Tag t where t.name = :name")
+                    .setParameter("name", name).setMaxResults(1).getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -101,12 +93,17 @@ public class JdbcTagRepository implements TagRepository {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<Tag> findTagsByCertificateId(long id) {
-        return template.query(SQL_SELECT_TAGS_BY_CERTIFICATE_ID, tagMapper::mapRowToObject, id);
+        return entityManager.createNativeQuery("select tag.id, tag.name from tag " +
+                        "join certificate_tag ct " +
+                        "on tag.id = ct.tag_id " +
+                        "where ct.certificate_id = :certificateId")
+                .setParameter("certificateId", id).getResultList();
     }
 
     @Override
-    public void delete(long id) {
-        template.update(SQL_DELETE_TAG, id);
+    public void delete(Tag tag) {
+        entityManager.remove(tag);
     }
 }

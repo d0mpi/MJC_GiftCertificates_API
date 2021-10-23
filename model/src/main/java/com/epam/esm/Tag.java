@@ -16,14 +16,13 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Entity
-@Builder
+@ToString
 @Table(name = "tag")
 public class Tag implements Comparable<Tag>, Serializable {
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "name")
     private String name;
@@ -34,6 +33,7 @@ public class Tag implements Comparable<Tag>, Serializable {
      * @param id   tag id
      * @param name tag name
      */
+    @Builder
     public Tag(long id, String name) {
         this.id = id;
         this.name = name;

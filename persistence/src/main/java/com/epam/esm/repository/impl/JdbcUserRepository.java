@@ -27,9 +27,13 @@ public class JdbcUserRepository implements UserRepository {
         return Optional.ofNullable(entityManager.find(User.class, id));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<User> readAll(long page, long size) {
-        return null;
+        return entityManager.createQuery("select u from User u")
+                .setFirstResult((int) ((page - 1) * size))
+                .setMaxResults((int) size)
+                .getResultList();
     }
 
     @Override
@@ -38,8 +42,8 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    public void delete(long id) {
-        throw new UnsupportedOperationException();
+    public void delete(User user) {
+        entityManager.remove(user);
     }
 
     @Override

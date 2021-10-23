@@ -39,7 +39,7 @@ public class BasicOrderService implements OrderService {
 
     @Override
     public void delete(long id) {
-        orderRepository.delete(id);
+        orderRepository.delete(orderMapper.convertToEntity(this.read(id)));
     }
 
     @Override
@@ -59,6 +59,7 @@ public class BasicOrderService implements OrderService {
                 .map(orderMapper::convertToDto)
                 .collect(Collectors.toList());
     }
+
 
     @Override
     public OrderDTO getUserOrder(long userId, long orderId) {

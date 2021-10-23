@@ -3,7 +3,6 @@ package com.epam.esm.service.impl;
 import com.epam.esm.DTO.CertificateDTO;
 import com.epam.esm.DTO.TagDTO;
 import com.epam.esm.exception.EntityNotFoundException;
-import com.epam.esm.exception.ValidationException;
 import com.epam.esm.mapper.CertificateMapper;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.repository.CertificateRepository;
@@ -11,9 +10,9 @@ import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.validation.CertificateValidator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,6 +38,7 @@ public class BasicCertificateService implements CertificateService {
     private final CertificateValidator certificateValidator;
 
     @Override
+    @Transactional
     public CertificateDTO create(CertificateDTO certificate) {
         certificateValidator.validate(certificate);
         certificate.setCreateDate(LocalDateTime.now());
@@ -51,6 +51,7 @@ public class BasicCertificateService implements CertificateService {
     }
 
     @Override
+    @Transactional
     public CertificateDTO read(long id) {
         return certificateMapper.convertToDto(
                 certificateRepo.read(id)
@@ -58,6 +59,7 @@ public class BasicCertificateService implements CertificateService {
     }
 
     @Override
+    @Transactional
     public List<CertificateDTO> findByCriteria(Map<String, String> paramMap, long page, long size) {
         return certificateRepo.findByCriteria(paramMap, page, size)
                 .stream()
@@ -66,6 +68,7 @@ public class BasicCertificateService implements CertificateService {
     }
 
     @Override
+    @Transactional
     public CertificateDTO update(CertificateDTO patch) {
         CertificateDTO certificate = read(patch.getId());
         if (patch.getName() != null)
@@ -86,6 +89,7 @@ public class BasicCertificateService implements CertificateService {
     }
 
     @Override
+    @Transactional
     public CertificateDTO addTagToCertificate(long certificateId, TagDTO tag) {
         certificateRepo.addTagToCertificate(certificateId, tagMapper.convertToEntity(tag));
         return certificateMapper.convertToDto(
@@ -94,18 +98,20 @@ public class BasicCertificateService implements CertificateService {
     }
 
     @Override
+    @Transactional
     public void deleteTagFromCertificate(long certificateId, TagDTO tag) {
         certificateRepo.deleteTagFromCertificate(certificateId, tagMapper.convertToEntity(tag));
     }
 
 
-
     @Override
+    @Transactional
     public void delete(long id) {
-        certificateRepo.delete(id);
+        certificateRepo.delete(certificateMapper.convertToEntity(this.read(id)));
     }
 
     @Override
+    @Transactional
     public PagedModel<CertificateDTO> readAll(long page, long size) {
         List<CertificateDTO> certificateDTOList = certificateRepo.readAll(page, size)
                 .stream()

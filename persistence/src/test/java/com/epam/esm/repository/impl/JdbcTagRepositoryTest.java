@@ -48,7 +48,7 @@ class JdbcTagRepositoryTest {
 
     @Test
     void delete_When_DeleteTagWithIdThree_Then_ReadAndThrowDAOException() {
-        tagRepository.delete(3);
+        tagRepository.delete(new Tag(3, null));
         assertNull(tagRepository.read(3).orElse(null));
     }
 

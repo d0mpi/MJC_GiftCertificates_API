@@ -9,6 +9,7 @@ import com.epam.esm.validation.TagValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,18 +30,24 @@ public class BasicTagService implements TagService {
     private final TagValidator validator;
 
     @Override
+    @Transactional
     public TagDTO create(TagDTO tag) {
         validator.validate(tag);
-        return mapper.convertToDto(
+        System.out.println("service" + tag);
+        TagDTO tagDTO = mapper.convertToDto(
                 repo.create(mapper.convertToEntity(tag)).orElseThrow(() -> (new EntityNotFoundException("tag", 40402))));
+        System.out.println("service" + tagDTO);
+        return tagDTO;
     }
 
     @Override
+    @Transactional
     public TagDTO read(long id) {
         return mapper.convertToDto(repo.read(id).orElseThrow(() -> (new EntityNotFoundException("tag", 40402))));
     }
 
     @Override
+    @Transactional
     public PagedModel<TagDTO> readAll(long page, long size) {
         List<TagDTO> tagDTOList = repo.readAll(page, size)
                 .stream()
@@ -51,11 +58,13 @@ public class BasicTagService implements TagService {
     }
 
     @Override
+    @Transactional
     public void delete(long id) {
-        repo.delete(id);
+        repo.delete(mapper.convertToEntity(this.read(id)));
     }
 
     @Override
+    @Transactional
     public TagDTO getMostWidelyUsedTag(long userId) {
         return null;
     }

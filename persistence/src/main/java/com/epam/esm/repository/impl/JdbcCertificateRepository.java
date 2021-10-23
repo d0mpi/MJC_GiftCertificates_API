@@ -2,10 +2,10 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.Certificate;
 import com.epam.esm.Tag;
-import exception.CustomDataIntegrityViolationException;
 import com.epam.esm.repository.CertificateRepository;
 import com.epam.esm.util.mapper.CertificateRowMapper;
 import com.epam.esm.util.searcher.CertificateQueryBuilder;
+import exception.CustomDataIntegrityViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -56,13 +56,14 @@ public class JdbcCertificateRepository implements CertificateRepository {
     private final JdbcTagRepository tagRepository;
 
     @Override
-    @Transactional
     public Optional<Tag> addTagToCertificate(long certificateId, Tag tag) {
         Optional<Tag> presentedTag = Optional.ofNullable(tagRepository
                 .readByName(
                         tag.getName()).orElseGet(() -> tagRepository.create(tag).orElse(null)));
         if (presentedTag.isEmpty())
             return Optional.empty();
+        System.out.println("repo add " + tag);
+        System.out.println("repo add after" + tag);
         presentedTag.ifPresent(value -> tag.setId(value.getId()));
         if (!tagRepository.findTagsByCertificateId(certificateId).contains(tag)) {
             template.update(SQL_CREATE_CERTIFICATE_TAG, certificateId, presentedTag.get().getId());
@@ -71,12 +72,13 @@ public class JdbcCertificateRepository implements CertificateRepository {
     }
 
     @Override
+    
     public void deleteTagFromCertificate(long certificateId, Tag tag) {
         template.update(SQL_DELETE_CERTIFICATE_TAG, certificateId, tag.getId());
     }
 
     @Override
-    @Transactional
+    
     public Optional<Certificate> create(Certificate certificate) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(connection -> {
@@ -101,24 +103,23 @@ public class JdbcCertificateRepository implements CertificateRepository {
     }
 
     @Override
-    @Transactional
+    
     public Optional<Certificate> read(long id) {
-        Certificate certificate = template.queryForStream(SQL_FIND_CERTIFICATE_BY_ID, certificateMapper::mapRowToObject, id)
-                .distinct().findFirst().orElse(null);
-        if (certificate != null) {
-            List<Tag> tags = tagRepository.findTagsByCertificateId(certificate.getId());
-            certificate.addTags(tags);
-        }
-        return Optional.ofNullable(certificate);
+        return Optional.ofNullable(entityManager.find(Certificate.class, id));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
+    
     public List<Certificate> readAll(long page, long size) {
-        return null;
+        return entityManager.createQuery("select c from Certificate c")
+                .setFirstResult((int) ((page - 1) * size))
+                .setMaxResults((int) size)
+                .getResultList();
     }
 
     @Override
-    @Transactional
+    
     public List<Certificate> findByCriteria(Map<String, String> paramMap, long page, long size) {
         List<Certificate> certificateList = template.query(
                 CertificateQueryBuilder.init().getQuery(paramMap), certificateMapper::mapRowToObject);
@@ -129,7 +130,7 @@ public class JdbcCertificateRepository implements CertificateRepository {
     }
 
     @Override
-    @Transactional
+    
     public Optional<Certificate> update(Certificate certificate) {
         int updatedRowsNum = template.update(SQL_UPDATE_CERTIFICATE,
                 certificate.getName(),
@@ -149,12 +150,13 @@ public class JdbcCertificateRepository implements CertificateRepository {
     }
 
     @Override
+    
     public long getCount() {
         return (long) entityManager.createQuery("SELECT COUNT(c) FROM Certificate c").getSingleResult();
     }
 
     @Override
-    public void delete(long id) {
-        template.update(SQL_DELETE_CERTIFICATE, id);
+    public void delete(Certificate certificate) {
+        entityManager.remove(certificate);
     }
 }

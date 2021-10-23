@@ -42,7 +42,7 @@ public interface Repository<T> {
     /**
      * Deletes object with the specified id from rhe database
      *
-     * @param id id of the object to be deleted
+     * @param entity entity to be deleted
      */
-    void delete(long id);
+    void delete(T entity);
 }

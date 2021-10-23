@@ -77,6 +77,6 @@ class BasicTagServiceTest {
     @Test
     void delete_Should_InvokeDeleteMethodInRepo() {
         service.delete(1L);
-        Mockito.verify(repo, Mockito.times(1)).delete(1L);
+        Mockito.verify(repo, Mockito.times(1)).delete(new Tag(1L, null));
     }
 }

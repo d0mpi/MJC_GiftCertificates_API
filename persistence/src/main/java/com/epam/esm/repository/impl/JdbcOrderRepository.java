@@ -2,6 +2,7 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.Certificate;
 import com.epam.esm.Order;
+import com.epam.esm.Tag;
 import com.epam.esm.User;
 import com.epam.esm.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,12 +42,15 @@ public class JdbcOrderRepository implements OrderRepository {
 
     @Override
     public Optional<Order> read(long id) {
-        return Optional.empty();
-    }
+        return Optional.ofNullable(entityManager.find(Order.class, id));    }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<Order> readAll(long page, long size) {
-        return null;
+        return entityManager.createQuery("select o from Order o")
+                .setFirstResult((int) ((page - 1) * size))
+                .setMaxResults((int) size)
+                .getResultList();
     }
 
     @Override
@@ -55,7 +59,8 @@ public class JdbcOrderRepository implements OrderRepository {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Order order) {
+        entityManager.remove(order);
     }
 
     @Override

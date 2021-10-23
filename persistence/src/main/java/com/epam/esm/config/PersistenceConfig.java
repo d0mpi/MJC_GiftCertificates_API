@@ -12,9 +12,14 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.vendor.Database;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
 
@@ -39,10 +44,10 @@ public class PersistenceConfig {
     }
 
 
-    @Bean
-    public PlatformTransactionManager txManager() {
-        return new DataSourceTransactionManager(getDataSource());
-    }
+//    @Bean
+//    public PlatformTransactionManager txManager() {
+//        return new DataSourceTransactionManager(getDataSource());
+//    }
 
     @Bean
     public LocalSessionFactoryBean sessionFactory() {
@@ -59,5 +64,23 @@ public class PersistenceConfig {
         properties.setProperty("spring.jpa.show-sql",
                 environment.getProperty("spring.jpa.show-sql"));
         return properties;
+    }
+
+    @Bean
+    public JpaVendorAdapter jpaVendorAdapter() {
+        HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
+        adapter.setDatabase(Database.MYSQL);
+        adapter.setShowSql(true);
+        adapter.setGenerateDdl(false);
+        adapter.setDatabasePlatform("org.hibernate.dialect.MySQL5Dialect");
+        return adapter;
+    }
+
+
+    @Bean
+    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(emf);
+        return transactionManager;
     }
 }

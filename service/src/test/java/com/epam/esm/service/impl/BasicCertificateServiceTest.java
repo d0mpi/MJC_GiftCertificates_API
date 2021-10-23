@@ -119,6 +119,7 @@ class BasicCertificateServiceTest {
     @Test
     void delete_Should_InvokeDeleteMethodInRepo() {
         service.delete(1L);
-        Mockito.verify(certificateRepo, Mockito.times(1)).delete(1L);
+        Mockito.verify(certificateRepo, Mockito.times(1)).delete(
+                new Certificate(1L, null, null, null, 1, null, null));
     }
 }

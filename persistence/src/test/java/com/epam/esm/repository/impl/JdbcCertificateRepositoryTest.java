@@ -5,7 +5,6 @@ import com.epam.esm.Tag;
 import com.epam.esm.repository.TestPersistenceConfig;
 import com.epam.esm.util.mapper.CertificateRowMapper;
 import com.epam.esm.util.mapper.TagRowMapper;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -96,7 +95,11 @@ class JdbcCertificateRepositoryTest {
 
     @Test
     void delete_When_DeleteCertificateWithIdNine_Then_ReadAndThrowDAOException() {
-        certificateRepository.delete(9);
+        certificateRepository.delete(new Certificate(9, null,
+                null,
+                null, 31,
+                null,
+                null));
         assertNull(certificateRepository.read(9).orElse(null));
     }
 

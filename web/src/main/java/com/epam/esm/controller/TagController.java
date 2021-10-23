@@ -5,6 +5,7 @@ import com.epam.esm.assembler.TagRepresentationModelAssembler;
 import com.epam.esm.exception.ValidationException;
 import com.epam.esm.service.TagService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -50,8 +51,8 @@ public class TagController {
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public TagDTO read(@PathVariable("id") long id) {
-        return tagService.read(id);
+    public EntityModel<TagDTO> read(@PathVariable("id") long id) {
+        return tagAssembler.toModel(tagService.read(id));
     }
 
     /**

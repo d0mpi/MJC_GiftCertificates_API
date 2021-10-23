@@ -1,8 +1,7 @@
 package com.epam.esm;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,11 +10,14 @@ import java.util.List;
 @Entity
 @EqualsAndHashCode
 @Table(name = "user")
+@Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "name")
     private String userName;
@@ -28,6 +30,5 @@ public class User {
     private List<Order> orders;
 
     @Column(name = "registration_date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private LocalDateTime registrationDate;
 }
