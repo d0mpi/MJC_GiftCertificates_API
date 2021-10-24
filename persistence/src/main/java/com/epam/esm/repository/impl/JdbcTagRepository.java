@@ -3,15 +3,15 @@ package com.epam.esm.repository.impl;
 import com.epam.esm.Certificate;
 import com.epam.esm.Tag;
 import com.epam.esm.repository.TagRepository;
-import com.epam.esm.util.mapper.TagRowMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,30 +27,35 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class JdbcTagRepository implements TagRepository {
-    private static final String SQL_CREATE_TAG = "insert into tag (name) values (?)";
-    private static final String SQL_FIND_ALL = "select id, name from tag";
-    private static final String SQL_FIND_TAG_BY_ID = "select id, name from tag where id = ?";
-    private static final String SQL_FIND_TAG_BY_NAME = "select id, name from tag where name = ?";
-    private static final String SQL_SELECT_TAGS_BY_CERTIFICATE_ID = "select t.id, t.name from tag t " +
-            "join certificate_tag ct " +
-            "on t.id = ct.tag_id " +
-            "where ct.certificate_id = ?";
-    private static final String SQL_DELETE_TAG = "delete from tag where id = ?";
-
-    private final JdbcTemplate template;
-    private final TagRowMapper tagMapper;
+//    private static final String SQL_CREATE_TAG = "insert into tag (name) values (?)";
+//    private static final String SQL_FIND_ALL = "select id, name from tag";
+//    private static final String SQL_FIND_TAG_BY_ID = "select id, name from tag where id = ?";
+//    private static final String SQL_FIND_TAG_BY_NAME = "select id, name from tag where name = ?";
+//    private static final String SQL_SELECT_TAGS_BY_CERTIFICATE_ID = "select t.id, t.name from tag t " +
+//            "join certificate_tag ct " +
+//            "on t.id = ct.tag_id " +
+//            "where ct.certificate_id = ?";
+//    private static final String SQL_DELETE_TAG = "delete from tag where id = ?";
+//
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
-    @Transactional
     public Optional<Tag> create(Tag tag) {
-        System.out.println("repo before " + tag);
         entityManager.persist(tag);
-        entityManager.flush();
-        System.out.println("repo after " + tag);
         return Optional.of(tag);
+    }
+
+    @Override
+    public boolean exists(Tag tag) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> query = cb.createQuery(Long.class);
+        Root<Tag> root = query.from(Tag.class);
+        query.select(cb.count(root))
+                .where(root.get("name").in(tag.getName()));
+        return entityManager.createQuery(query)
+                .getSingleResult() != 0;
     }
 
     @Override
@@ -61,7 +66,7 @@ public class JdbcTagRepository implements TagRepository {
     @SuppressWarnings("unchecked")
     @Override
     public List<Tag> readAll(long page, long size) {
-        return entityManager.createQuery("select t from Tag t")
+        return (List<Tag>) entityManager.createQuery("select t from Tag t")
                 .setFirstResult((int) ((page - 1) * size))
                 .setMaxResults((int) size)
                 .getResultList();
@@ -98,7 +103,7 @@ public class JdbcTagRepository implements TagRepository {
         return entityManager.createNativeQuery("select tag.id, tag.name from tag " +
                         "join certificate_tag ct " +
                         "on tag.id = ct.tag_id " +
-                        "where ct.certificate_id = :certificateId")
+                        "where ct.certificate_id = :certificateId", Tag.class)
                 .setParameter("certificateId", id).getResultList();
     }
 

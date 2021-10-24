@@ -33,6 +33,6 @@ public class TagDTO extends RepresentationModel<TagDTO> {
     @Positive
     private Long id;
     @NotBlank
-    @Size(min = 1, max = 45)
+    @Size(min = 1, max = 45, message = "too long")
     private String name;
 }

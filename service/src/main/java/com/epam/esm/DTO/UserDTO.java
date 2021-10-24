@@ -2,6 +2,8 @@ package com.epam.esm.DTO;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -14,6 +16,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
@@ -24,6 +27,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Relation(itemRelation = "user", collectionRelation = "users")
 public class UserDTO extends RepresentationModel<UserDTO> {
     @Positive
@@ -31,10 +35,12 @@ public class UserDTO extends RepresentationModel<UserDTO> {
     @Size(min = 1, max = 45)
     private String userName;
     @Email
+    @Size(min = 1, max = 45)
     private String email;
+    @Size(min = 1, max = 255)
     private String password;
-    @JsonBackReference
-    private List<OrderDTO> orders;
+    @JsonIgnore
+    private List<@Valid OrderDTO> orders;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)

@@ -64,8 +64,8 @@ public class TagController {
      */
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public TagDTO create(@RequestBody @Valid TagDTO tag) {
-        return tagService.create(tag);
+    public EntityModel<TagDTO> create(@RequestBody @Valid TagDTO tag) {
+        return tagAssembler.toModel(tagService.create(tag));
     }
 
     /**

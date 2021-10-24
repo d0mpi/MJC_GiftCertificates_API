@@ -60,11 +60,13 @@ public class BasicCertificateService implements CertificateService {
 
     @Override
     @Transactional
-    public List<CertificateDTO> findByCriteria(Map<String, String> paramMap, long page, long size) {
-        return certificateRepo.findByCriteria(paramMap, page, size)
+    public PagedModel<CertificateDTO> findByCriteria(Map<String, String> paramMap, long page, long size) {
+        List<CertificateDTO> certificateDTOList = certificateRepo.findByCriteria(paramMap, page, size)
                 .stream()
                 .map(certificateMapper::convertToDto)
                 .collect(Collectors.toList());
+        PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(size, page, certificateRepo.getCount(paramMap));
+        return PagedModel.of(certificateDTOList, metadata);
     }
 
     @Override

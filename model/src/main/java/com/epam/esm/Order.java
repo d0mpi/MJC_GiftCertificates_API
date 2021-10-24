@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class Order {
     @Id
     @Column(name = "id")
@@ -24,8 +25,7 @@ public class Order {
     private BigDecimal cost;
     @Column(name = "create_date")
     @CreationTimestamp
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-    private LocalDateTime createDate;
+    private LocalDateTime purchaseDate;
 
     @ManyToOne(targetEntity = Certificate.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "certificate_id")

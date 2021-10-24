@@ -3,8 +3,8 @@ package com.epam.esm.service;
 import com.epam.esm.DTO.CertificateDTO;
 import com.epam.esm.DTO.TagDTO;
 import com.epam.esm.exception.ValidationException;
+import org.springframework.hateoas.PagedModel;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -55,6 +55,6 @@ public interface CertificateService extends EntityService<CertificateDTO> {
      * @param paramMap map of params parsed from url
      * @return entities that meet the parameters specified in the specified map
      */
-    List<CertificateDTO> findByCriteria(Map<String, String> paramMap, long page, long size);
+    PagedModel<CertificateDTO> findByCriteria(Map<String, String> paramMap, long page, long size);
 
 }

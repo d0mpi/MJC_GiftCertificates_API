@@ -18,13 +18,13 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @ToString
-@Table(name = "tag")
+@Table(name = "tag", uniqueConstraints = @UniqueConstraint(columnNames = "name"))
 public class Tag implements Comparable<Tag>, Serializable {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     /**

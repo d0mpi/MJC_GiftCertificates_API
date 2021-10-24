@@ -1,10 +1,7 @@
 package com.epam.esm.DTO;
 
-import com.epam.esm.Certificate;
-import com.epam.esm.Order;
-import com.epam.esm.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -28,12 +25,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Relation(itemRelation = "order", collectionRelation = "orders")
 public class OrderDTO extends RepresentationModel<OrderDTO> {
     @Positive
     private Long id;
     private CertificateDTO certificate;
-    @JsonManagedReference
     private UserDTO user;
     @Digits(integer = 13, fraction = 2)
     @PositiveOrZero
@@ -43,5 +40,5 @@ public class OrderDTO extends RepresentationModel<OrderDTO> {
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime createDate;
+    private LocalDateTime purchaseDate;
 }

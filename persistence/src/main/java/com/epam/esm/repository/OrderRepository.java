@@ -11,6 +11,4 @@ public interface OrderRepository extends Repository<Order> {
     List<Order> readUserOrders(long userId, long page, long size);
 
     Order create(long userId, long certificateId);
-
-    long getCount();
 }

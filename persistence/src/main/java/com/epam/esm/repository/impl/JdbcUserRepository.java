@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,8 +21,9 @@ public class JdbcUserRepository implements UserRepository {
     private EntityManager entityManager;
 
     @Override
-    public Optional<User> create(User entity) {
-        throw new UnsupportedOperationException();
+    public Optional<User> create(User user) {
+        entityManager.persist(user);
+        return Optional.of(user);
     }
 
     @Override
@@ -43,11 +47,22 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public void delete(User user) {
-        entityManager.remove(user);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public long getCount() {
-        return (long) entityManager.createQuery("SELECT COUNT(u) FROM User u").getSingleResult();
+        return (long) entityManager.createQuery("select count (u) from User u").getSingleResult();
+    }
+
+    @Override
+    public boolean exists(User user) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> query = cb.createQuery(Long.class);
+        Root<User> root = query.from(User.class);
+        query.select(cb.count(root))
+                .where(root.get("email").in(user.getEmail()));
+        return entityManager.createQuery(query)
+                .getSingleResult() != 0;
     }
 }

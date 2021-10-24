@@ -16,9 +16,11 @@ public class CertificateQueryBuilder implements EntityQueryBuilder {
     private final StringBuilder joinQuery;
     private final StringBuilder sortingQuery;
     private final StringBuilder filteringQuery;
+    private final StringBuilder limitQuery;
 
     private CertificateQueryBuilder() {
         this.sortingQuery = new StringBuilder();
+        this.limitQuery = new StringBuilder();
         this.filteringQuery = new StringBuilder(" where true ");
         this.joinQuery = new StringBuilder();
     }
@@ -41,12 +43,13 @@ public class CertificateQueryBuilder implements EntityQueryBuilder {
      * with specified parameters
      */
     @Override
-    public String getQuery(Map<String, String> paramMap) {
+    public String getQuery(Map<String, String> paramMap, long page, long size) {
         for (Map.Entry<String, String> param : paramMap.entrySet()) {
             if (CertificateCriteriaStorage.hasParam(param.getKey())) {
                 addQueryComponent(Objects.requireNonNull(CertificateCriteriaStorage.of(param.getKey())), param.getValue());
             }
         }
+        createLimitQuery(page, size);
         return "select certificate.id," +
                 " certificate.name," +
                 " certificate.description," +
@@ -54,6 +57,21 @@ public class CertificateQueryBuilder implements EntityQueryBuilder {
                 " certificate.duration," +
                 " certificate.create_date," +
                 " certificate.last_update_date " +
+                " from certificate " + joinQuery + filteringQuery + sortingQuery + limitQuery;
+    }
+
+    private void createLimitQuery(long page, long size) {
+        limitQuery.append(" limit ").append(size).append(" offset ").append((page - 1) * size);
+    }
+
+    @Override
+    public String getCountQuery(Map<String, String> paramMap) {
+        for (Map.Entry<String, String> param : paramMap.entrySet()) {
+            if (CertificateCriteriaStorage.hasParam(param.getKey())) {
+                addQueryComponent(Objects.requireNonNull(CertificateCriteriaStorage.of(param.getKey())), param.getValue());
+            }
+        }
+        return "select count(certificate.id) " +
                 " from certificate " + joinQuery + filteringQuery + sortingQuery;
     }
 

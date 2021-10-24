@@ -2,14 +2,17 @@ package com.epam.esm.controller;
 
 import com.epam.esm.DTO.CertificateDTO;
 import com.epam.esm.DTO.TagDTO;
+import com.epam.esm.assembler.CertificateRepresentationModelAssembler;
 import com.epam.esm.exception.ValidationException;
 import com.epam.esm.service.CertificateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.validation.Valid;
 import java.util.Map;
 
 /**
@@ -28,6 +31,7 @@ import java.util.Map;
 public class CertificateController {
 
     private final CertificateService certificateService;
+    private final CertificateRepresentationModelAssembler certificateAssembler;
 
     /**
      * Gets all certificates that meet specified criteria
@@ -37,13 +41,14 @@ public class CertificateController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<CertificateDTO> findAllByCriteria(@RequestParam
-                                                          Map<String, String> params,
-                                                  @RequestParam(value = "page", required = false, defaultValue = "1")
-                                                          long page,
-                                                  @RequestParam(value = "size", required = false, defaultValue = "10")
-                                                          long size) {
-        return certificateService.findByCriteria(params, page, size);
+    public PagedModel<CertificateDTO> findAllByCriteria(@RequestParam
+                                                                Map<String, String> params,
+                                                        @RequestParam(value = "page", required = false, defaultValue = "1")
+                                                                long page,
+                                                        @RequestParam(value = "size", required = false, defaultValue = "10")
+                                                                long size) {
+        PagedModel<CertificateDTO> certificateDTOList = certificateService.findByCriteria(params, page, size);
+        return certificateAssembler.toPagedModel(certificateDTOList, params);
     }
 
     /**
@@ -54,8 +59,8 @@ public class CertificateController {
      */
     @GetMapping("/{id}")
     @ResponseBody
-    public CertificateDTO read(@PathVariable("id") long id) {
-        return certificateService.read(id);
+    public EntityModel<CertificateDTO> read(@PathVariable("id") long id) {
+        return certificateAssembler.toModel(certificateService.read(id));
     }
 
     /**
@@ -67,8 +72,8 @@ public class CertificateController {
      */
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public CertificateDTO create(@RequestBody CertificateDTO certificate) {
-        return certificateService.create(certificate);
+    public EntityModel<CertificateDTO> create(@RequestBody @Valid CertificateDTO certificate) {
+        return certificateAssembler.toModel(certificateService.create(certificate));
     }
 
     /**
@@ -82,9 +87,9 @@ public class CertificateController {
     @PatchMapping(value = "/{id}",
             consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public CertificateDTO update(@PathVariable("id") long id, @RequestBody CertificateDTO patch) {
+    public EntityModel<CertificateDTO> update(@PathVariable("id") long id, @RequestBody @Valid CertificateDTO patch) {
         patch.setId(id);
-        return certificateService.update(patch);
+        return certificateAssembler.toModel(certificateService.update(patch));
     }
 
     /**
@@ -107,9 +112,9 @@ public class CertificateController {
      */
     @PostMapping(value = "/{certificateId}/tag")
     @ResponseStatus(HttpStatus.OK)
-    public CertificateDTO addTagToCertificate(@PathVariable("certificateId") long certificateId,
-                                              @RequestBody TagDTO tag) {
-        return certificateService.addTagToCertificate(certificateId, tag);
+    public EntityModel<CertificateDTO> addTagToCertificate(@PathVariable("certificateId") long certificateId,
+                                                           @RequestBody TagDTO tag) {
+        return certificateAssembler.toModel(certificateService.addTagToCertificate(certificateId, tag));
     }
 
     /**

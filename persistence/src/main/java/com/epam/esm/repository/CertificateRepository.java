@@ -40,5 +40,5 @@ public interface CertificateRepository extends Repository<Certificate> {
      */
     List<Certificate> findByCriteria(Map<String, String> paramMap, long page, long size);
 
-    long getCount();
+    long getCount(Map<String, String> paramMap);
 }

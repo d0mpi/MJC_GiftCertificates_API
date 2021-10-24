@@ -45,4 +45,6 @@ public interface Repository<T> {
      * @param entity entity to be deleted
      */
     void delete(T entity);
+
+    long getCount();
 }

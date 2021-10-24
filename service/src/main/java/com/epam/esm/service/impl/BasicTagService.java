@@ -1,6 +1,7 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.DTO.TagDTO;
+import com.epam.esm.Tag;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.repository.TagRepository;
@@ -11,6 +12,7 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityExistsException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,12 +34,12 @@ public class BasicTagService implements TagService {
     @Override
     @Transactional
     public TagDTO create(TagDTO tag) {
+        if (repo.exists(mapper.convertToEntity(tag))) {
+            throw new EntityExistsException("already exists");
+        }
         validator.validate(tag);
-        System.out.println("service" + tag);
-        TagDTO tagDTO = mapper.convertToDto(
+        return mapper.convertToDto(
                 repo.create(mapper.convertToEntity(tag)).orElseThrow(() -> (new EntityNotFoundException("tag", 40402))));
-        System.out.println("service" + tagDTO);
-        return tagDTO;
     }
 
     @Override
@@ -60,7 +62,8 @@ public class BasicTagService implements TagService {
     @Override
     @Transactional
     public void delete(long id) {
-        repo.delete(mapper.convertToEntity(this.read(id)));
+        Tag tag = repo.read(id).orElseThrow(() -> (new EntityNotFoundException("tag", 40402)));
+        repo.delete(tag);
     }
 
     @Override
