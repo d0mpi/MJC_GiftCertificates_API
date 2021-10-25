@@ -1,10 +1,10 @@
 package com.epam.esm.util.searcher;
 
+import com.epam.esm.Certificate;
 import lombok.Getter;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import javax.persistence.criteria.*;
+import java.util.*;
 
 /**
  * Class store all possible url parameters for certificate search and
@@ -19,32 +19,57 @@ import java.util.Locale;
 public enum CertificateCriteriaStorage {
     NAME {
         @Override
-        public String component(String value) {
-            return String.format(" upper(certificate.name) LIKE upper('%%%s%%') ", value);
+        public Predicate component(String value,
+                                   CriteriaQuery<Certificate> cq,
+                                   CriteriaBuilder cb,
+                                   Root<Certificate> root) {
+            return cb.and(cb.like(cb.upper(root.get("name")), "%" + value + "%"));
         }
     },
     DESCRIPTION {
         @Override
-        public String component(String value) {
-            return String.format(" upper(certificate.description) LIKE upper('%%%s%%') ", value);
+        public Predicate component(String value,
+                                   CriteriaQuery<Certificate> cq,
+                                   CriteriaBuilder cb,
+                                   Root<Certificate> root) {
+            return cb.and(cb.like(cb.upper(root.get("description")), "%" + value + "%"));
         }
     },
     PRICE {
         @Override
-        public String component(String value) {
-            return String.format(" certificate.price = %s ", value);
+        public Predicate component(String value,
+                                   CriteriaQuery<Certificate> cq,
+                                   CriteriaBuilder cb,
+                                   Root<Certificate> root) {
+            return cb.and(cb.equal(root.get("price"), value));
         }
     },
-    TAG {
+    TAGS {
         @Override
-        public String component(String value) {
-            return String.format(" upper(tag.name) = upper('%s') ", value);
+        public Predicate component(String value,
+                                   CriteriaQuery<Certificate> cq,
+                                   CriteriaBuilder cb,
+                                   Root<Certificate> root) {
+            Set<String> tagNames = new HashSet<>(Arrays.asList(value.split(",")));
+            Join<Object, Object> certificateTagJoin = root.join("tags", JoinType.LEFT);
+            List<Predicate> predicates = new ArrayList<>();
+            for(String tagName : tagNames) {
+                predicates.add(cb.and(certificateTagJoin.get("name").in(tagName)));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+
+//            return String.format(" upper(tag.name) = upper('%s') ", value);
+//            "select c from Certificate c where"
         }
     },
     SORT {
         @Override
-        public String component(String value) {
-            return SortType.of(value).getQueryComponent();
+        public Predicate component(String value,
+                                   CriteriaQuery<Certificate> cq,
+                                   CriteriaBuilder cb,
+                                   Root<Certificate> root) {
+//            return SortType.of(value).getQueryComponent();
+            return null;
         }
     };
 
@@ -82,7 +107,10 @@ public enum CertificateCriteriaStorage {
      * @param value url parameter received from request
      * @return component of SQL Query
      */
-    public abstract String component(String value);
+    public abstract Predicate component(String value,
+                                        CriteriaQuery<Certificate> query,
+                                        CriteriaBuilder criteriaBuilder,
+                                        Root<Certificate> root);
 
     /**
      * Nested enum containing all possible types of sorting

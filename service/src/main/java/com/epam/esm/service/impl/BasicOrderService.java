@@ -13,6 +13,7 @@ import com.epam.esm.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,22 +27,26 @@ public class BasicOrderService implements OrderService {
     private final UserRepository userRepository;
     private final OrderMapper orderMapper;
 
+    @Transactional
     @Override
     public OrderDTO create(OrderDTO entity) {
         return null;
     }
 
+    @Transactional
     @Override
     public OrderDTO read(long id) {
         return orderMapper.convertToDto(
                 orderRepository.read(id).orElseThrow(() -> (new EntityNotFoundException("order", 40404))));
     }
 
+    @Transactional
     @Override
     public void delete(long id) {
         orderRepository.delete(orderMapper.convertToEntity(this.read(id)));
     }
 
+    @Transactional
     @Override
     public PagedModel<OrderDTO> readAll(long page, long size) {
         List<OrderDTO> orderDTOList = orderRepository.readAll(page, size)
@@ -52,15 +57,18 @@ public class BasicOrderService implements OrderService {
         return PagedModel.of(orderDTOList, metadata);
     }
 
+    @Transactional
     @Override
-    public List<OrderDTO> getUserOrders(long userId, long page, long size) {
-        return orderRepository.readUserOrders(userId, page, size)
-                .stream()
-                .map(orderMapper::convertToDto)
+    public PagedModel<OrderDTO> getUserOrders(long userId, long page, long size) {
+        User user = userRepository.read(userId).orElseThrow(() -> (new EntityNotFoundException("order", 40404)));
+        List<OrderDTO> orderDTOList = orderRepository.readUserOrders(user, page, size)
+                .stream().map(orderMapper::convertToDto)
                 .collect(Collectors.toList());
+        PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(size, page, orderRepository.getCount(user));
+        return PagedModel.of(orderDTOList, metadata);
     }
 
-
+    @Transactional
     @Override
     public OrderDTO getUserOrder(long userId, long orderId) {
         Order order = orderRepository.read(orderId).orElseThrow(() -> (new EntityNotFoundException("order", 40404)));
@@ -70,6 +78,7 @@ public class BasicOrderService implements OrderService {
         return orderMapper.convertToDto(order);
     }
 
+    @Transactional
     @Override
     public OrderDTO create(long userId, long certificateId) {
         Certificate certificate = certificateRepository
@@ -77,10 +86,6 @@ public class BasicOrderService implements OrderService {
         User user = userRepository.read(userId).orElseThrow(() -> (new EntityNotFoundException("user", 40403)));
         Order order = new Order(null, certificate.getPrice(), LocalDateTime.now(), certificate, user);
         return orderMapper.convertToDto(orderRepository.create(
-                new Order(null,
-                        certificate.getPrice(),
-                        LocalDateTime.now(),
-                        certificate,
-                        user)).orElseThrow(() -> (new EntityNotFoundException("certificate", 40401))));
+                order).orElseThrow(() -> (new EntityNotFoundException("certificate", 40401))));
     }
 }

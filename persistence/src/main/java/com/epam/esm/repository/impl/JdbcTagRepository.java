@@ -9,11 +9,9 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Implementation of the {@link TagRepository} class that uses JDBC to
@@ -27,16 +25,6 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class JdbcTagRepository implements TagRepository {
-//    private static final String SQL_CREATE_TAG = "insert into tag (name) values (?)";
-//    private static final String SQL_FIND_ALL = "select id, name from tag";
-//    private static final String SQL_FIND_TAG_BY_ID = "select id, name from tag where id = ?";
-//    private static final String SQL_FIND_TAG_BY_NAME = "select id, name from tag where name = ?";
-//    private static final String SQL_SELECT_TAGS_BY_CERTIFICATE_ID = "select t.id, t.name from tag t " +
-//            "join certificate_tag ct " +
-//            "on t.id = ct.tag_id " +
-//            "where ct.certificate_id = ?";
-//    private static final String SQL_DELETE_TAG = "delete from tag where id = ?";
-//
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -49,12 +37,8 @@ public class JdbcTagRepository implements TagRepository {
 
     @Override
     public boolean exists(Tag tag) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> query = cb.createQuery(Long.class);
-        Root<Tag> root = query.from(Tag.class);
-        query.select(cb.count(root))
-                .where(root.get("name").in(tag.getName()));
-        return entityManager.createQuery(query)
+        return entityManager.createQuery("select count(t) from Tag t where t.name= :name", Long.class)
+                .setParameter("name", tag.getName())
                 .getSingleResult() != 0;
     }
 
@@ -98,13 +82,12 @@ public class JdbcTagRepository implements TagRepository {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public List<Tag> findTagsByCertificateId(long id) {
-        return entityManager.createNativeQuery("select tag.id, tag.name from tag " +
-                        "join certificate_tag ct " +
-                        "on tag.id = ct.tag_id " +
-                        "where ct.certificate_id = :certificateId", Tag.class)
-                .setParameter("certificateId", id).getResultList();
+    public Set<Tag> findTagsByCertificateId(long id) {
+        Certificate certificate = (Certificate) entityManager.createQuery("select c from Certificate c where c.id = :id")
+                .setParameter("id", id)
+                .setMaxResults(1)
+                .getSingleResult();
+        return certificate.getTags();
     }
 
     @Override

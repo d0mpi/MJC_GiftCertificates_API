@@ -85,22 +85,26 @@ public class JdbcCertificateRepository implements CertificateRepository {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<Certificate> findByCriteria(Map<String, String> paramMap, long page, long size) {
-        List<Certificate> certificateList = (List<Certificate>) entityManager.createNativeQuery(
-                CertificateQueryBuilder.init().getQuery(paramMap, page, size), Certificate.class).getResultList();
+        List<Certificate> certificateList = CertificateQueryBuilder
+                .init()
+                .getQuery(paramMap, entityManager)
+                .setFirstResult((int) ((page - 1) * size))
+                .setMaxResults((int) size)
+                .getResultList();
         for (Certificate certificate : certificateList) {
-            List<Tag> tags = tagRepository.findTagsByCertificateId(certificate.getId());
-            System.out.println(tags);
-            certificate.addTags(tags);
+            Set<Tag> tags = tagRepository.findTagsByCertificateId(certificate.getId());
+            certificate.addTags(new LinkedList<>(tags));
         }
         return certificateList;
     }
 
     @Override
     public long getCount(Map<String, String> paramMap) {
-        return new BigInteger(String.valueOf(entityManager.createNativeQuery(
-                CertificateQueryBuilder.init().getCountQuery(paramMap)).getSingleResult())).longValue();
+        return CertificateQueryBuilder
+                .init()
+                .getQuery(paramMap, entityManager)
+                .getResultList().size();
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.Certificate;
 import com.epam.esm.Order;
-import com.epam.esm.Tag;
 import com.epam.esm.User;
 import com.epam.esm.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -21,13 +19,12 @@ public class JdbcOrderRepository implements OrderRepository {
     private EntityManager entityManager;
 
     @Override
-    public List<Order> findOrdersPageByUser(User user, long page, long size) {
-        return null;
-    }
-
-    @Override
-    public List<Order> readUserOrders(long userId, long page, long size) {
-        return null;
+    public List<Order> readUserOrders(User user, long page, long size) {
+        return entityManager.createQuery("select o from Order o where o.user = :user", Order.class)
+                .setParameter("user", user)
+                .setFirstResult((int) ((page - 1) * size))
+                .setMaxResults((int) size)
+                .getResultList();
     }
 
     @Override
@@ -36,13 +33,22 @@ public class JdbcOrderRepository implements OrderRepository {
     }
 
     @Override
-    public Optional<Order> create(Order entity) {
-        return Optional.empty();
+    public long getCount(User user) {
+        return entityManager.createQuery("select count(o) from Order o where o.user = :user", Long.class)
+                .setParameter("user", user)
+                .getSingleResult();
+    }
+
+    @Override
+    public Optional<Order> create(Order order) {
+        entityManager.persist(order);
+        return Optional.of(order);
     }
 
     @Override
     public Optional<Order> read(long id) {
-        return Optional.ofNullable(entityManager.find(Order.class, id));    }
+        return Optional.ofNullable(entityManager.find(Order.class, id));
+    }
 
     @SuppressWarnings("unchecked")
     @Override

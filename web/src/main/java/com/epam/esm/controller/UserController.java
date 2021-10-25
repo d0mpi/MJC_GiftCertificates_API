@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
-import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -37,7 +36,7 @@ public class UserController {
         return userAssembler.toModel(userService.read(id));
     }
 
-    @GetMapping
+    @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public PagedModel<UserDTO> findAll(@RequestParam(value = "page", required = false, defaultValue = "1")
                                                long page,
@@ -45,6 +44,16 @@ public class UserController {
                                                long size) {
         PagedModel<UserDTO> userDTOS = userService.readAll(page, size);
         return userAssembler.toPagedModel(userDTOS);
+    }
+
+    @GetMapping("/orders")
+    @ResponseStatus(HttpStatus.OK)
+    public PagedModel<OrderDTO> findAllOrders(@RequestParam(value = "page", required = false, defaultValue = "1")
+                                                      long page,
+                                              @RequestParam(value = "size", required = false, defaultValue = "10")
+                                                      long size) {
+        PagedModel<OrderDTO> orderDTOS = orderService.readAll(page, size);
+        return orderAssembler.toPagedModel(orderDTOS);
     }
 
     @PostMapping(consumes = "application/json")
@@ -56,16 +65,16 @@ public class UserController {
 
     @GetMapping("/{userId}/orders")
     @ResponseStatus(HttpStatus.OK)
-    public List<OrderDTO> getUserOrders(@PathVariable
-                                        @Positive long userId,
-                                        @RequestParam(value = "page", required = false, defaultValue = "1")
-                                        @Positive long page,
-                                        @RequestParam(value = "size", required = false, defaultValue = "10")
-                                        @Positive long size) {
-        return orderService.getUserOrders(userId, page, size);
+    public PagedModel<OrderDTO> getUserOrders(@PathVariable
+                                              @Positive long userId,
+                                              @RequestParam(value = "page", required = false, defaultValue = "1")
+                                              @Positive long page,
+                                              @RequestParam(value = "size", required = false, defaultValue = "10")
+                                              @Positive long size) {
+        return orderAssembler.toPagedModel(orderService.getUserOrders(userId, page, size), userId);
     }
 
-    @GetMapping("/{userId}/orders/{orderId}")
+    @GetMapping("/{userId}/order/{orderId}")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<OrderDTO> getUserOrder(@PathVariable
                                               @Positive long userId,
@@ -74,13 +83,13 @@ public class UserController {
         return orderAssembler.toModel(orderService.getUserOrder(userId, orderId));
     }
 
-    @PostMapping(value = "/{userId}/orders/{certificateId}", consumes = "application/json")
+    @PostMapping(value = "/{userId}/order/{certificateId}")
     @ResponseStatus(HttpStatus.OK)
-    public EntityModel<OrderDTO> createOrder(@PathVariable
-                                             @Positive long userId,
-                                             @PathVariable
-                                             @Positive long certificateId) {
-        return orderAssembler.toModel(orderService.create(userId, certificateId));
+    public OrderDTO createOrder(@PathVariable
+                                @Positive long userId,
+                                @PathVariable
+                                @Positive long certificateId) {
+        return orderService.create(userId, certificateId);
     }
 
     @GetMapping("/{userId}/mostWidelyUsedTag")

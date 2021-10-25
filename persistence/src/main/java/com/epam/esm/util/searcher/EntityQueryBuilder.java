@@ -1,5 +1,9 @@
 package com.epam.esm.util.searcher;
 
+import com.epam.esm.Certificate;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.Map;
 
 /**
@@ -10,7 +14,5 @@ import java.util.Map;
  * @version 1.0
  */
 public interface EntityQueryBuilder {
-    String getQuery(Map<String, String> paramMap, long page, long size);
-
-    String getCountQuery(Map<String, String> paramMap);
+    TypedQuery<Certificate> getQuery(Map<String, String> paramMap, EntityManager entityManager);
 }
