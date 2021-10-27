@@ -1,6 +1,7 @@
 package com.epam.esm.util.searcher;
 
 import com.epam.esm.Certificate;
+import org.springframework.data.jpa.repository.query.InvalidJpaQueryMethodException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -53,65 +54,36 @@ public class CertificateQueryBuilder implements EntityQueryBuilder {
         cq = cq.select(root);
         List<Predicate> predicates = new ArrayList<>();
         boolean findByTags = false;
-        Set<String> tagNames = new HashSet<>();
+        Set<String> tagNames = null;
         Expression<Long> count = null;
+        List<Order> orderList = new LinkedList<>(Arrays.asList(cb.desc(root.get("lastUpdateDate"))));
         for (Map.Entry<String, String> param : paramMap.entrySet()) {
             if (CertificateCriteriaStorage.hasParam(param.getKey())) {
-                if (Objects.equals(CertificateCriteriaStorage.of(param.getKey()), CertificateCriteriaStorage.TAGS)) {
-                    tagNames = new HashSet<>(Arrays.asList(param.getValue().split(",")));
-                    Join<Object, Object> certificateTagJoin = root.join("tags", JoinType.LEFT);
-                    count = cb.count(root);
-                    predicates.add(cb.and(certificateTagJoin.get("name").in(tagNames)));
+                CertificateCriteriaStorage criteria = CertificateCriteriaStorage.of(param.getKey());
+                if (Objects.equals(criteria, CertificateCriteriaStorage.TAGS)) {
                     findByTags = true;
+                    tagNames = new HashSet<>(Arrays.asList(param.getValue().split(",")));
+                    predicates.add(criteria.component(param.getValue(), cq, cb, root));
+                    count = cb.count(root);
+                } else if (Objects.equals(criteria, CertificateCriteriaStorage.SORT)) {
+                    orderList.clear();
+                    Set<String> values = new HashSet<>(Arrays.asList(param.getValue().split(",")));
+                    for (String sortType : values) {
+                        orderList.add(CertificateCriteriaStorage.SortType.of(sortType)
+                                .orElseThrow(() -> new InvalidJpaQueryMethodException("message.not-valid.query.order"))
+                                .component(cq, cb, root));
+                    }
                 } else {
-                    predicates.add(Objects.requireNonNull(CertificateCriteriaStorage.of(param.getKey())).component(param.getValue(),
-                            cq, cb, root));
+                    predicates.add(Objects.requireNonNull(CertificateCriteriaStorage.of(param.getKey()))
+                            .component(param.getValue(), cq, cb, root));
                 }
             }
         }
         if (findByTags) {
             return entityManager.createQuery(cq.where(cb.and(predicates.toArray(new Predicate[0]))).groupBy(root)
-                    .having(cb.equal(count, tagNames.size())));
+                    .having(cb.equal(count, tagNames.size())).orderBy(orderList));
         }
-
-        return entityManager.createQuery(cq.where(predicates.toArray(new Predicate[0])));
+        return entityManager.createQuery(cq.where(cb.and(predicates.toArray(new Predicate[0]))).orderBy(orderList));
     }
 
-
-//    private void addQueryComponent(CertificateCriteriaStorage certificateFindParam, String paramValue) {
-//        if (certificateFindParam.equals(CertificateCriteriaStorage.TAG)) {
-//            joinQuery.append(" join certificate_tag " +
-//                    "              on certificate.id = certificate_tag.certificate_id" +
-//                    "         join tag " +
-//                    "              on certificate_tag.tag_id = tag.id ");
-//        }
-//        if (certificateFindParam.equals(CertificateCriteriaStorage.SORT)) {
-//            Arrays.stream(paramValue.split("[,+\\s]"))
-//                    .forEach(component -> addSortComponent(certificateFindParam, component));
-//        } else {
-//            addFilterComponent(certificateFindParam, paramValue);
-//        }
-//    }
-
-//    private void addSortComponent(CertificateCriteriaStorage certificateFindParam, String sortComponent) {
-//
-//        if (this.sortingQuery.length() == 0) {
-//            this.sortingQuery.append(" order by ");
-//        } else {
-//            this.sortingQuery.append(" , ");
-//        }
-////        if(sortComponent.contains("date_asc")) {
-////            sortingQuery.append(" certificate.last_update_date ASC");
-////        } else if(sortComponent.contains("date_desc")) {
-////            sortingQuery.append(" certificate.last_update_date DESC");
-////        } else if(sortComponent.contains("name_asc")) {
-////            sortingQuery.append(" certificate.name ASC");
-////        }
-//        this.sortingQuery.append(certificateFindParam.component(sortComponent));
-//    }
-//
-//    private void addFilterComponent(CertificateCriteriaStorage certificateFindParam, String filterComponent) {
-//        this.filteringQuery.append(" and ");
-//        this.filteringQuery.append(certificateFindParam.component(filterComponent));
-//    }
 }

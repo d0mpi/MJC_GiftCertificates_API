@@ -1,6 +1,5 @@
 package com.epam.esm.service;
 
-import com.epam.esm.exception.ValidationException;
 import org.springframework.hateoas.PagedModel;
 
 /**
@@ -20,7 +19,6 @@ public interface EntityService<T> {
      *
      * @param entity transmitted entity
      * @return converted to DTO entity received from persistence
-     * @throws ValidationException if the transmitted information is not valid
      */
     T create(T entity);
 

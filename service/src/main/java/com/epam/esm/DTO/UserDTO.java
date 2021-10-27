@@ -1,6 +1,5 @@
 package com.epam.esm.DTO;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -30,14 +29,15 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Relation(itemRelation = "user", collectionRelation = "users")
 public class UserDTO extends RepresentationModel<UserDTO> {
-    @Positive
+    @Positive(message = "{message.positive.id}")
     private Long id;
-    @Size(min = 1, max = 45)
+    @Size(min = 1, max = 45, message = "{message.size.name}")
     private String userName;
-    @Email
-    @Size(min = 1, max = 45)
+    @Email(message = "{message.email}")
+    @Size(min = 1, max = 45, message = "{message.size.email}")
     private String email;
-    @Size(min = 1, max = 255)
+    @Size(min = 1, max = 255, message = "{message.size.password}")
+    @JsonIgnore
     private String password;
     @JsonIgnore
     private List<@Valid OrderDTO> orders;

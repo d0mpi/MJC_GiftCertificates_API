@@ -1,6 +1,8 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.DTO.UserDTO;
+import com.epam.esm.exception.EntityAlreadyExistsException;
+import com.epam.esm.exception.EntityNotCreatedException;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.mapper.UserMapper;
 import com.epam.esm.repository.UserRepository;
@@ -10,7 +12,6 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityExistsException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,22 +27,23 @@ public class BasicUserService implements UserService {
     public UserDTO create(UserDTO user) {
         user.setRegistrationDate(LocalDateTime.now());
         if (userRepository.exists(userMapper.convertToEntity(user))) {
-            throw new EntityExistsException("already exists");
+            throw new EntityAlreadyExistsException("message.exists.user");
         }
         return userMapper.convertToDto(
                 userRepository.create(userMapper.convertToEntity(user))
-                        .orElseThrow(() -> (new EntityNotFoundException("user", 40403))));
+                        .orElseThrow(() -> (new EntityNotCreatedException("message.not-created.user"))));
     }
 
     @Override
     @Transactional
     public UserDTO read(long id) {
-        return userMapper.convertToDto(userRepository.read(id).orElseThrow(() -> (new EntityNotFoundException("user", 40403))));
+        return userMapper.convertToDto(userRepository.read(id).orElseThrow(() -> (new EntityNotFoundException("message.not-found.user"))));
     }
 
     @Override
     @Transactional
     public void delete(long id) {
+        userRepository.read(id).orElseThrow(() -> (new EntityNotFoundException("message.not-found.user")));
         userRepository.delete(userMapper.convertToEntity(this.read(id)));
     }
 

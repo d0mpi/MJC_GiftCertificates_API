@@ -2,7 +2,6 @@ package com.epam.esm.service;
 
 import com.epam.esm.DTO.CertificateDTO;
 import com.epam.esm.DTO.TagDTO;
-import com.epam.esm.exception.ValidationException;
 import org.springframework.hateoas.PagedModel;
 
 import java.util.Map;
@@ -25,7 +24,6 @@ public interface CertificateService extends EntityService<CertificateDTO> {
      * @param entity entity containing information about certificate
      *               to be updated
      * @return updated {@link CertificateDTO}
-     * @throws ValidationException if the transmitted information is not valid
      */
     CertificateDTO update(CertificateDTO entity);
 

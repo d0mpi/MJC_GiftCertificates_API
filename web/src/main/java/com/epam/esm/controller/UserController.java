@@ -83,19 +83,4 @@ public class UserController {
         return orderAssembler.toModel(orderService.getUserOrder(userId, orderId));
     }
 
-    @PostMapping(value = "/{userId}/order/{certificateId}")
-    @ResponseStatus(HttpStatus.OK)
-    public OrderDTO createOrder(@PathVariable
-                                @Positive long userId,
-                                @PathVariable
-                                @Positive long certificateId) {
-        return orderService.create(userId, certificateId);
-    }
-
-    @GetMapping("/{userId}/mostWidelyUsedTag")
-    @ResponseStatus(HttpStatus.OK)
-    public EntityModel<TagDTO> getMostWidelyUsedTag(@PathVariable
-                                                    @Positive long userId) {
-        return tagAssembler.toModel(tagService.getMostWidelyUsedTag(userId));
-    }
 }

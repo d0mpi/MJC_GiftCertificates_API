@@ -2,7 +2,6 @@ package com.epam.esm.controller;
 
 import com.epam.esm.DTO.TagDTO;
 import com.epam.esm.assembler.TagRepresentationModelAssembler;
-import com.epam.esm.exception.ValidationException;
 import com.epam.esm.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
@@ -11,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 
 /**
  * Contains methods that process information in JSON received from this kind
@@ -60,7 +60,6 @@ public class TagController {
      *
      * @param tag {@link TagDTO} containing all necessary information
      * @return created {@link TagDTO} with up-to-date information in JSON format
-     * @throws ValidationException if received information is not valid
      */
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
@@ -77,5 +76,13 @@ public class TagController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") long id) {
         tagService.delete(id);
+    }
+
+
+    @GetMapping("/mostWidelyUsedTag/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<TagDTO> getMostWidelyUsedTag(@PathVariable
+                                                    @Positive long userId) {
+        return tagAssembler.toModel(tagService.getMostWidelyUsedTag(userId));
     }
 }

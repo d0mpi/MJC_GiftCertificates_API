@@ -30,7 +30,7 @@ public class Order {
     @ManyToOne(targetEntity = Certificate.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "certificate_id")
     private Certificate certificate;
-    @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY, cascade = {
+    @ManyToOne(targetEntity = User.class, cascade = {
             CascadeType.REMOVE,
             CascadeType.MERGE
     })

@@ -9,7 +9,6 @@ import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
@@ -30,9 +29,9 @@ import javax.validation.constraints.Size;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Relation(itemRelation = "tag", collectionRelation = "tags")
 public class TagDTO extends RepresentationModel<TagDTO> {
-    @Positive
+    @Positive(message = "{message.positive.id}")
     private Long id;
-    @NotBlank
-    @Size(min = 1, max = 45, message = "too long")
+    @NotBlank(message = "{message.not-blank.name}")
+    @Size(min = 1, max = 45, message = "{message.size.name}")
     private String name;
 }

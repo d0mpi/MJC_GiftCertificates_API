@@ -1,9 +1,12 @@
 package com.epam.esm;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Contains information about tag, provides
@@ -26,6 +29,9 @@ public class Tag implements Comparable<Tag>, Serializable {
     private Long id;
     @Column(name = "name", unique = true)
     private String name;
+    @JsonIgnore
+    @ManyToMany(mappedBy = "tags")
+    private Collection<Certificate> certificates;
 
     /**
      * All args tag constructor

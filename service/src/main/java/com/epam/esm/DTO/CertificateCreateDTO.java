@@ -35,18 +35,22 @@ import java.util.Set;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ToString
 @Relation(itemRelation = "certificate", collectionRelation = "certificates")
-public class CertificateDTO extends RepresentationModel<CertificateDTO> {
+public class CertificateCreateDTO extends RepresentationModel<CertificateDTO> {
     @Positive(message = "{message.positive.id}")
     private Long id;
+    @NotBlank(message = "{message.not-blank.name}")
     @Size(min = 1, max = 45, message = "{message.size.name}")
     private String name;
+    @NotBlank(message = "{message.not-blank.description}")
     @Size(min = 1, max = 200, message = "{message.size.description}")
     private String description;
     @Digits(integer = 13, fraction = 2, message = "{message.digits.price}")
     @PositiveOrZero(message = "{message.positive-or-zero.price}")
     @DecimalMax(value = "99999999999.99", message = "{message.max.price}")
+    @NotNull(message = "{message.not-null.price}")
     private BigDecimal price;
     @Positive(message = "{message.positive.duration}")
+    @NotNull(message = "{message.not-null.duration}")
     private Integer duration;
     private Set<@Valid TagDTO> tags;
 
@@ -64,16 +68,5 @@ public class CertificateDTO extends RepresentationModel<CertificateDTO> {
 
     public void addTag(TagDTO tag) {
         tags.add(tag);
-    }
-
-    public CertificateDTO(CertificateCreateDTO certificateCreateDTO) {
-        this.id = certificateCreateDTO.getId();
-        this.name = certificateCreateDTO.getName();
-        this.description = certificateCreateDTO.getDescription();
-        this.price = certificateCreateDTO.getPrice();
-        this.duration = certificateCreateDTO.getDuration();
-        this.tags = certificateCreateDTO.getTags();
-        this.createDate = certificateCreateDTO.getCreateDate();
-        this.lastUpdateDate = certificateCreateDTO.getLastUpdateDate();
     }
 }

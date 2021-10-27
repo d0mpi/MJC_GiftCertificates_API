@@ -1,18 +1,23 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.DTO.CertificateCreateDTO;
 import com.epam.esm.DTO.CertificateDTO;
+import com.epam.esm.DTO.OrderDTO;
 import com.epam.esm.DTO.TagDTO;
 import com.epam.esm.assembler.CertificateRepresentationModelAssembler;
-import com.epam.esm.exception.ValidationException;
+import com.epam.esm.assembler.OrderRepresentationModelAssembler;
 import com.epam.esm.service.CertificateService;
+import com.epam.esm.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.util.Map;
 
 /**
@@ -26,12 +31,15 @@ import java.util.Map;
  */
 @RestController
 @Slf4j
+@Validated
 @RequestMapping("/certificate")
 @RequiredArgsConstructor
 public class CertificateController {
 
     private final CertificateService certificateService;
     private final CertificateRepresentationModelAssembler certificateAssembler;
+    private final OrderRepresentationModelAssembler orderAssembler;
+    private final OrderService orderService;
 
     /**
      * Gets all certificates that meet specified criteria
@@ -68,12 +76,11 @@ public class CertificateController {
      *
      * @param certificate {@link CertificateDTO} containing all necessary information
      * @return created {@link CertificateDTO} with up-to-date information in JSON format
-     * @throws ValidationException if received information is not valid
      */
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public EntityModel<CertificateDTO> create(@RequestBody @Valid CertificateDTO certificate) {
-        return certificateAssembler.toModel(certificateService.create(certificate));
+    public EntityModel<CertificateDTO> create(@Valid @RequestBody CertificateCreateDTO certificate) {
+        return certificateAssembler.toModel(certificateService.create(new CertificateDTO(certificate)));
     }
 
     /**
@@ -82,7 +89,6 @@ public class CertificateController {
      * @param id    id of the certificate to be updated
      * @param patch {@link CertificateDTO} with information to be updated
      * @return {@link CertificateDTO} with up-to-date information in JSON format
-     * @throws ValidationException if certificate with the specified id does not exist
      */
     @PatchMapping(value = "/{id}",
             consumes = "application/json")
@@ -128,5 +134,15 @@ public class CertificateController {
     public void deleteTagFromCertificate(@PathVariable("certificateId") long certificateId,
                                          @RequestBody TagDTO tag) {
         certificateService.deleteTagFromCertificate(certificateId, tag);
+    }
+
+
+    @PostMapping(value = "/{certificateId}/user/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<OrderDTO> createOrder(@PathVariable
+                                             @Positive long userId,
+                                             @PathVariable
+                                             @Positive long certificateId) {
+        return orderAssembler.toModel(orderService.create(userId, certificateId));
     }
 }

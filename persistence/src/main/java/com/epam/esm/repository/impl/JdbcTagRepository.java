@@ -2,6 +2,7 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.Certificate;
 import com.epam.esm.Tag;
+import com.epam.esm.User;
 import com.epam.esm.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -64,7 +65,7 @@ public class JdbcTagRepository implements TagRepository {
     @Override
     public Optional<Tag> readByName(String name) {
         try {
-            return Optional.of((Tag) entityManager.createQuery("select t from Tag t where t.name = :name")
+            return Optional.of(entityManager.createQuery("select t from Tag t where t.name = :name", Tag.class)
                     .setParameter("name", name).setMaxResults(1).getSingleResult());
         } catch (NoResultException e) {
             return Optional.empty();
@@ -72,8 +73,34 @@ public class JdbcTagRepository implements TagRepository {
     }
 
     @Override
-    public Tag getMostWidelyUsedTag(long userId) {
-        return null;
+    public Optional<Tag> getMostWidelyUsedTag(User user) {
+//        return Optional.of((Tag) entityManager.createQuery("select tag.id, tag.name, count(tag.id) as countt, sum(orders.cost) as summ " +
+//                        "from Tag tag " +
+//                        "join tag.certificates certificate " +
+//                        "join certificate.orders orders" +
+//                        "join orders.user tag " +
+//                        "where u.id = :user_id " +
+//                        "group by tag.id " +
+//                        "order by countt desc, summ desc")
+//                .setParameter("user_id", user.getId())
+//                .setMaxResults(1)
+//                .getSingleResult());
+
+        return Optional.of((Tag) entityManager.createNativeQuery("select tag.id, tag.name, count(tag.id) as count, sum(o.cost) as sum " +
+                        "from tag " +
+                        "         inner join certificate_tag ct " +
+                        "                    on tag.id = ct.tag_id " +
+                        "         inner join certificate c " +
+                        "                    on ct.certificate_id = c.id " +
+                        "         inner join orders o " +
+                        "                    on c.id = o.certificate_id " +
+                        "         inner join user u " +
+                        "                    on o.user_id = u.id " +
+                        "where u.id = :user_id " +
+                        "group by tag.id " +
+                        "order by count desc, sum desc limit 1", Tag.class)
+                .setParameter("user_id", user.getId())
+                .getSingleResult());
     }
 
     @Override

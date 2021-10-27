@@ -1,6 +1,7 @@
 package com.epam.esm.repository;
 
 import com.epam.esm.Tag;
+import com.epam.esm.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,5 +34,5 @@ public interface TagRepository extends Repository<Tag> {
      */
     Optional<Tag> readByName(String name);
 
-    Tag getMostWidelyUsedTag(long userId);
+    Optional<Tag> getMostWidelyUsedTag(User user);
 }

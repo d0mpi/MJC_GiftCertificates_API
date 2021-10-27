@@ -2,17 +2,19 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.DTO.TagDTO;
 import com.epam.esm.Tag;
+import com.epam.esm.User;
+import com.epam.esm.exception.EntityAlreadyExistsException;
+import com.epam.esm.exception.EntityNotCreatedException;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.repository.TagRepository;
+import com.epam.esm.repository.UserRepository;
 import com.epam.esm.service.TagService;
-import com.epam.esm.validation.TagValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityExistsException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,24 +30,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BasicTagService implements TagService {
     private final TagRepository repo;
+    private final UserRepository userRepository;
     private final TagMapper mapper;
-    private final TagValidator validator;
 
     @Override
     @Transactional
     public TagDTO create(TagDTO tag) {
         if (repo.exists(mapper.convertToEntity(tag))) {
-            throw new EntityExistsException("already exists");
+            throw new EntityAlreadyExistsException("message.exists.tag");
         }
-        validator.validate(tag);
         return mapper.convertToDto(
-                repo.create(mapper.convertToEntity(tag)).orElseThrow(() -> (new EntityNotFoundException("tag", 40402))));
+                repo.create(mapper.convertToEntity(tag))
+                        .orElseThrow(() -> (new EntityNotCreatedException("message.not-created.tag"))));
     }
 
     @Override
     @Transactional
     public TagDTO read(long id) {
-        return mapper.convertToDto(repo.read(id).orElseThrow(() -> (new EntityNotFoundException("tag", 40402))));
+        return mapper.convertToDto(repo.read(id).orElseThrow(() -> (new EntityNotFoundException("message.not-found.tag"))));
     }
 
     @Override
@@ -62,13 +64,16 @@ public class BasicTagService implements TagService {
     @Override
     @Transactional
     public void delete(long id) {
-        Tag tag = repo.read(id).orElseThrow(() -> (new EntityNotFoundException("tag", 40402)));
+        Tag tag = repo.read(id).orElseThrow(() -> (new EntityNotFoundException("message.not-found.tag")));
         repo.delete(tag);
     }
 
     @Override
     @Transactional
     public TagDTO getMostWidelyUsedTag(long userId) {
-        return null;
+        User user = userRepository.read(userId)
+                .orElseThrow(() -> (new EntityNotFoundException("message.not-found.user")));
+        return mapper.convertToDto(repo.getMostWidelyUsedTag(user)
+                .orElseThrow(() -> (new EntityNotFoundException("message.not-found.tag"))));
     }
 }

@@ -2,13 +2,12 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.DTO.CertificateDTO;
 import com.epam.esm.DTO.TagDTO;
+import com.epam.esm.exception.EntityNotCreatedException;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.mapper.CertificateMapper;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.repository.CertificateRepository;
-import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.CertificateService;
-import com.epam.esm.validation.CertificateValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
@@ -32,22 +31,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BasicCertificateService implements CertificateService {
     private final CertificateRepository certificateRepo;
-    private final TagRepository tagRepo;
     private final CertificateMapper certificateMapper;
     private final TagMapper tagMapper;
-    private final CertificateValidator certificateValidator;
 
     @Override
     @Transactional
     public CertificateDTO create(CertificateDTO certificate) {
-        certificateValidator.validate(certificate);
         certificate.setCreateDate(LocalDateTime.now());
         certificate.setLastUpdateDate(LocalDateTime.now());
-        return certificateMapper
-                .convertToDto(
-                        certificateRepo.create(
-                                        certificateMapper.convertToEntity(certificate))
-                                .orElseThrow(() -> (new EntityNotFoundException("certificate", 40401))));
+        return certificateMapper.convertToDto(certificateRepo
+                .create(certificateMapper.convertToEntity(certificate))
+                .orElseThrow(() -> (new EntityNotCreatedException("message.not-created.certificate"))));
     }
 
     @Override
@@ -55,7 +49,7 @@ public class BasicCertificateService implements CertificateService {
     public CertificateDTO read(long id) {
         return certificateMapper.convertToDto(
                 certificateRepo.read(id)
-                        .orElseThrow(() -> (new EntityNotFoundException("certificate", 40401))));
+                        .orElseThrow(() -> (new EntityNotFoundException("message.not-found.certificate.id"))));
     }
 
     @Override
@@ -83,11 +77,10 @@ public class BasicCertificateService implements CertificateService {
             certificate.setPrice(patch.getPrice());
         if (patch.getTags() != null)
             certificate.setTags(patch.getTags());
-        certificateValidator.validate(certificate);
         certificate.setLastUpdateDate(LocalDateTime.now());
         return certificateMapper.convertToDto(
                 certificateRepo.update(certificateMapper.convertToEntity(certificate))
-                        .orElseThrow(() -> (new EntityNotFoundException("certificate", 40401))));
+                        .orElseThrow(() -> (new EntityNotFoundException("message.not-found.certificate.id"))));
     }
 
     @Override
@@ -95,8 +88,8 @@ public class BasicCertificateService implements CertificateService {
     public CertificateDTO addTagToCertificate(long certificateId, TagDTO tag) {
         certificateRepo.addTagToCertificate(certificateId, tagMapper.convertToEntity(tag));
         return certificateMapper.convertToDto(
-                certificateRepo.read(
-                        certificateId).orElseThrow(() -> (new EntityNotFoundException("certificate", 40401))));
+                certificateRepo.read(certificateId)
+                        .orElseThrow(() -> (new EntityNotFoundException("message.not-found.certificate.id"))));
     }
 
     @Override
@@ -109,6 +102,7 @@ public class BasicCertificateService implements CertificateService {
     @Override
     @Transactional
     public void delete(long id) {
+        certificateRepo.read(id).orElseThrow(() -> new EntityNotFoundException("message.not-found.certificate.id"));
         certificateRepo.delete(certificateMapper.convertToEntity(this.read(id)));
     }
 
