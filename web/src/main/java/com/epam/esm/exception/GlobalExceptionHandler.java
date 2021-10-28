@@ -46,7 +46,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = Throwable.class)
     public ExceptionResponseObject handleThrowable(Throwable ex,
                                                    Locale locale) {
-        log.error(getLocalizeMessage(new Throwable("message.not-supported.exception"), new Locale("US_us")), ex);
+        log.error(getLocalizeMessage(new Throwable("message.not-supported.exception"), new Locale("US_us")));
         return ExceptionResponseObject.builder().errorCode(ErrorCode.UNSUPPORTED.getCode())
                 .errorMessage(getLocalizeMessage(new Throwable("message.not-supported.exception"), locale)
                         + ex.getCause()).build();
@@ -57,8 +57,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = EntityNotFoundException.class)
     public ExceptionResponseObject handleEntityNotFoundException(EntityNotFoundException ex,
                                                                  Locale locale) {
-        log.error(getLocalizeMessage(ex, new Locale("US_us")), ex);
+        log.error(getLocalizeMessage(ex, new Locale("US_us")));
         return ExceptionResponseObject.builder().errorCode(ErrorCode.ENTITY_NOT_FOUND.getCode())
+                .errorMessage(getLocalizeMessage(ex, locale)).build();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    @ExceptionHandler(value = InvalidQueryParamException.class)
+    public ExceptionResponseObject handleEntityNotFoundException(InvalidQueryParamException ex,
+                                                                 Locale locale) {
+        log.error(getLocalizeMessage(ex, new Locale("US_us")));
+        return ExceptionResponseObject.builder().errorCode(ErrorCode.INVALID_QUERY.getCode())
                 .errorMessage(getLocalizeMessage(ex, locale)).build();
     }
 
@@ -67,8 +77,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = EntityAlreadyExistsException.class)
     public ExceptionResponseObject handleEntityAlreadyExistsException(EntityAlreadyExistsException ex,
                                                                       Locale locale) {
-        log.error(getLocalizeMessage(ex, new Locale("US_us")), ex);
+        log.error(getLocalizeMessage(ex, new Locale("US_us")));
         return ExceptionResponseObject.builder().errorCode(ErrorCode.ENTITY_EXISTS.getCode())
+                .errorMessage(getLocalizeMessage(ex, locale)).build();
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    @ExceptionHandler(value = OrderIsAssociatedWithDatabaseEntity.class)
+    public ExceptionResponseObject handleEntityAlreadyExistsException(OrderIsAssociatedWithDatabaseEntity ex,
+                                                                      Locale locale) {
+        log.error(getLocalizeMessage(ex, new Locale("US_us")));
+        return ExceptionResponseObject.builder().errorCode(ErrorCode.ENTITY_ASSOCIATED.getCode())
                 .errorMessage(getLocalizeMessage(ex, locale)).build();
     }
 
@@ -80,7 +100,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         String errorMessages = ex.getBindingResult().getFieldErrors().stream()
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining(" && "));
-        log.error(errorMessages, ex);
+        log.error(errorMessages);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ExceptionResponseObject.builder()
                 .errorCode(ErrorCode.INPUT_VALIDATION.getCode())
                 .errorMessage(errorMessages).build());
@@ -91,7 +111,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                    HttpHeaders headers,
                                                                    HttpStatus status,
                                                                    WebRequest request) {
-        log.error(getLocalizeMessage(ex, new Locale("US_us")), ex);
+        log.error(getLocalizeMessage(ex, new Locale("US_us")));
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ExceptionResponseObject.builder()
                         .errorCode(ErrorCode.NO_HANDLER.getCode())
@@ -104,7 +124,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                          HttpHeaders headers,
                                                                          HttpStatus status,
                                                                          WebRequest request) {
-        log.error(getLocalizeMessage(ex, new Locale("US_us")), ex);
+        log.error(getLocalizeMessage(ex, new Locale("US_us")));
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
                 .body(ExceptionResponseObject.builder()
                         .errorCode(ErrorCode.NO_HANDLER.getCode())
@@ -117,7 +137,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = EntityNotCreatedException.class)
     public ExceptionResponseObject handleEntityNotCreatedException(EntityNotCreatedException ex,
                                                                    Locale locale) {
-        log.error(getLocalizeMessage(ex, new Locale("US_us")), ex);
+        log.error(getLocalizeMessage(ex, new Locale("US_us")));
         return ExceptionResponseObject.builder().errorCode(ErrorCode.ENTITY_CREATE.getCode())
                 .errorMessage(getLocalizeMessage(ex, locale)).build();
     }

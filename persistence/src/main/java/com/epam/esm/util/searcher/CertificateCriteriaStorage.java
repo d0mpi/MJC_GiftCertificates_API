@@ -68,7 +68,7 @@ public enum CertificateCriteriaStorage {
      * @param param name of the param to be checked
      * @return true - if parameter is present
      */
-    static boolean hasParam(String param) {
+    public static boolean hasParam(String param) {
         for (CertificateCriteriaStorage type : values()) {
             if (type.name().equalsIgnoreCase(param)) {
                 return true;
@@ -83,11 +83,11 @@ public enum CertificateCriteriaStorage {
      * @param param name of the parameter to be found
      * @return CertificateParam corresponding to the specified param name
      */
-    static CertificateCriteriaStorage of(String param) {
+    static Optional<CertificateCriteriaStorage> of(String param) {
         if (hasParam(param))
-            return CertificateCriteriaStorage.valueOf(param.toUpperCase(Locale.ROOT));
+            return Optional.of(CertificateCriteriaStorage.valueOf(param.toUpperCase(Locale.ROOT)));
         else
-            return null;
+            return Optional.empty();
     }
 
     /**
@@ -155,7 +155,7 @@ public enum CertificateCriteriaStorage {
          * @param param name of the parameter to be found
          * @return SortType corresponding to the specified param name
          */
-        static Optional<SortType> of(String param) {
+        public static Optional<SortType> of(String param) {
             for (SortType type : values()) {
                 if (type.getParamVars().contains(param)) {
                     return Optional.of(type);

@@ -44,8 +44,8 @@ public class BasicOrderService implements OrderService {
     @Transactional
     @Override
     public void delete(long id) {
-        orderRepository.read(id).orElseThrow(() -> (new EntityNotFoundException("message.not-found.order.id")));
-        orderRepository.delete(orderMapper.convertToEntity(this.read(id)));
+        Order order = orderRepository.read(id).orElseThrow(() -> (new EntityNotFoundException("message.not-found.order.id")));
+        orderRepository.delete(order);
     }
 
     @Transactional

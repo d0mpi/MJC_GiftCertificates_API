@@ -1,10 +1,13 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.DTO.UserDTO;
+import com.epam.esm.User;
 import com.epam.esm.exception.EntityAlreadyExistsException;
 import com.epam.esm.exception.EntityNotCreatedException;
 import com.epam.esm.exception.EntityNotFoundException;
+import com.epam.esm.exception.OrderIsAssociatedWithDatabaseEntity;
 import com.epam.esm.mapper.UserMapper;
+import com.epam.esm.repository.OrderRepository;
 import com.epam.esm.repository.UserRepository;
 import com.epam.esm.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BasicUserService implements UserService {
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
     private final UserMapper userMapper;
 
     @Override
@@ -43,8 +47,11 @@ public class BasicUserService implements UserService {
     @Override
     @Transactional
     public void delete(long id) {
-        userRepository.read(id).orElseThrow(() -> (new EntityNotFoundException("message.not-found.user")));
-        userRepository.delete(userMapper.convertToEntity(this.read(id)));
+        User user = userRepository.read(id).orElseThrow(() -> (new EntityNotFoundException("message.not-found.user")));
+        if (orderRepository.isUserAssociatedWithOrder(user)) {
+            throw new OrderIsAssociatedWithDatabaseEntity("message.is-associated.user");
+        }
+        userRepository.delete(user);
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.epam.esm.DTO.TagDTO;
 import com.epam.esm.Tag;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.repository.impl.JdbcTagRepository;
-import com.epam.esm.validation.TagValidator;
+import com.epam.esm.repository.impl.JdbcUserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,12 +26,13 @@ class BasicTagServiceTest {
     @Mock
     private JdbcTagRepository repo;
     @Mock
-    private TagValidator validator;
+    private JdbcUserRepository userRepository;
+
     private BasicTagService service;
 
     @BeforeEach
     void init() {
-        service = new BasicTagService(repo, tagMapper, validator);
+        service = new BasicTagService(repo, userRepository, tagMapper);
     }
 
     @Test
@@ -43,7 +44,6 @@ class BasicTagServiceTest {
         Mockito.when(repo.create(tag)).thenReturn(Optional.of(tag));
         assertEquals(tagDTO, service.create(tagDTO));
         Mockito.verify(repo, Mockito.times(1)).create(tag);
-        Mockito.verify(validator, Mockito.times(1)).validate(tagDTO);
     }
 
     @Test

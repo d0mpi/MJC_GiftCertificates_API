@@ -1,12 +1,15 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.Certificate;
 import com.epam.esm.DTO.CertificateDTO;
 import com.epam.esm.DTO.TagDTO;
 import com.epam.esm.exception.EntityNotCreatedException;
 import com.epam.esm.exception.EntityNotFoundException;
+import com.epam.esm.exception.OrderIsAssociatedWithDatabaseEntity;
 import com.epam.esm.mapper.CertificateMapper;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.repository.CertificateRepository;
+import com.epam.esm.repository.OrderRepository;
 import com.epam.esm.service.CertificateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.PagedModel;
@@ -31,6 +34,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BasicCertificateService implements CertificateService {
     private final CertificateRepository certificateRepo;
+    private final OrderRepository orderRepository;
     private final CertificateMapper certificateMapper;
     private final TagMapper tagMapper;
 
@@ -102,8 +106,11 @@ public class BasicCertificateService implements CertificateService {
     @Override
     @Transactional
     public void delete(long id) {
-        certificateRepo.read(id).orElseThrow(() -> new EntityNotFoundException("message.not-found.certificate.id"));
-        certificateRepo.delete(certificateMapper.convertToEntity(this.read(id)));
+        Certificate certificate = certificateRepo.read(id).orElseThrow(() -> new EntityNotFoundException("message.not-found.certificate.id"));
+        if (orderRepository.isCertificateAssociatedWithOrder(certificate)) {
+            throw new OrderIsAssociatedWithDatabaseEntity("message.is-associated.certificate");
+        }
+            certificateRepo.delete(certificate);
     }
 
     @Override

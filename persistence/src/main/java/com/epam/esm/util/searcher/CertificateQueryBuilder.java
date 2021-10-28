@@ -1,7 +1,7 @@
 package com.epam.esm.util.searcher;
 
 import com.epam.esm.Certificate;
-import org.springframework.data.jpa.repository.query.InvalidJpaQueryMethodException;
+import com.epam.esm.exception.InvalidQueryParamException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -52,38 +52,33 @@ public class CertificateQueryBuilder implements EntityQueryBuilder {
         CriteriaQuery<Certificate> cq = cb.createQuery(Certificate.class);
         Root<Certificate> root = cq.from(Certificate.class);
         cq = cq.select(root);
+
         List<Predicate> predicates = new ArrayList<>();
-        boolean findByTags = false;
-        Set<String> tagNames = null;
-        Expression<Long> count = null;
-        List<Order> orderList = new LinkedList<>(Arrays.asList(cb.desc(root.get("lastUpdateDate"))));
+        List<Order> orderList = new LinkedList<>(List.of(cb.desc(root.get("lastUpdateDate"))));
+
         for (Map.Entry<String, String> param : paramMap.entrySet()) {
-            if (CertificateCriteriaStorage.hasParam(param.getKey())) {
-                CertificateCriteriaStorage criteria = CertificateCriteriaStorage.of(param.getKey());
-                if (Objects.equals(criteria, CertificateCriteriaStorage.TAGS)) {
-                    findByTags = true;
-                    tagNames = new HashSet<>(Arrays.asList(param.getValue().split(",")));
+            CertificateCriteriaStorage criteria = CertificateCriteriaStorage.of(param.getKey())
+                    .orElseThrow(() -> new InvalidQueryParamException("message.query-param"));
+            switch (criteria) {
+                case TAGS -> {
+                    Set<String> tagNames = new HashSet<>(Arrays.asList(param.getValue().split(",")));
                     predicates.add(criteria.component(param.getValue(), cq, cb, root));
-                    count = cb.count(root);
-                } else if (Objects.equals(criteria, CertificateCriteriaStorage.SORT)) {
+                    cq.groupBy(root).having(cb.equal(cb.count(root), tagNames.size()));
+                }
+                case SORT -> {
                     orderList.clear();
-                    Set<String> values = new HashSet<>(Arrays.asList(param.getValue().split(",")));
+                    Set<String> values = new LinkedHashSet<>(Arrays.asList(param.getValue().split(",")));
                     for (String sortType : values) {
                         orderList.add(CertificateCriteriaStorage.SortType.of(sortType)
-                                .orElseThrow(() -> new InvalidJpaQueryMethodException("message.not-valid.query.order"))
+                                .orElseThrow(() -> new InvalidQueryParamException("message.not-valid.query.order"))
                                 .component(cq, cb, root));
                     }
-                } else {
-                    predicates.add(Objects.requireNonNull(CertificateCriteriaStorage.of(param.getKey()))
-                            .component(param.getValue(), cq, cb, root));
                 }
+                default -> predicates.add(criteria.component(param.getValue(), cq, cb, root));
             }
         }
-        if (findByTags) {
-            return entityManager.createQuery(cq.where(cb.and(predicates.toArray(new Predicate[0]))).groupBy(root)
-                    .having(cb.equal(count, tagNames.size())).orderBy(orderList));
-        }
-        return entityManager.createQuery(cq.where(cb.and(predicates.toArray(new Predicate[0]))).orderBy(orderList));
+        cq.where(cb.and(predicates.toArray(new Predicate[0])));
+        cq.orderBy(orderList);
+        return entityManager.createQuery(cq);
     }
-
 }

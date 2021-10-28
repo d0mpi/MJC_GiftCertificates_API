@@ -6,10 +6,7 @@ import com.epam.esm.DTO.TagDTO;
 import com.epam.esm.Tag;
 import com.epam.esm.mapper.CertificateMapper;
 import com.epam.esm.mapper.TagMapper;
-import com.epam.esm.repository.TagRepository;
 import com.epam.esm.repository.impl.JdbcCertificateRepository;
-import com.epam.esm.validation.CertificateValidator;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -25,19 +22,16 @@ class BasicCertificateServiceTest {
 
     private BasicCertificateService service;
     @Mock
+    private JdbcCertificateRepository certificateRepo;
+    @Mock
     private CertificateMapper certificateMapper;
     @Mock
     private TagMapper tagMapper;
-    @Mock
-    private JdbcCertificateRepository certificateRepo;
-    @Mock
-    private CertificateValidator validator;
 
-    @BeforeEach
-    void setUp(@Mock TagRepository tagRepository) {
-        this.service = new BasicCertificateService(certificateRepo, tagRepository, certificateMapper, tagMapper,
-                validator);
-    }
+//    @BeforeEach
+//    void setUp() {
+//        this.service = new BasicCertificateService(certificateRepo, certificateMapper, tagMapper);
+//    }
 
     @Test
     void create_When_CreateCertificateDTOFromService_Should_InvokeCreateCertificateMethodInRepoAndConvertToDTO() {
@@ -49,7 +43,6 @@ class BasicCertificateServiceTest {
 
         assertEquals(certificateDTO, service.create(certificateDTO));
         Mockito.verify(certificateRepo, Mockito.times(1)).create(certificate);
-        Mockito.verify(validator, Mockito.times(1)).validate(certificateDTO);
     }
 
     @Test

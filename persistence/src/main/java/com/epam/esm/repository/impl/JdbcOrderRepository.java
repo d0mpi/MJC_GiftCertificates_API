@@ -33,6 +33,20 @@ public class JdbcOrderRepository implements OrderRepository {
     }
 
     @Override
+    public boolean isCertificateAssociatedWithOrder(Certificate certificate) {
+        return entityManager.createQuery("select o from Order o where o.certificate = :certificate", Order.class)
+                .setParameter("certificate", certificate)
+                .getResultList().size() != 0;
+    }
+
+    @Override
+    public boolean isUserAssociatedWithOrder(User user) {
+        return entityManager.createQuery("select o from Order o where o.user = :user", Order.class)
+                .setParameter("user", user)
+                .getResultList().size() != 0;
+    }
+
+    @Override
     public long getCount(User user) {
         return entityManager.createQuery("select count(o) from Order o where o.user = :user", Long.class)
                 .setParameter("user", user)

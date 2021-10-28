@@ -28,6 +28,7 @@ dependencies {
         }
     }
     implementation project(':service')
+    implementation project(':persistence')
 
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.5.5'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.5.5'
