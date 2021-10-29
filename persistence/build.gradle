@@ -1,42 +1,46 @@
 plugins {
     id 'java'
+    id 'idea'
+    id 'war'
 }
 
-group 'com.epam.esm'
-version '1.0-SNAPSHOT'
+group = 'com.epam.esm'
+version = '0.0.1-SNAPSHOT'
+
 
 repositories {
     mavenCentral()
 }
 
-if (project.hasProperty('env')) {
-    println "Target environment: $env"
-    sourceSets.main.resources.srcDir "src/main/resources/$env"
-}
-
 dependencies {
     implementation project(':model')
-
-    implementation group: 'com.zaxxer', name: 'HikariCP', version: '5.0.0'
+    configurations {
+        all {
+            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+            exclude group: 'ch.qos.logback', module: 'logback-classic'
+            exclude group: 'org.apache.logging.log4j', module: 'log4j-to-slf4j'
+        }
+    }
+    implementation 'org.springframework:spring-orm:5.3.12'
+    implementation 'org.hibernate:hibernate-core:5.4.32.Final'
+    implementation 'javax.persistence:javax.persistence-api:2.2'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.5.5'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '2.5.5'
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.5.5'
 
     implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.23'
-    implementation group: 'org.springframework', name: 'spring-jdbc', version: '5.3.10'
-    implementation group: 'org.springframework', name: 'spring-core', version: '5.3.10'
-    implementation group: 'org.springframework', name: 'spring-context', version: '5.3.10'
-    implementation group: 'org.springframework', name: 'spring-beans', version: '5.3.10'
 
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    testImplementation 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
+    testImplementation group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
-    testImplementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.32'
 
+    testImplementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.32'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.32'
 
     testImplementation group: 'com.h2database', name: 'h2', version: '1.4.200'
-    testImplementation group: 'org.springframework', name: 'spring-test', version: '5.3.10'
 }
 
 test {

@@ -1,13 +1,19 @@
 package com.epam.esm.exception;
 
-import lombok.Getter;
-
 public class EntityNotFoundException extends RuntimeException {
-    @Getter
-    private final int errorCode;
+    public EntityNotFoundException() {
+        super();
+    }
 
-    public EntityNotFoundException(String errorMessage, int errorCode) {
-        super(errorMessage);
-        this.errorCode = errorCode;
+    public EntityNotFoundException(String message) {
+        super(message);
+    }
+
+    public EntityNotFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public EntityNotFoundException(Throwable cause) {
+        super(cause);
     }
 }

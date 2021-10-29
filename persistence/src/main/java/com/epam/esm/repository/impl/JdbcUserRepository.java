@@ -1,0 +1,59 @@
+package com.epam.esm.repository.impl;
+
+import com.epam.esm.User;
+import com.epam.esm.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+@RequiredArgsConstructor
+public class JdbcUserRepository implements UserRepository {
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Override
+    public Optional<User> create(User user) {
+        entityManager.persist(user);
+        return Optional.of(user);
+    }
+
+    @Override
+    public Optional<User> read(long id) {
+        return Optional.ofNullable(entityManager.find(User.class, id));
+    }
+
+    @Override
+    public List<User> readAll(long page, long size) {
+        return entityManager.createQuery("select u from User u", User.class)
+                .setFirstResult((int) ((page - 1) * size))
+                .setMaxResults((int) size)
+                .getResultList();
+    }
+
+    @Override
+    public Optional<User> update(User user) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void delete(User user) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long getCount() {
+        return (long) entityManager.createQuery("select count (u) from User u").getSingleResult();
+    }
+
+    @Override
+    public boolean exists(User user) {
+        return entityManager.createQuery("select count(u) from User u where u.email= :email", Long.class)
+                .setParameter("email", user.getEmail())
+                .getSingleResult() != 0;
+    }
+}

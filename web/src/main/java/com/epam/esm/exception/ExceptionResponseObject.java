@@ -1,6 +1,7 @@
 package com.epam.esm.exception;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 
@@ -14,6 +15,7 @@ import lombok.ToString;
 @Data
 @ToString
 @AllArgsConstructor
+@Builder
 public class ExceptionResponseObject {
     private String errorMessage;
     private Integer errorCode;

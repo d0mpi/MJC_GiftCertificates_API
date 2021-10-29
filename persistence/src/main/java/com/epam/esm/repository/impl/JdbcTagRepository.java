@@ -1,22 +1,18 @@
 package com.epam.esm.repository.impl;
 
+import com.epam.esm.Certificate;
 import com.epam.esm.Tag;
-import com.epam.esm.exception.CustomDataIntegrityViolationException;
+import com.epam.esm.User;
 import com.epam.esm.repository.TagRepository;
-import com.epam.esm.util.mapper.TagRowMapper;
-import com.epam.esm.util.searcher.TagQueryBuilder;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Implementation of the {@link TagRepository} class that uses JDBC to
@@ -30,64 +26,99 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class JdbcTagRepository implements TagRepository {
-    private static final String SQL_CREATE_TAG = "insert into tag (name) values (?)";
-    private static final String SQL_FIND_TAG_BY_ID = "select id, name from tag where id = ?";
-    private static final String SQL_FIND_TAG_BY_NAME = "select id, name from tag where name = ?";
-    private static final String SQL_SELECT_TAGS_BY_CERTIFICATE_ID = "select t.id, t.name from tag t " +
-            "join certificate_tag ct " +
-            "on t.id = ct.tag_id " +
-            "where ct.certificate_id = ?";
 
-    private static final String SQL_DELETE_TAG = "delete from tag where id = ?";
-
-    @Autowired
-    private final JdbcTemplate template;
-    @Autowired
-    private final TagRowMapper tagMapper;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public Optional<Tag> create(Tag tag) {
-        Tag existingTag = readByName(tag.getName()).orElse(null);
-        if (existingTag != null) {
-            return Optional.of(existingTag);
-        }
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        template.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(SQL_CREATE_TAG, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, tag.getName());
-            return ps;
-        }, keyHolder);
-        if (keyHolder.getKey() != null) {
-            tag.setId(keyHolder.getKey().longValue());
-            return Optional.of(tag);
-        } else
-            throw new CustomDataIntegrityViolationException("tag", 50002);
+        entityManager.persist(tag);
+        return Optional.of(tag);
     }
 
     @Override
-    public List<Tag> findByCriteria(Map<String, String> paramMap) {
-        return template.query(TagQueryBuilder.init().getQuery(paramMap), tagMapper::mapRowToObject);
+    public boolean exists(Tag tag) {
+        return entityManager.createQuery("select count(t) from Tag t where t.name= :name", Long.class)
+                .setParameter("name", tag.getName())
+                .getSingleResult() != 0;
     }
 
     @Override
     public Optional<Tag> read(long id) {
-        return template.queryForStream(SQL_FIND_TAG_BY_ID, tagMapper::mapRowToObject, id)
-                .distinct().findFirst();
+        return Optional.ofNullable(entityManager.find(Tag.class, id));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Tag> readAll(long page, long size) {
+        return (List<Tag>) entityManager.createQuery("select t from Tag t")
+                .setFirstResult((int) ((page - 1) * size))
+                .setMaxResults((int) size)
+                .getResultList();
+    }
+
+    @Override
+    public Optional<Tag> update(Tag tag) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Optional<Tag> readByName(String name) {
-        return template.queryForStream(SQL_FIND_TAG_BY_NAME, tagMapper::mapRowToObject, name)
-                .findFirst();
+        try {
+            return Optional.of(entityManager.createQuery("select t from Tag t where t.name = :name", Tag.class)
+                    .setParameter("name", name).setMaxResults(1).getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public List<Tag> findTagsByCertificateId(long id) {
-        return template.query(SQL_SELECT_TAGS_BY_CERTIFICATE_ID, tagMapper::mapRowToObject, id);
+    public Optional<Tag> getMostWidelyUsedTag(User user) {
+//        return Optional.of((Tag) entityManager.createQuery("select tag.id, tag.name, count(tag.id) as countt, sum(orders.cost) as summ " +
+//                        "from Tag tag " +
+//                        "join tag.certificates certificate " +
+//                        "join certificate.orders orders" +
+//                        "join orders.user tag " +
+//                        "where u.id = :user_id " +
+//                        "group by tag.id " +
+//                        "order by countt desc, summ desc")
+//                .setParameter("user_id", user.getId())
+//                .setMaxResults(1)
+//                .getSingleResult());
+
+        return Optional.of((Tag) entityManager.createNativeQuery("select tag.id, tag.name, count(tag.id) as count, sum(o.cost) as sum " +
+                        "from tag " +
+                        "         inner join certificate_tag ct " +
+                        "                    on tag.id = ct.tag_id " +
+                        "         inner join certificate c " +
+                        "                    on ct.certificate_id = c.id " +
+                        "         inner join orders o " +
+                        "                    on c.id = o.certificate_id " +
+                        "         inner join user u " +
+                        "                    on o.user_id = u.id " +
+                        "where u.id = :user_id " +
+                        "group by tag.id " +
+                        "order by count desc, sum desc limit 1", Tag.class)
+                .setParameter("user_id", user.getId())
+                .getSingleResult());
     }
 
     @Override
-    public void delete(long id) {
-        template.update(SQL_DELETE_TAG, id);
+    public long getCount() {
+        return (long) entityManager.createQuery("SELECT COUNT(t) FROM Tag t").getSingleResult();
+    }
+
+    @Override
+    public Set<Tag> findTagsByCertificateId(long id) {
+        Certificate certificate = (Certificate) entityManager.createQuery("select c from Certificate c where c.id = :id")
+                .setParameter("id", id)
+                .setMaxResults(1)
+                .getSingleResult();
+        return certificate.getTags();
+    }
+
+    @Override
+    public void delete(Tag tag) {
+        entityManager.remove(tag);
     }
 }

@@ -1,9 +1,10 @@
 package com.epam.esm.repository;
 
 import com.epam.esm.Tag;
+import com.epam.esm.User;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Provides CRD operations on {@link Tag} required to interact with database.
@@ -19,7 +20,9 @@ public interface TagRepository extends Repository<Tag> {
      * @param id id of the certificate whoose tags need to be found
      * @return list of tags belonging to the certificate with the specifies id
      */
-    List<Tag> findTagsByCertificateId(long id);
+    Set<Tag> findTagsByCertificateId(long id);
+
+    boolean exists(Tag tag);
 
     /**
      * Reads tag from the database by name
@@ -29,4 +32,6 @@ public interface TagRepository extends Repository<Tag> {
      * the {@link Tag} with the specified id does not exist in the databse
      */
     Optional<Tag> readByName(String name);
+
+    Optional<Tag> getMostWidelyUsedTag(User user);
 }

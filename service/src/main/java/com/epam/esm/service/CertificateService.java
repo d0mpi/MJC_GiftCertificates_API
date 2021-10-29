@@ -2,7 +2,9 @@ package com.epam.esm.service;
 
 import com.epam.esm.DTO.CertificateDTO;
 import com.epam.esm.DTO.TagDTO;
-import com.epam.esm.exception.ValidationException;
+import org.springframework.hateoas.PagedModel;
+
+import java.util.Map;
 
 /**
  * Provides certificate info transfer between web and persistence module,
@@ -22,7 +24,6 @@ public interface CertificateService extends EntityService<CertificateDTO> {
      * @param entity entity containing information about certificate
      *               to be updated
      * @return updated {@link CertificateDTO}
-     * @throws ValidationException if the transmitted information is not valid
      */
     CertificateDTO update(CertificateDTO entity);
 
@@ -44,4 +45,14 @@ public interface CertificateService extends EntityService<CertificateDTO> {
      * @param tag           the tag to be deleted
      */
     void deleteTagFromCertificate(long certificateId, TagDTO tag);
+
+    /**
+     * Provides a link between web and persistence module.
+     * Gets entity by specified params.
+     *
+     * @param paramMap map of params parsed from url
+     * @return entities that meet the parameters specified in the specified map
+     */
+    PagedModel<CertificateDTO> findByCriteria(Map<String, String> paramMap, long page, long size);
+
 }

@@ -1,8 +1,23 @@
 package com.epam.esm.util.searcher;
 
+import com.epam.esm.Certificate;
+import com.epam.esm.exception.InvalidQueryParamException;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Set;
 
 /**
  * Class makes it easier to write a string containing SQL query
@@ -16,9 +31,11 @@ public class CertificateQueryBuilder implements EntityQueryBuilder {
     private final StringBuilder joinQuery;
     private final StringBuilder sortingQuery;
     private final StringBuilder filteringQuery;
+    private final StringBuilder limitQuery;
 
     private CertificateQueryBuilder() {
         this.sortingQuery = new StringBuilder();
+        this.limitQuery = new StringBuilder();
         this.filteringQuery = new StringBuilder(" where true ");
         this.joinQuery = new StringBuilder();
     }
@@ -41,48 +58,38 @@ public class CertificateQueryBuilder implements EntityQueryBuilder {
      * with specified parameters
      */
     @Override
-    public String getQuery(Map<String, String> paramMap) {
+    public TypedQuery<Certificate> getQuery(Map<String, String> paramMap, EntityManager entityManager) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Certificate> cq = cb.createQuery(Certificate.class);
+        Root<Certificate> root = cq.from(Certificate.class);
+        cq = cq.select(root);
+
+        List<Predicate> predicates = new ArrayList<>();
+        List<Order> orderList = new LinkedList<>(List.of(cb.desc(root.get("lastUpdateDate"))));
+
         for (Map.Entry<String, String> param : paramMap.entrySet()) {
-            if (CertificateCriteriaStorage.hasParam(param.getKey())) {
-                addQueryComponent(Objects.requireNonNull(CertificateCriteriaStorage.of(param.getKey())), param.getValue());
+            CertificateCriteriaStorage criteria = CertificateCriteriaStorage.of(param.getKey())
+                    .orElseThrow(() -> new InvalidQueryParamException("message.query-param"));
+            switch (criteria) {
+                case TAGS -> {
+                    Set<String> tagNames = new HashSet<>(Arrays.asList(param.getValue().split(",")));
+                    predicates.add(criteria.component(param.getValue(), cq, cb, root));
+                    cq.groupBy(root).having(cb.equal(cb.count(root), tagNames.size()));
+                }
+                case SORT -> {
+                    orderList.clear();
+                    Set<String> values = new LinkedHashSet<>(Arrays.asList(param.getValue().split(",")));
+                    for (String sortType : values) {
+                        orderList.add(CertificateCriteriaStorage.SortType.of(sortType)
+                                .orElseThrow(() -> new InvalidQueryParamException("message.not-valid.query.order"))
+                                .component(cq, cb, root));
+                    }
+                }
+                default -> predicates.add(criteria.component(param.getValue(), cq, cb, root));
             }
         }
-        return "select certificate.id," +
-                " certificate.name," +
-                " certificate.description," +
-                " certificate.price," +
-                " certificate.duration," +
-                " certificate.create_date," +
-                " certificate.last_update_date " +
-                " from certificate " + joinQuery + filteringQuery + sortingQuery;
-    }
-
-    private void addQueryComponent(CertificateCriteriaStorage certificateFindParam, String paramValue) {
-        if (certificateFindParam.equals(CertificateCriteriaStorage.TAG)) {
-            joinQuery.append(" join certificate_tag " +
-                    "              on certificate.id = certificate_tag.certificate_id" +
-                    "         join tag " +
-                    "              on certificate_tag.tag_id = tag.id ");
-        }
-        if (certificateFindParam.equals(CertificateCriteriaStorage.SORT)) {
-            Arrays.stream(paramValue.split("[,+\\s]"))
-                    .forEach(component -> addSortComponent(certificateFindParam, component));
-        } else {
-            addFilterComponent(certificateFindParam, paramValue);
-        }
-    }
-
-    private void addSortComponent(CertificateCriteriaStorage certificateFindParam, String sortComponent) {
-        if (this.sortingQuery.length() == 0) {
-            this.sortingQuery.append(" order by ");
-        } else {
-            this.sortingQuery.append(" , ");
-        }
-        this.sortingQuery.append(certificateFindParam.component(sortComponent));
-    }
-
-    private void addFilterComponent(CertificateCriteriaStorage certificateFindParam, String filterComponent) {
-        this.filteringQuery.append(" and ");
-        this.filteringQuery.append(certificateFindParam.component(filterComponent));
+        cq.where(cb.and(predicates.toArray(new Predicate[0])));
+        cq.orderBy(orderList);
+        return entityManager.createQuery(cq);
     }
 }

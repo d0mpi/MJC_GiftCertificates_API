@@ -1,15 +1,24 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.DTO.TagDTO;
-import com.epam.esm.exception.ValidationException;
+import com.epam.esm.assembler.TagRepresentationModelAssembler;
 import com.epam.esm.service.TagService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
+import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 
 /**
  * Contains methods that process information in JSON received from this kind
@@ -24,19 +33,22 @@ import java.util.Map;
 @RequestMapping("/tag")
 @RequiredArgsConstructor
 public class TagController {
-    @Autowired
     private final TagService tagService;
+    private final TagRepresentationModelAssembler tagAssembler;
 
     /**
      * Gets all tags that meet specified criteria
      *
-     * @param params parameters that tag must satisfy
      * @return list of {@link TagDTO} in JSON  format
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<TagDTO> findAll(@RequestParam Map<String, String> params) {
-        return tagService.findByCriteria(params);
+    public PagedModel<TagDTO> findAll(@RequestParam(value = "page", required = false, defaultValue = "1")
+                                              long page,
+                                      @RequestParam(value = "size", required = false, defaultValue = "10")
+                                              long size) {
+        PagedModel<TagDTO> tagPage = tagService.readAll(page, size);
+        return tagAssembler.toPagedModel(tagPage);
     }
 
     /**
@@ -47,8 +59,8 @@ public class TagController {
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public TagDTO read(@PathVariable("id") long id) {
-        return tagService.read(id);
+    public EntityModel<TagDTO> read(@PathVariable("id") long id) {
+        return tagAssembler.toModel(tagService.read(id));
     }
 
     /**
@@ -56,12 +68,11 @@ public class TagController {
      *
      * @param tag {@link TagDTO} containing all necessary information
      * @return created {@link TagDTO} with up-to-date information in JSON format
-     * @throws ValidationException if received information is not valid
      */
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public TagDTO create(@RequestBody TagDTO tag) {
-        return tagService.create(tag);
+    public EntityModel<TagDTO> create(@RequestBody @Valid TagDTO tag) {
+        return tagAssembler.toModel(tagService.create(tag));
     }
 
     /**
@@ -73,5 +84,13 @@ public class TagController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") long id) {
         tagService.delete(id);
+    }
+
+
+    @GetMapping("/mostWidelyUsedTag/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<TagDTO> getMostWidelyUsedTag(@PathVariable
+                                                    @Positive long userId) {
+        return tagAssembler.toModel(tagService.getMostWidelyUsedTag(userId));
     }
 }

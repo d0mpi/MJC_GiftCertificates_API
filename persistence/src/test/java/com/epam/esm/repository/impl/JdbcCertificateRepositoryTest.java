@@ -3,57 +3,45 @@ package com.epam.esm.repository.impl;
 import com.epam.esm.Certificate;
 import com.epam.esm.Tag;
 import com.epam.esm.repository.TestPersistenceConfig;
-import com.epam.esm.util.mapper.CertificateRowMapper;
-import com.epam.esm.util.mapper.TagRowMapper;
-import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(SpringExtension.class)
-@SpringJUnitConfig(classes = TestPersistenceConfig.class)
+@SpringBootTest(classes = TestPersistenceConfig.class)
+@Transactional
 class JdbcCertificateRepositoryTest {
-    private static JdbcCertificateRepository certificateRepository;
-
-    @BeforeAll
-    static void init(@Autowired JdbcTemplate template) {
-        certificateRepository = new JdbcCertificateRepository(
-                template,
-                new CertificateRowMapper(),
-                new JdbcTagRepository(template, new TagRowMapper()));
-    }
+    @Autowired
+    private JdbcCertificateRepository certificateRepository;
 
     @Test
     void findAllByCriteria_When_FindAll_Then_ReturnTen() {
-        assertEquals(10, certificateRepository.findByCriteria(Collections.emptyMap()).size());
+        assertEquals(10, certificateRepository.findByCriteria(Collections.emptyMap(), 1, 10).size());
     }
 
     @Test
     void findAllByCriteria_When_FindByName_Ride_Then_ReturnOne() {
-        assertEquals(1, certificateRepository.findByCriteria(Collections.singletonMap("name", "ride")).size());
+        assertEquals(1, certificateRepository.findByCriteria(Collections.singletonMap("name", "ride"), 1, 10).size());
     }
 
     @Test
     void findAllByCriteria_When_FindByDescription_Ride_Then_ReturnOne() {
-        assertEquals(2, certificateRepository.findByCriteria(Collections.singletonMap("description", "certificate")).size());
+        assertEquals(2, certificateRepository.findByCriteria(Collections.singletonMap("description", "certificate"), 1, 10).size());
     }
 
     @Test
     void findAllByCriteria_When_FindByTagName_ForOnePerson_Then_ReturnThree() {
-        assertEquals(3, certificateRepository.findByCriteria(Collections.singletonMap("tag", "for one person")).size());
+        assertEquals(3, certificateRepository.findByCriteria(Collections.singletonMap("tag", "for one person"), 1, 10).size());
     }
 
     @Test
@@ -96,25 +84,29 @@ class JdbcCertificateRepositoryTest {
 
     @Test
     void delete_When_DeleteCertificateWithIdNine_Then_ReadAndThrowDAOException() {
-        certificateRepository.delete(9);
+        certificateRepository.delete(new Certificate(9, null,
+                null,
+                null, 31,
+                null,
+                null));
         assertNull(certificateRepository.read(9).orElse(null));
     }
 
-    @Test
-    void addTagToCertificate_When_TagDoesNotExist_Then_ReadUpdatedCertificateWithNewTag() {
-        certificateRepository.addTagToCertificate(8, new Tag("new tag"));
-        Certificate certificate = new Certificate(8, "Vocal Mastery Course",
-                "Want to get 100 karaoke points, perform at events, or sing beautifully in the shower? In one month, you will master the basic theoretical knowledge and acquire professional performance skills that will help you develop in the future.",
-                new BigDecimal("94.0"), 31,
-                LocalDateTime.parse("2021-06-12T10:34:09"),
-                LocalDateTime.parse("2021-06-12T10:34:09"));
-        certificate.addTags(Arrays.asList(new Tag(6, "for one person"), new Tag(8, "new tag"), new Tag(3, "training")));
-        assertEquals(certificate, certificateRepository.read(8).orElse(null));
-    }
-
-    @Test
-    void deleteTagFromCertificate_When_DeleteFromSevenCertificateFifthTag_Then_ReadCertificateWithoutTags() {
-        certificateRepository.deleteTagFromCertificate(7, new Tag(5, "does not matter"));
-        assertEquals(0, Objects.requireNonNull(certificateRepository.read(7).orElse(null)).getTags().size());
-    }
+//    @Test
+//    void addTagToCertificate_When_TagDoesNotExist_Then_ReadUpdatedCertificateWithNewTag() {
+//        certificateRepository.addTagToCertificate(8, new Tag("new tag"));
+//        Certificate certificate = new Certificate(8, "Vocal Mastery Course",
+//                "Want to get 100 karaoke points, perform at events, or sing beautifully in the shower? In one month, you will master the basic theoretical knowledge and acquire professional performance skills that will help you develop in the future.",
+//                new BigDecimal("94.0"), 31,
+//                LocalDateTime.parse("2021-06-12T10:34:09"),
+//                LocalDateTime.parse("2021-06-12T10:34:09"));
+//        certificate.addTags(Arrays.asList(new Tag(6, "for one person"), new Tag(8, "new tag"), new Tag(3, "training")));
+//        assertEquals(certificate, certificateRepository.read(8).orElse(null));
+//    }
+//
+//    @Test
+//    void deleteTagFromCertificate_When_DeleteFromSevenCertificateFifthTag_Then_ReadCertificateWithoutTags() {
+//        certificateRepository.deleteTagFromCertificate(7, new Tag(5, "does not matter"));
+//        assertEquals(0, Objects.requireNonNull(certificateRepository.read(7).orElse(null)).getTags().size());
+//    }
 }

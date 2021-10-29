@@ -19,14 +19,8 @@ import javax.sql.DataSource;
 @ComponentScan("com.epam.esm")
 public class TestPersistenceConfig implements ApplicationContextAware {
     private ApplicationContext applicationContext;
-
     @Bean
     @Primary
-    public static JdbcTemplate getTestTemplate() {
-        return new JdbcTemplate(H2DataSource());
-    }
-
-    @Bean
     public static DataSource H2DataSource() {
         return new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)

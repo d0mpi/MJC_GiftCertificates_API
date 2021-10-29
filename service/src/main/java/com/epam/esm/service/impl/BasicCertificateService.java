@@ -1,18 +1,20 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.Certificate;
 import com.epam.esm.DTO.CertificateDTO;
 import com.epam.esm.DTO.TagDTO;
+import com.epam.esm.exception.EntityNotCreatedException;
 import com.epam.esm.exception.EntityNotFoundException;
-import com.epam.esm.exception.ValidationException;
+import com.epam.esm.exception.OrderIsAssociatedWithDatabaseEntity;
 import com.epam.esm.mapper.CertificateMapper;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.repository.CertificateRepository;
-import com.epam.esm.repository.TagRepository;
+import com.epam.esm.repository.OrderRepository;
 import com.epam.esm.service.CertificateService;
-import com.epam.esm.validation.CertificateValidator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,48 +33,43 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class BasicCertificateService implements CertificateService {
-    @Autowired
     private final CertificateRepository certificateRepo;
-    @Autowired
-    private final TagRepository tagRepo;
-    @Autowired
+    private final OrderRepository orderRepository;
     private final CertificateMapper certificateMapper;
-    @Autowired
     private final TagMapper tagMapper;
-    @Autowired
-    private final CertificateValidator certificateValidator;
-
 
     @Override
+    @Transactional
     public CertificateDTO create(CertificateDTO certificate) {
-        certificateValidator.validate(certificate);
         certificate.setCreateDate(LocalDateTime.now());
         certificate.setLastUpdateDate(LocalDateTime.now());
-        return certificateMapper
-                .convertToDto(
-                        certificateRepo.create(
-                                        certificateMapper.convertToEntity(certificate))
-                                .orElseThrow(() -> (new EntityNotFoundException("certificate", 40401))));
+        return certificateMapper.convertToDto(certificateRepo
+                .create(certificateMapper.convertToEntity(certificate))
+                .orElseThrow(() -> (new EntityNotCreatedException("message.not-created.certificate"))));
     }
 
     @Override
+    @Transactional
     public CertificateDTO read(long id) {
         return certificateMapper.convertToDto(
                 certificateRepo.read(id)
-                        .orElseThrow(() -> (new EntityNotFoundException("certificate", 40401))));
+                        .orElseThrow(() -> (new EntityNotFoundException("message.not-found.certificate.id"))));
     }
 
     @Override
-    public List<CertificateDTO> findByCriteria(Map<String, String> paramMap) {
-
-        return certificateRepo.findByCriteria(paramMap)
+    @Transactional
+    public PagedModel<CertificateDTO> findByCriteria(Map<String, String> paramMap, long page, long size) {
+        List<CertificateDTO> certificateDTOList = certificateRepo.findByCriteria(paramMap, page, size)
                 .stream()
                 .map(certificateMapper::convertToDto)
                 .collect(Collectors.toList());
+        PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(size, page, certificateRepo.getCount(paramMap));
+        return PagedModel.of(certificateDTOList, metadata);
     }
 
     @Override
-    public CertificateDTO update(CertificateDTO patch) throws ValidationException {
+    @Transactional
+    public CertificateDTO update(CertificateDTO patch) {
         CertificateDTO certificate = read(patch.getId());
         if (patch.getName() != null)
             certificate.setName(patch.getName());
@@ -84,29 +81,47 @@ public class BasicCertificateService implements CertificateService {
             certificate.setPrice(patch.getPrice());
         if (patch.getTags() != null)
             certificate.setTags(patch.getTags());
-        certificateValidator.validate(certificate);
         certificate.setLastUpdateDate(LocalDateTime.now());
         return certificateMapper.convertToDto(
                 certificateRepo.update(certificateMapper.convertToEntity(certificate))
-                        .orElseThrow(() -> (new EntityNotFoundException("certificate", 40401))));
+                        .orElseThrow(() -> (new EntityNotFoundException("message.not-found.certificate.id"))));
     }
 
     @Override
+    @Transactional
     public CertificateDTO addTagToCertificate(long certificateId, TagDTO tag) {
         certificateRepo.addTagToCertificate(certificateId, tagMapper.convertToEntity(tag));
         return certificateMapper.convertToDto(
-                certificateRepo.read(
-                        certificateId).orElseThrow(() -> (new EntityNotFoundException("certificate", 40401))));
+                certificateRepo.read(certificateId)
+                        .orElseThrow(() -> (new EntityNotFoundException("message.not-found.certificate.id"))));
     }
 
     @Override
+    @Transactional
     public void deleteTagFromCertificate(long certificateId, TagDTO tag) {
         certificateRepo.deleteTagFromCertificate(certificateId, tagMapper.convertToEntity(tag));
     }
 
+
     @Override
+    @Transactional
     public void delete(long id) {
-        certificateRepo.delete(id);
+        Certificate certificate = certificateRepo.read(id).orElseThrow(() -> new EntityNotFoundException("message.not-found.certificate.id"));
+        if (orderRepository.isCertificateAssociatedWithOrder(certificate)) {
+            throw new OrderIsAssociatedWithDatabaseEntity("message.is-associated.certificate");
+        }
+            certificateRepo.delete(certificate);
+    }
+
+    @Override
+    @Transactional
+    public PagedModel<CertificateDTO> readAll(long page, long size) {
+        List<CertificateDTO> certificateDTOList = certificateRepo.readAll(page, size)
+                .stream()
+                .map(certificateMapper::convertToDto)
+                .collect(Collectors.toList());
+        PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(size, page, certificateRepo.getCount());
+        return PagedModel.of(certificateDTOList, metadata);
     }
 
 }

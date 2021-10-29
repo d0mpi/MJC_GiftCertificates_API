@@ -2,34 +2,26 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.Tag;
 import com.epam.esm.repository.TestPersistenceConfig;
-import com.epam.esm.util.mapper.TagRowMapper;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(SpringExtension.class)
-@SpringJUnitConfig(classes = TestPersistenceConfig.class)
-class JdbcTagRepositoryTest {
-
-    private static JdbcTagRepository tagRepository;
-
-    @BeforeAll
-    static void init(@Autowired JdbcTemplate template) {
-        tagRepository = new JdbcTagRepository(
-                template,
-                new TagRowMapper());
-    }
+@SpringBootTest(classes = TestPersistenceConfig.class)
+@Transactional
+public class JdbcTagRepositoryTest {
+    @Autowired
+    private JdbcTagRepository tagRepository;
 
     @Test
     void create_When_CreteNewTag_Then_ShouldBeEqualsWithReadTagWithSpecifiedId() {
-        Tag tag = new Tag(8, "created tag");
+        Tag tag = new Tag(8L, "eight");
         tagRepository.create(tag);
         assertEquals(tag, tagRepository.read(8).orElse(null));
     }
@@ -48,7 +40,7 @@ class JdbcTagRepositoryTest {
 
     @Test
     void delete_When_DeleteTagWithIdThree_Then_ReadAndThrowDAOException() {
-        tagRepository.delete(3);
+        tagRepository.delete(new Tag(3, null));
         assertNull(tagRepository.read(3).orElse(null));
     }
 

@@ -1,4 +1,4 @@
-package com.epam.esm.exception;
+package exception;
 
 import lombok.Getter;
 

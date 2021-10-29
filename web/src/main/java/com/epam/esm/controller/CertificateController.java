@@ -1,16 +1,33 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.DTO.CertificateCreateDTO;
 import com.epam.esm.DTO.CertificateDTO;
+import com.epam.esm.DTO.OrderDTO;
 import com.epam.esm.DTO.TagDTO;
-import com.epam.esm.exception.ValidationException;
+import com.epam.esm.assembler.CertificateRepresentationModelAssembler;
+import com.epam.esm.assembler.OrderRepresentationModelAssembler;
 import com.epam.esm.service.CertificateService;
+import com.epam.esm.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.util.Map;
 
 /**
@@ -24,12 +41,15 @@ import java.util.Map;
  */
 @RestController
 @Slf4j
+@Validated
 @RequestMapping("/certificate")
 @RequiredArgsConstructor
 public class CertificateController {
 
-    @Autowired
     private final CertificateService certificateService;
+    private final CertificateRepresentationModelAssembler certificateAssembler;
+    private final OrderRepresentationModelAssembler orderAssembler;
+    private final OrderService orderService;
 
     /**
      * Gets all certificates that meet specified criteria
@@ -39,8 +59,14 @@ public class CertificateController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<CertificateDTO> findAllByCriteria(@RequestParam Map<String, String> params) {
-        return certificateService.findByCriteria(params);
+    public PagedModel<CertificateDTO> findAllByCriteria(@RequestParam
+                                                                Map<String, String> params,
+                                                        @RequestParam(value = "page", required = false, defaultValue = "1")
+                                                                long page,
+                                                        @RequestParam(value = "size", required = false, defaultValue = "10")
+                                                                long size) {
+        PagedModel<CertificateDTO> certificateDTOList = certificateService.findByCriteria(params, page, size);
+        return certificateAssembler.toPagedModel(certificateDTOList, params);
     }
 
     /**
@@ -51,8 +77,8 @@ public class CertificateController {
      */
     @GetMapping("/{id}")
     @ResponseBody
-    public CertificateDTO read(@PathVariable("id") long id) {
-        return certificateService.read(id);
+    public EntityModel<CertificateDTO> read(@PathVariable("id") long id) {
+        return certificateAssembler.toModel(certificateService.read(id));
     }
 
     /**
@@ -60,12 +86,11 @@ public class CertificateController {
      *
      * @param certificate {@link CertificateDTO} containing all necessary information
      * @return created {@link CertificateDTO} with up-to-date information in JSON format
-     * @throws ValidationException if received information is not valid
      */
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public CertificateDTO create(@RequestBody CertificateDTO certificate) {
-        return certificateService.create(certificate);
+    public EntityModel<CertificateDTO> create(@Valid @RequestBody CertificateCreateDTO certificate) {
+        return certificateAssembler.toModel(certificateService.create(new CertificateDTO(certificate)));
     }
 
     /**
@@ -74,14 +99,13 @@ public class CertificateController {
      * @param id    id of the certificate to be updated
      * @param patch {@link CertificateDTO} with information to be updated
      * @return {@link CertificateDTO} with up-to-date information in JSON format
-     * @throws ValidationException if certificate with the specified id does not exist
      */
     @PatchMapping(value = "/{id}",
             consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public CertificateDTO update(@PathVariable("id") long id, @RequestBody CertificateDTO patch) {
+    public EntityModel<CertificateDTO> update(@PathVariable("id") long id, @RequestBody @Valid CertificateDTO patch) {
         patch.setId(id);
-        return certificateService.update(patch);
+        return certificateAssembler.toModel(certificateService.update(patch));
     }
 
     /**
@@ -104,9 +128,9 @@ public class CertificateController {
      */
     @PostMapping(value = "/{certificateId}/tag")
     @ResponseStatus(HttpStatus.OK)
-    public CertificateDTO addTagToCertificate(@PathVariable("certificateId") long certificateId,
-                                              @RequestBody TagDTO tag) {
-        return certificateService.addTagToCertificate(certificateId, tag);
+    public EntityModel<CertificateDTO> addTagToCertificate(@PathVariable("certificateId") long certificateId,
+                                                           @RequestBody TagDTO tag) {
+        return certificateAssembler.toModel(certificateService.addTagToCertificate(certificateId, tag));
     }
 
     /**
@@ -120,5 +144,15 @@ public class CertificateController {
     public void deleteTagFromCertificate(@PathVariable("certificateId") long certificateId,
                                          @RequestBody TagDTO tag) {
         certificateService.deleteTagFromCertificate(certificateId, tag);
+    }
+
+
+    @PostMapping(value = "/{certificateId}/user/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<OrderDTO> createOrder(@PathVariable
+                                             @Positive long userId,
+                                             @PathVariable
+                                             @Positive long certificateId) {
+        return orderAssembler.toModel(orderService.create(userId, certificateId));
     }
 }

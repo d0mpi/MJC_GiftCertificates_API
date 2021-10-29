@@ -1,17 +1,21 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.DTO.TagDTO;
+import com.epam.esm.Tag;
+import com.epam.esm.User;
+import com.epam.esm.exception.EntityAlreadyExistsException;
+import com.epam.esm.exception.EntityNotCreatedException;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.repository.TagRepository;
+import com.epam.esm.repository.UserRepository;
 import com.epam.esm.service.TagService;
-import com.epam.esm.validation.TagValidator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -25,36 +29,51 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class BasicTagService implements TagService {
-    @Autowired
     private final TagRepository repo;
-    @Autowired
+    private final UserRepository userRepository;
     private final TagMapper mapper;
-    @Autowired
-    private final TagValidator validator;
 
     @Override
+    @Transactional
     public TagDTO create(TagDTO tag) {
-        validator.validate(tag);
+        if (repo.exists(mapper.convertToEntity(tag))) {
+            throw new EntityAlreadyExistsException("message.exists.tag");
+        }
         return mapper.convertToDto(
-                repo.create(mapper.convertToEntity(tag)).orElseThrow(() -> (new EntityNotFoundException("tag", 40402))));
+                repo.create(mapper.convertToEntity(tag))
+                        .orElseThrow(() -> (new EntityNotCreatedException("message.not-created.tag"))));
     }
 
     @Override
+    @Transactional
     public TagDTO read(long id) {
-        return mapper.convertToDto(repo.read(id).orElseThrow(() -> (new EntityNotFoundException("tag", 40402))));
+        return mapper.convertToDto(repo.read(id).orElseThrow(() -> (new EntityNotFoundException("message.not-found.tag"))));
     }
 
     @Override
-    public List<TagDTO> findByCriteria(Map<String, String> paramMap) {
-        return repo.findByCriteria(paramMap)
+    @Transactional
+    public PagedModel<TagDTO> readAll(long page, long size) {
+        List<TagDTO> tagDTOList = repo.readAll(page, size)
                 .stream()
                 .map(mapper::convertToDto)
                 .collect(Collectors.toList());
+        PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(size, page, repo.getCount());
+        return PagedModel.of(tagDTOList, metadata);
     }
 
     @Override
+    @Transactional
     public void delete(long id) {
-        repo.delete(id);
+        Tag tag = repo.read(id).orElseThrow(() -> (new EntityNotFoundException("message.not-found.tag")));
+        repo.delete(tag);
     }
 
+    @Override
+    @Transactional
+    public TagDTO getMostWidelyUsedTag(long userId) {
+        User user = userRepository.read(userId)
+                .orElseThrow(() -> (new EntityNotFoundException("message.not-found.user")));
+        return mapper.convertToDto(repo.getMostWidelyUsedTag(user)
+                .orElseThrow(() -> (new EntityNotFoundException("message.not-found.tag"))));
+    }
 }

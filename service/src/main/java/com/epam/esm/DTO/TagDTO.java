@@ -1,9 +1,16 @@
 package com.epam.esm.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 
 
 /**
@@ -15,24 +22,16 @@ import lombok.NoArgsConstructor;
  * @version 1.0
  * @see com.epam.esm.Tag
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TagDTO extends EntityDTO {
-
+@ToString
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Relation(itemRelation = "tag", collectionRelation = "tags")
+public class TagDTO extends RepresentationModel<TagDTO> {
+    @Positive(message = "{message.positive.id}")
+    private Long id;
+    @NotBlank(message = "{message.not-blank.name}")
+    @Size(min = 1, max = 45, message = "{message.size.name}")
     private String name;
-
-    public TagDTO(Long id, String name) {
-        super(id);
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return "TagDTO{" +
-                "id" + super.getId() +
-                "name='" + name + '\'' +
-                '}';
-    }
 }
