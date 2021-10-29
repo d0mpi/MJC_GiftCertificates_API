@@ -2,7 +2,6 @@ package com.epam.esm.controller;
 
 
 import com.epam.esm.DTO.OrderDTO;
-import com.epam.esm.DTO.TagDTO;
 import com.epam.esm.DTO.UserDTO;
 import com.epam.esm.assembler.OrderRepresentationModelAssembler;
 import com.epam.esm.assembler.TagRepresentationModelAssembler;
@@ -14,7 +13,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;

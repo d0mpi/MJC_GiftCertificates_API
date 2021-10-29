@@ -58,7 +58,7 @@ public class JdbcTagRepository implements TagRepository {
     }
 
     @Override
-    public Optional<Certificate> update(Certificate certificate) {
+    public Optional<Tag> update(Tag tag) {
         throw new UnsupportedOperationException();
     }
 

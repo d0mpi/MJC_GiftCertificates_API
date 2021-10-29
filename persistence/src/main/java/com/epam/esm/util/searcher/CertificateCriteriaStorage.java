@@ -3,8 +3,20 @@ package com.epam.esm.util.searcher;
 import com.epam.esm.Certificate;
 import lombok.Getter;
 
-import javax.persistence.criteria.*;
-import java.util.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+
 
 /**
  * Class store all possible url parameters for certificate search and

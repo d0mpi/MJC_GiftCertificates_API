@@ -34,10 +34,9 @@ public interface Repository<T> {
     /**
      * Updates info about the specified {@link Certificate} in the database
      *
-     * @param certificate {@link Certificate} instance containing info to be updated
      * @return updated {@link Certificate}
      */
-    Optional<Certificate> update(Certificate certificate);
+    Optional<T> update(T entity);
 
     /**
      * Deletes object with the specified id from rhe database

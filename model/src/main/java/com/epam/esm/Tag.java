@@ -1,12 +1,21 @@
 package com.epam.esm;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Contains information about tag, provides
@@ -20,9 +29,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@ToString
 @Table(name = "tag", uniqueConstraints = @UniqueConstraint(columnNames = "name"))
-public class Tag implements Comparable<Tag>, Serializable {
+@EqualsAndHashCode
+public class Tag {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,18 +56,5 @@ public class Tag implements Comparable<Tag>, Serializable {
 
     public Tag(String name) {
         this.name = name;
-    }
-
-    /**
-     * Compares two {@link Tag} instances by id
-     *
-     * @param o {@link Tag} to be compared
-     * @return 0 - if objects are equals
-     * positive number - if id of the {@link Tag} o is more than id of the object whoose method was called
-     * negative number - if id of the {@link Tag} o is less than id of the object whoose method was called
-     */
-    @Override
-    public int compareTo(Tag o) {
-        return (int) (o.getId() - this.getId());
     }
 }

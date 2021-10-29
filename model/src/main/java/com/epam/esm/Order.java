@@ -1,10 +1,22 @@
 package com.epam.esm;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -24,7 +36,6 @@ public class Order {
     @Column(name = "cost")
     private BigDecimal cost;
     @Column(name = "create_date")
-    @CreationTimestamp
     private LocalDateTime purchaseDate;
 
     @ManyToOne(targetEntity = Certificate.class, fetch = FetchType.LAZY)

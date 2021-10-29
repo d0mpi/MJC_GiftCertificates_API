@@ -3,7 +3,6 @@ package com.epam.esm.repository;
 import com.epam.esm.Tag;
 import com.epam.esm.User;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 

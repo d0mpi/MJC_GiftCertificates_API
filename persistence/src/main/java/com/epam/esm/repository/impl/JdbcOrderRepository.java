@@ -29,7 +29,7 @@ public class JdbcOrderRepository implements OrderRepository {
 
     @Override
     public Order create(long userId, long certificateId) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -74,8 +74,8 @@ public class JdbcOrderRepository implements OrderRepository {
     }
 
     @Override
-    public Optional<Certificate> update(Certificate certificate) {
-        return Optional.empty();
+    public Optional<Order> update(Order order) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
